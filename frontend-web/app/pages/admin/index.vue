@@ -27,7 +27,7 @@
             </div>
             <div class="mt-1.5 h-1.5 overflow-hidden rounded-full bg-surface-muted">
               <div
-                class="h-full rounded-full bg-primary dark:bg-tertiary"
+                class="h-full rounded-full bg-tertiary shadow-[0_0_10px_rgba(219,255,0,0.35)]"
                 :style="{ width: `${maxCategory ? Math.round((item.products / maxCategory) * 100) : 0}%` }"
               />
             </div>

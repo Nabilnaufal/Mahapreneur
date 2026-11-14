@@ -20,11 +20,25 @@
           <h1 class="text-xl font-extrabold text-strong">Ringkasan toko</h1>
           <p class="mt-1 text-sm text-muted">{{ auth.user?.store?.name }} · data diperbarui otomatis dari pesanan nyata.</p>
         </div>
-        <div class="flex gap-2">
-          <NuxtLink to="/seller/products/new" class="btn btn-primary text-xs"><Plus class="size-4" /> Tambah produk</NuxtLink>
-          <NuxtLink to="/seller/orders" class="btn btn-outline text-xs">Pesanan masuk</NuxtLink>
-        </div>
       </header>
+
+      <div class="grid grid-cols-2 gap-3 sm:grid-cols-4">
+        <NuxtLink
+          v-for="action in quickActions"
+          :key="action.label"
+          :to="action.to"
+          :target="action.external ? '_blank' : undefined"
+          class="card group flex items-center gap-3 p-3.5 transition hover:-translate-y-0.5 hover:border-line-strong sm:p-4"
+        >
+          <span class="grid size-9 shrink-0 place-items-center rounded-xl bg-surface-muted text-primary transition group-hover:bg-tertiary group-hover:text-neutral sm:size-10 dark:text-tertiary">
+            <component :is="action.icon" class="size-5" />
+          </span>
+          <div class="min-w-0">
+            <p class="text-xs font-bold leading-snug text-strong">{{ action.label }}</p>
+            <p class="hidden text-[10px] text-muted sm:block">{{ action.desc }}</p>
+          </div>
+        </NuxtLink>
+      </div>
 
       <div class="grid grid-cols-2 gap-3 lg:grid-cols-3 xl:grid-cols-6">
         <DashboardStat label="Total produk" :value="stats.productCount ?? 0" :icon="Boxes" />
@@ -87,7 +101,7 @@
 
 <script setup lang="ts">
 import {
-  Boxes, CheckCircle2, ChevronRight, Clock, PackageCheck, Plus, ShoppingBag, Store, Wallet,
+  Boxes, CheckCircle2, ChevronRight, ClipboardList, Clock, ExternalLink, PackageCheck, Plus, ShoppingBag, Store, Wallet,
 } from 'lucide-vue-next';
 import type { Order, Product } from '~/types';
 
@@ -113,6 +127,13 @@ const stats = computed(() => data.value?.stats ?? ({} as DashboardData['stats'])
 const recentOrders = computed(() => data.value?.recentOrders ?? []);
 const topProducts = computed(() => data.value?.topProducts ?? []);
 const chartData = computed(() => (data.value?.chart ?? []).map((point) => ({ date: point.date, label: point.label, value: point.revenue })));
+
+const quickActions = computed(() => [
+  { label: 'Tambah produk', desc: 'Unggah produk atau jasa', to: '/seller/products/new', icon: Plus, external: false },
+  { label: 'Kelola toko', desc: 'Profil, jam buka, banner', to: '/seller/store', icon: Store, external: false },
+  { label: 'Pesanan masuk', desc: 'Proses dan antar pesanan', to: '/seller/orders', icon: ClipboardList, external: false },
+  { label: 'Lihat toko', desc: 'Tampilan publik tokomu', to: `/store/${auth.user?.store?.slug ?? ''}`, icon: ExternalLink, external: true },
+]);
 
 useSeoMeta({ title: 'Dashboard Seller' });
 </script>
