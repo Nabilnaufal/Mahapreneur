@@ -19,7 +19,7 @@
 <p align="center">
   <a href="https://expressjs.com/"><img alt="Express" src="https://img.shields.io/badge/API-Express_4-000000?style=for-the-badge&logo=express&logoColor=white"></a>
   <a href="https://www.prisma.io/"><img alt="Prisma" src="https://img.shields.io/badge/ORM-Prisma-2D3748?style=for-the-badge&logo=prisma&logoColor=white"></a>
-  <a href="https://www.mysql.com/"><img alt="MySQL" src="https://img.shields.io/badge/Database-MySQL_8-4479A1?style=for-the-badge&logo=mysql&logoColor=white"></a>
+  <a href="https://www.apachefriends.org/"><img alt="MariaDB" src="https://img.shields.io/badge/Database-MariaDB_10.4-003545?style=for-the-badge&logo=mariadb&logoColor=white"></a>
   <a href="https://www.doku.com/"><img alt="DOKU" src="https://img.shields.io/badge/Payment-DOKU_Sandbox-102C40?style=for-the-badge&logo=databricks&logoColor=DBFF00"></a>
   <a href="https://nodejs.org/"><img alt="Node.js" src="https://img.shields.io/badge/Runtime-Node.js_20-5FA04E?style=for-the-badge&logo=nodedotjs&logoColor=white"></a>
 </p>
@@ -35,7 +35,7 @@ Mahapreneur adalah aplikasi marketplace tempat mahasiswa membuka toko sendiri da
 
 Aplikasi ini dibangun sebagai proyek mata kuliah E-Business dengan dua bagian:
 
-- **`backend/`** — REST API Express + TypeScript + Prisma + MySQL.
+- **`backend/`** — REST API Express + TypeScript + Prisma + MariaDB/MySQL.
 - **`frontend-web/`** — aplikasi Nuxt 4 + Vue 3 + Tailwind CSS + Pinia.
 
 Pembayaran online memakai **DOKU Sandbox** (QRIS, Virtual Account, dan e-wallet) ditambah opsi COD. Status pembayaran hanya menjadi `PAID` setelah backend menerima dan memverifikasi notifikasi resmi DOKU.
@@ -71,7 +71,7 @@ Pembayaran online memakai **DOKU Sandbox** (QRIS, Virtual Account, dan e-wallet)
 | State | [Pinia](https://pinia.vuejs.org/) | Auth, keranjang, wishlist, UI, notifikasi |
 | Backend | [Express 4](https://expressjs.com/) + [TypeScript](https://www.typescriptlang.org/) | REST API, validasi Zod, autentikasi |
 | ORM | [Prisma 6](https://www.prisma.io/) | Schema, migrasi, dan query database |
-| Database | [MySQL 8](https://www.mysql.com/) | Penyimpanan data transaksi |
+| Database | [MariaDB 10.4 (XAMPP)](https://www.apachefriends.org/) | Penyimpanan data transaksi — dikelola lewat phpMyAdmin |
 | Pembayaran | [DOKU Sandbox](https://www.doku.com/) | QRIS, Virtual Account, e-wallet, webhook |
 | Runtime | [Node.js 20+](https://nodejs.org/) | Menjalankan backend dan build frontend |
 
@@ -126,7 +126,7 @@ Browser
 ## Prasyarat
 
 - [Node.js 20+](https://nodejs.org/) dan npm.
-- [MySQL 8+](https://dev.mysql.com/downloads/mysql/) atau MariaDB yang kompatibel.
+- [XAMPP](https://www.apachefriends.org/) (Apache + MariaDB/MySQL + phpMyAdmin) atau server MySQL 8 mandiri.
 - Git.
 - Kredensial **DOKU Sandbox** (opsional; tanpa kredensial aplikasi otomatis memakai mode simulasi).
 
@@ -139,11 +139,26 @@ git clone https://github.com/nabil-udah-kenyang/mahapreneur.git
 cd mahapreneur
 ```
 
-### 2. Siapkan database
+### 2. Siapkan database lewat XAMPP
 
-```sql
-CREATE DATABASE mahapreneur CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+1. Buka **XAMPP Control Panel**, lalu klik **Start** pada **Apache** dan **MySQL**.
+2. Buka `http://localhost/phpmyadmin` di browser.
+3. Klik **New** di panel kiri, isi nama database `mahapreneur`, pilih collation `utf8mb4_unicode_ci`, lalu klik **Create**.
+4. Database `mahapreneur` langsung muncul di daftar kiri phpMyAdmin.
+
+Alternatif lewat terminal Linux:
+
+```bash
+/opt/lampp/bin/mysql -u root -e "CREATE DATABASE mahapreneur CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
 ```
+
+Windows:
+
+```powershell
+C:\xampp\mysql\bin\mysql.exe -u root -e "CREATE DATABASE mahapreneur CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
+```
+
+> Default XAMPP memakai user `root` tanpa password di port `3306`. Kalau kamu sudah memberi password pada MySQL XAMPP, sesuaikan `DATABASE_URL` di langkah berikut.
 
 ### 3. Jalankan backend
 
@@ -209,7 +224,7 @@ Semua akun memakai password yang sama: **`Mahapreneur1`**.
 
 | Variabel | Keterangan |
 | --- | --- |
-| `DATABASE_URL` | Koneksi MySQL, mis. `mysql://user:password@host:3306/mahapreneur` |
+| `DATABASE_URL` | Koneksi database, default XAMPP: `mysql://root@127.0.0.1:3306/mahapreneur` |
 | `PORT` | Port API, default `4000` |
 | `APP_URL` | URL frontend untuk link verifikasi & reset password |
 | `API_URL` | URL publik API, dipakai untuk callback pembayaran |
@@ -315,7 +330,13 @@ Semua response memakai envelope `{ success, message, data }`.
 lsof -i :3000 -i :4000
 ```
 
-**Gagal konek database** — pastikan MySQL berjalan dan `DATABASE_URL` benar, lalu cek:
+**Database tidak muncul di phpMyAdmin** — pastikan:
+- Modul **MySQL** di XAMPP Control Panel sudah berstatus *Running* (port `3306`).
+- Database `mahapreneur` sudah dibuat lewat phpMyAdmin.
+- `DATABASE_URL` di `backend/.env` memakai port `3306` dan user `root`.
+- Jangan menjalankan instance MySQL lain di port yang sama.
+
+**Gagal konek database** — pastikan MySQL XAMPP berjalan dan `DATABASE_URL` benar, lalu cek:
 
 ```bash
 npx prisma migrate status
