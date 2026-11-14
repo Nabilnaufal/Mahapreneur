@@ -8,6 +8,17 @@ export const useUiStore = defineStore('ui', () => {
   const toasts = ref<Toast[]>([]);
   const mobileMenuOpen = ref(false);
   const searchOpen = ref(false);
+  const loginModalOpen = ref(false);
+  const loginRedirect = ref('');
+
+  function openLogin(redirect = '') {
+    loginRedirect.value = redirect;
+    loginModalOpen.value = true;
+  }
+
+  function closeLogin() {
+    loginModalOpen.value = false;
+  }
 
   function applyTheme(next: 'light' | 'dark') {
     theme.value = next;
@@ -39,5 +50,5 @@ export const useUiStore = defineStore('ui', () => {
     toasts.value = toasts.value.filter((t) => t.id !== id);
   };
 
-  return { theme, toasts, mobileMenuOpen, searchOpen, initTheme, toggleTheme, applyTheme, toast, dismissToast };
+  return { theme, toasts, mobileMenuOpen, searchOpen, loginModalOpen, loginRedirect, openLogin, closeLogin, initTheme, toggleTheme, applyTheme, toast, dismissToast };
 });
