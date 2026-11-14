@@ -134,7 +134,10 @@ export const authController = {
 
   async login(req: Request, res: Response) {
     const data = loginSchema.parse(req.body);
-    const user = await prisma.user.findUnique({ where: { email: data.email } });
+    const user = await prisma.user.findUnique({
+      where: { email: data.email },
+      include: { store: { select: { id: true, name: true, slug: true, status: true, logo: true } } },
+    });
     if (!user || !(await verifyPassword(data.password, user.password))) {
       throw ApiError.unauthorized('Email atau password salah');
     }
