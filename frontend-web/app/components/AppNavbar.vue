@@ -117,7 +117,7 @@
           </div>
         </template>
         <div v-else class="flex items-center gap-2">
-          <NuxtLink to="/auth/login" class="btn btn-ghost hidden sm:inline-flex">Masuk</NuxtLink>
+          <button class="btn btn-ghost hidden sm:inline-flex" @click="ui.openLogin(route.fullPath)">Masuk</button>
           <NuxtLink to="/auth/register" class="btn btn-primary">Daftar</NuxtLink>
         </div>
       </div>

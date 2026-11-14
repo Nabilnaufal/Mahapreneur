@@ -84,8 +84,7 @@ const wishlisted = computed(() => wishlist.has(props.product.id));
 const added = ref(false);
 
 function requireLogin() {
-  ui.toast('Masuk sebagai customer untuk melanjutkan', 'info');
-  router.push(`/auth/login?redirect=${encodeURIComponent(router.currentRoute.value.fullPath)}`);
+  ui.openLogin(router.currentRoute.value.fullPath);
 }
 
 async function addToCart(event: MouseEvent) {
