@@ -1,0 +1,19 @@
+# Dependensi
+node_modules/
+
+# Build
+dist/
+.output/
+.nuxt/
+
+# Environment & rahasia lokal
+.env
+.env.*
+!.env.example
+
+# Upload pengguna
+backend/uploads/
+
+# Log & OS
+*.log
+.DS_Store
