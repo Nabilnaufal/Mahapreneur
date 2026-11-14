@@ -178,8 +178,7 @@ const related = computed(() => data.value?.related ?? []);
 const wishlisted = computed(() => (product.value ? wishlist.has(product.value.id) : false));
 
 function requireLogin() {
-  ui.toast('Masuk sebagai customer untuk melanjutkan', 'info');
-  router.push(`/auth/login?redirect=${encodeURIComponent(route.fullPath)}`);
+  ui.openLogin(route.fullPath);
 }
 
 async function addToCart(event: MouseEvent) {
