@@ -1,6 +1,6 @@
 <template>
   <div class="relative min-h-screen lg:grid lg:grid-cols-[1.05fr_1fr]">
-    <aside class="relative hidden overflow-hidden bg-primary p-12 lg:flex lg:flex-col">
+    <aside v-if="!simple" class="relative hidden overflow-hidden bg-primary p-12 lg:flex lg:flex-col">
       <div class="pointer-events-none absolute inset-0" aria-hidden="true">
         <div class="absolute -right-32 -top-32 size-[28rem] rounded-full bg-tertiary/15 blur-[110px]" />
         <div class="absolute -bottom-24 left-1/3 size-80 rounded-full bg-primary-soft blur-[100px]" />
@@ -41,21 +41,21 @@
       <p class="relative text-xs text-white/35">© 2026 Mahapreneur · Dibuat untuk mahasiswa.</p>
     </aside>
 
-    <main class="relative flex min-h-screen items-center justify-center px-5 py-10 sm:px-8">
+    <main class="relative flex min-h-screen items-center justify-center px-5 py-10 sm:px-8" :class="simple ? 'lg:col-span-2' : ''">
       <div class="pointer-events-none absolute inset-x-0 top-0 h-56 bg-gradient-to-b from-tertiary/15 to-transparent lg:hidden" aria-hidden="true" />
       <div class="relative w-full max-w-md">
-        <NuxtLink to="/" class="mb-7 flex items-center gap-2 lg:hidden">
+        <NuxtLink to="/" class="mb-7 flex items-center justify-center gap-2 lg:hidden" :class="simple ? 'lg:flex' : ''">
           <span class="grid size-9 place-items-center rounded-xl bg-primary">
             <img src="/logo-mark.png" alt="" class="h-4 w-auto" />
           </span>
           <span class="text-lg font-extrabold text-strong">Mahapreneur</span>
         </NuxtLink>
 
-        <div class="card rounded-[1.75rem] p-6 sm:p-8">
+        <div class="card rounded-[1.75rem] p-6 sm:p-8" :class="simple ? 'max-w-lg' : ''">
           <slot />
         </div>
 
-        <p class="mt-6 flex items-center justify-center gap-1.5 text-[11px] text-muted">
+        <p v-if="!simple" class="mt-6 flex items-center justify-center gap-1.5 text-[11px] text-muted">
           <ShieldCheck class="size-3.5" /> Transaksi aman · Pembayaran terverifikasi
         </p>
       </div>
@@ -71,6 +71,8 @@ const features = [
   { icon: Wallet, title: 'Pembayaran fleksibel', desc: 'QRIS, Virtual Account, e-wallet, atau COD saat bertemu.' },
   { icon: BadgeCheck, title: 'Antar langsung', desc: 'Seller mengantar pesanan sendiri ke pembeli di sekitar kampus.' },
 ];
+const route = useRoute();
+const simple = computed(() => route.path === '/auth/register');
 </script>
 
 <style scoped>
