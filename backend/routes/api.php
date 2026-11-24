@@ -70,16 +70,16 @@ Route::middleware(['auth.api', 'role:CUSTOMER'])->prefix('customer')->group(func
     Route::patch('cart/{itemId}', [CartController::class, 'updateCartItem']);
     Route::delete('cart/{itemId}', [CartController::class, 'removeCartItem']);
 
-    Route::get('wishlist', [WishlistController::class, 'index']);
-    Route::post('wishlist', [WishlistController::class, 'store']);
-    Route::delete('wishlist/{productId}', [WishlistController::class, 'destroy']);
+    Route::get('wishlist', [WishlistController::class, 'getWishlist']);
+    Route::post('wishlist', [WishlistController::class, 'addWishlist']);
+    Route::delete('wishlist/{productId}', [WishlistController::class, 'removeWishlist']);
 
-    Route::get('addresses', [CustomerAddressController::class, 'index']);
-    Route::post('addresses', [CustomerAddressController::class, 'store']);
-    Route::patch('addresses/{id}', [CustomerAddressController::class, 'update']);
-    Route::delete('addresses/{id}', [CustomerAddressController::class, 'destroy']);
+    Route::get('addresses', [CustomerAddressController::class, 'listAddresses']);
+    Route::post('addresses', [CustomerAddressController::class, 'createAddress']);
+    Route::patch('addresses/{id}', [CustomerAddressController::class, 'updateAddress']);
+    Route::delete('addresses/{id}', [CustomerAddressController::class, 'deleteAddress']);
 
-    Route::post('checkout', [CheckoutController::class, 'store']);
+    Route::post('checkout', [CheckoutController::class, 'checkout']);
     Route::get('orders', [CustomerOrderController::class, 'index']);
     Route::get('orders/{id}', [CustomerOrderController::class, 'show']);
     Route::post('orders/{id}/cancel', [CustomerOrderController::class, 'cancel']);
