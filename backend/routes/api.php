@@ -65,10 +65,10 @@ Route::middleware('auth.api')->group(function () {
 });
 
 Route::middleware(['auth.api', 'role:CUSTOMER'])->prefix('customer')->group(function () {
-    Route::get('cart', [CartController::class, 'index']);
-    Route::post('cart', [CartController::class, 'store']);
-    Route::patch('cart/{itemId}', [CartController::class, 'update']);
-    Route::delete('cart/{itemId}', [CartController::class, 'destroy']);
+    Route::get('cart', [CartController::class, 'getCart']);
+    Route::post('cart', [CartController::class, 'addToCart']);
+    Route::patch('cart/{itemId}', [CartController::class, 'updateCartItem']);
+    Route::delete('cart/{itemId}', [CartController::class, 'removeCartItem']);
 
     Route::get('wishlist', [WishlistController::class, 'index']);
     Route::post('wishlist', [WishlistController::class, 'store']);
