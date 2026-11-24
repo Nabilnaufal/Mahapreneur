@@ -17,8 +17,8 @@
 </p>
 
 <p align="center">
-  <a href="https://expressjs.com/"><img alt="Express" src="https://img.shields.io/badge/API-Express_4-000000?style=for-the-badge&logo=express&logoColor=white"></a>
-  <a href="https://www.prisma.io/"><img alt="Prisma" src="https://img.shields.io/badge/ORM-Prisma-2D3748?style=for-the-badge&logo=prisma&logoColor=white"></a>
+  <a href="https://laravel.com/"><img alt="Laravel" src="https://img.shields.io/badge/API-Laravel_12-FF2D20?style=for-the-badge&logo=laravel&logoColor=white"></a>
+  <a href="https://www.php.net/"><img alt="PHP" src="https://img.shields.io/badge/PHP-8.2+-777BB4?style=for-the-badge&logo=php&logoColor=white"></a>
   <a href="https://www.apachefriends.org/"><img alt="MariaDB" src="https://img.shields.io/badge/Database-MariaDB_10.4-003545?style=for-the-badge&logo=mariadb&logoColor=white"></a>
   <a href="https://www.doku.com/"><img alt="DOKU" src="https://img.shields.io/badge/Payment-DOKU_Sandbox-102C40?style=for-the-badge&logo=databricks&logoColor=DBFF00"></a>
   <a href="https://nodejs.org/"><img alt="Node.js" src="https://img.shields.io/badge/Runtime-Node.js_20-5FA04E?style=for-the-badge&logo=nodedotjs&logoColor=white"></a>
@@ -35,7 +35,7 @@ Mahapreneur adalah aplikasi marketplace tempat mahasiswa membuka toko sendiri da
 
 Aplikasi ini dibangun sebagai proyek mata kuliah E-Business dengan dua bagian:
 
-- **`backend/`** — REST API Express + TypeScript + Prisma + MariaDB/MySQL.
+- **`backend/`** — REST API Laravel 12 + Eloquent + MySQL.
 - **`frontend-web/`** — aplikasi Nuxt 4 + Vue 3 + Tailwind CSS + Pinia.
 
 Pembayaran online memakai **DOKU Sandbox** (QRIS, Virtual Account, dan e-wallet) ditambah opsi COD. Status pembayaran hanya menjadi `PAID` setelah backend menerima dan memverifikasi notifikasi resmi DOKU.
@@ -49,7 +49,7 @@ Pembayaran online memakai **DOKU Sandbox** (QRIS, Virtual Account, dan e-wallet)
 - Dashboard seller: statistik toko, grafik pendapatan 7 hari, kelola produk, dan update status pesanan.
 - Dashboard superadmin: pengguna, kategori, toko, produk, pesanan, pembayaran, banner, dan log aktivitas.
 - Notifikasi in-app untuk perubahan status pesanan dan pembayaran.
-- Autentikasi JWT di cookie `httpOnly`, verifikasi email, dan reset password.
+- Autentikasi token terenkripsi di cookie `httpOnly`, verifikasi email, dan reset password.
 - Upload gambar produk, logo toko, dan banner dengan validasi tipe file.
 - Tema terang/gelap, layout responsif, animasi tambah ke keranjang, dan swipe banner di mobile.
 - Pembayaran DOKU Sandbox dengan verifikasi signature webhook dan proteksi notifikasi duplikat.
@@ -69,21 +69,21 @@ Pembayaran online memakai **DOKU Sandbox** (QRIS, Virtual Account, dan e-wallet)
 | Frontend | [Nuxt 4](https://nuxt.com/) + [Vue 3](https://vuejs.org/) | SSR, routing berbasis file, halaman publik & dashboard |
 | Styling | [Tailwind CSS 4](https://tailwindcss.com/) + [Lucide](https://lucide.dev/) | Design system, tema, dan ikon |
 | State | [Pinia](https://pinia.vuejs.org/) | Auth, keranjang, wishlist, UI, notifikasi |
-| Backend | [Express 4](https://expressjs.com/) + [TypeScript](https://www.typescriptlang.org/) | REST API, validasi Zod, autentikasi |
-| ORM | [Prisma 6](https://www.prisma.io/) | Schema, migrasi, dan query database |
+| Backend | [Laravel 12](https://laravel.com/) | REST API, routing, validasi, autentikasi, dan keamanan |
+| ORM | [Eloquent](https://laravel.com/docs/eloquent) | Model, relasi, migrasi, dan query database |
 | Database | [MariaDB 10.4 (XAMPP)](https://www.apachefriends.org/) | Penyimpanan data transaksi — dikelola lewat phpMyAdmin |
 | Pembayaran | [DOKU Sandbox](https://www.doku.com/) | QRIS, Virtual Account, e-wallet, webhook |
-| Runtime | [Node.js 20+](https://nodejs.org/) | Menjalankan backend dan build frontend |
+| Runtime | PHP 8.2+ & [Node.js 20+](https://nodejs.org/) | Menjalankan API dan build frontend |
 
 ## Arsitektur
 
 ```text
 Browser
   │
-  ├── Nuxt 4 (SSR)  ── httpOnly cookie ──►  Express REST API
+  ├── Nuxt 4 (SSR)  ── httpOnly cookie ──►  Laravel 12 REST API
   │        │                                     │
-  │        └── Pinia (auth, cart, wishlist)      ├── Prisma ORM ──► MySQL
-  │                                              ├── Upload lokal (backend/uploads)
+  │        └── Pinia (auth, cart, wishlist)      ├── Eloquent ORM ──► MySQL
+  │                                              ├── Upload lokal (backend/public/uploads)
   │                                              └── DOKU Sandbox ◄── webhook notifikasi
   │
   └── Halaman publik, customer, seller, dan admin
@@ -96,18 +96,20 @@ Browser
 |-- assets/
 |   `-- icon/                     # Sumber logo & favicon
 |-- backend/
-|   |-- prisma/
-|   |   |-- schema.prisma         # Schema database marketplace
-|   |   |-- migrations/           # Riwayat migrasi database
-|   |   `-- seed.ts               # Data demo & akun demo
-|   |-- src/
-|   |   |-- config/               # Env, Prisma, DOKU, mailer
-|   |   |-- controllers/          # Public, auth, customer, seller, admin, payment
-|   |   |-- middleware/           # Auth, role, upload
-|   |   |-- routes/               # Definisi endpoint REST
-|   |   |-- services/             # Logika pembayaran & transaksi
-|   |   `-- utils/                # Response, validasi, serialisasi
-|   `-- uploads/                  # File upload (tidak di-commit)
+|   |-- app/
+|   |   |-- Http/
+|   |   |   |-- Controllers/Api/   # Public, auth, customer, seller, admin, payment
+|   |   |   |-- Middleware/        # Auth token, role, toko, normalisasi input
+|   |   |   `-- Resources/         # Bentuk response camelCase
+|   |   |-- Models/                # Model Eloquent marketplace
+|   |   |-- Services/              # DOKU & alur pembayaran
+|   |   `-- Support/               # Token, upload, activity log, helper
+|   |-- database/
+|   |   |-- migrations/            # Schema marketplace
+|   |   `-- seeders/               # Data demo & akun demo
+|   |-- routes/api.php             # Definisi endpoint REST
+|   |-- config/mahapreneur.php     # Konfigurasi khusus aplikasi
+|   `-- public/uploads/            # File upload (tidak di-commit)
 |-- frontend-web/
 |   |-- app/
 |   |   |-- assets/css/           # Design token & animasi
@@ -125,6 +127,8 @@ Browser
 
 ## Prasyarat
 
+- PHP 8.2+ dengan ekstensi `pdo_mysql`, `mbstring`, `openssl`, dan `fileinfo`.
+- [Composer](https://getcomposer.org/).
 - [Node.js 20+](https://nodejs.org/) dan npm.
 - [XAMPP](https://www.apachefriends.org/) (Apache + MariaDB/MySQL + phpMyAdmin) atau server MySQL 8 mandiri.
 - Git.
@@ -158,34 +162,40 @@ Windows:
 C:\xampp\mysql\bin\mysql.exe -u root -e "CREATE DATABASE mahapreneur CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
 ```
 
-> Default XAMPP memakai user `root` tanpa password di port `3306`. Kalau kamu sudah memberi password pada MySQL XAMPP, sesuaikan `DATABASE_URL` di langkah berikut.
+> Default XAMPP memakai user `root` tanpa password di port `3306`. Kalau kamu sudah memberi password pada MySQL XAMPP, sesuaikan `DB_PASSWORD` di langkah berikut.
 
 ### 3. Jalankan backend
 
 ```bash
 cd backend
+composer install
 cp .env.example .env
-npm install
+php artisan key:generate
 ```
 
 Sesuaikan `backend/.env`, minimal:
 
 ```env
-DATABASE_URL="mysql://root@127.0.0.1:3306/mahapreneur"
-JWT_SECRET="ganti-dengan-string-acak-panjang"
-CORS_ORIGIN=http://localhost:3000
 APP_URL=http://localhost:3000
+API_URL=http://localhost:4000
+CORS_ORIGIN=http://localhost:3000
+
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=mahapreneur
+DB_USERNAME=root
+DB_PASSWORD=
 ```
 
 Lalu buat tabel dan isi data demo:
 
 ```bash
-npx prisma migrate dev
-npm run db:seed
-npm run dev
+php artisan migrate --seed
+php artisan serve --host=0.0.0.0 --port=4000
 ```
 
-Backend berjalan di `http://localhost:4000`.
+Backend berjalan di `http://localhost:4000`. Endpoint kesehatan: `GET /health`.
 
 ### 4. Jalankan frontend
 
@@ -216,7 +226,7 @@ Semua akun memakai password yang sama: **`Mahapreneur1`**.
 | Seller | `jasa@mahapreneur.test` | Studio Nadia |
 | Customer | `pembeli@mahapreneur.test` | — |
 
-> Akun demo dibuat oleh `npm run db:seed` hanya untuk pengembangan lokal. Ganti atau hapus sebelum aplikasi dipasang di server publik.
+> Akun demo dibuat oleh `php artisan migrate --seed` hanya untuk pengembangan lokal. Ganti atau hapus sebelum aplikasi dipasang di server publik.
 
 ## Konfigurasi Environment
 
@@ -224,15 +234,16 @@ Semua akun memakai password yang sama: **`Mahapreneur1`**.
 
 | Variabel | Keterangan |
 | --- | --- |
-| `DATABASE_URL` | Koneksi database, default XAMPP: `mysql://root@127.0.0.1:3306/mahapreneur` |
-| `PORT` | Port API, default `4000` |
+| `APP_KEY` | Kunci enkripsi Laravel — dibuat dengan `php artisan key:generate` |
 | `APP_URL` | URL frontend untuk link verifikasi & reset password |
-| `API_URL` | URL publik API, dipakai untuk callback pembayaran |
+| `API_URL` | URL publik API, dipakai untuk URL gambar dan callback pembayaran |
 | `CORS_ORIGIN` | Origin frontend yang diizinkan (boleh lebih dari satu, pisahkan koma) |
-| `JWT_SECRET` | Rahasia signing JWT — wajib diisi dan wajib diganti di produksi |
-| `SMTP_HOST` dll. | Konfigurasi email; jika kosong, email dicetak ke console |
+| `DB_CONNECTION`, `DB_HOST`, `DB_PORT`, `DB_DATABASE`, `DB_USERNAME`, `DB_PASSWORD` | Koneksi database, default XAMPP |
+| `MAIL_*` | Konfigurasi email; dengan `MAIL_MAILER=log` email dicatat ke log dan token verifikasi ikut dikembalikan |
 | `DOKU_CLIENT_ID` / `DOKU_SECRET_KEY` | Kredensial DOKU; kosong berarti mode simulasi |
-| `UPLOAD_DIR` / `MAX_UPLOAD_MB` | Lokasi dan batas ukuran file upload |
+| `MAX_UPLOAD_MB` | Batas ukuran file upload |
+| `AUTH_TTL_DAYS` / `EMAIL_VERIFICATION_TTL_HOURS` / `PASSWORD_RESET_TTL_MINUTES` | Masa berlaku token |
+| `PAYMENT_TTL_MINUTES` | Masa berlaku instruksi pembayaran |
 
 ### Frontend (`frontend-web/.env`)
 
@@ -258,7 +269,7 @@ Jika `DOKU_CLIENT_ID` dan `DOKU_SECRET_KEY` kosong:
 1. Isi `DOKU_CLIENT_ID` dan `DOKU_SECRET_KEY` dari dashboard DOKU Sandbox.
 2. Daftarkan URL notifikasi `POST {API_URL}/api/payments/doku/notification`.
 3. Backend memverifikasi signature HMAC-SHA256 dari raw body sebelum memproses.
-4. Notifikasi duplikat diabaikan lewat kolom unik `notificationKey`.
+4. Notifikasi duplikat diabaikan lewat kolom unik `notification_key`.
 
 ## Status Pesanan & Pembayaran
 
@@ -278,7 +289,7 @@ Jika `DOKU_CLIENT_ID` dan `DOKU_SECRET_KEY` kosong:
 
 ## Ringkasan API
 
-Semua response memakai envelope `{ success, message, data }`.
+Semua response memakai envelope `{ success, message, data }` dengan field camelCase.
 
 | Prefix | Fungsi |
 | --- | --- |
@@ -292,22 +303,23 @@ Semua response memakai envelope `{ success, message, data }`.
 
 ## Keamanan
 
-- Password di-hash dengan bcrypt; token JWT disimpan di cookie `httpOnly`, `sameSite`, dan `secure` saat produksi.
+- Password di-hash dengan bcrypt (cast `hashed` Eloquent); token autentikasi dienkripsi `Crypt` lalu disimpan di cookie `httpOnly`, `sameSite`, dan `secure` saat produksi.
 - Frontend tidak menyimpan token autentikasi di `localStorage`.
-- Helmet, CORS terbatas, validasi input dengan Zod, dan pembatasan tipe/ukuran upload.
+- CORS terbatas, validasi input Laravel, dan pembatasan tipe/ukuran upload.
 - Webhook DOKU diverifikasi signature-nya sebelum mengubah status pembayaran.
-- File `.env`, folder upload, `node_modules`, dan artefak build tidak di-commit.
+- File `.env`, folder upload, `node_modules`, `vendor`, dan artefak build tidak di-commit.
 
 ## Perintah Berguna
 
 | Lokasi | Perintah | Fungsi |
 | --- | --- | --- |
-| `backend/` | `npm run dev` | Jalankan API dengan hot reload |
-| `backend/` | `npm run typecheck` | Cek tipe TypeScript |
-| `backend/` | `npm run build` | Kompilasi ke `dist/` |
-| `backend/` | `npm run db:seed` | Isi ulang data demo |
-| `backend/` | `npm run prisma:migrate` | Buat migrasi baru |
-| `backend/` | `npm run prisma:deploy` | Terapkan migrasi di produksi |
+| `backend/` | `php artisan serve --port=4000` | Jalankan API |
+| `backend/` | `composer dev` | Jalankan API di port `4000` |
+| `backend/` | `php artisan migrate --seed` | Buat tabel dan isi data demo |
+| `backend/` | `php artisan migrate:fresh --seed` | Reset database lalu isi data demo |
+| `backend/` | `php artisan test` | Jalankan test PHPUnit |
+| `backend/` | `vendor/bin/pint` | Rapikan gaya kode PHP |
+| `backend/` | `php artisan route:list` | Lihat daftar endpoint |
 | `frontend-web/` | `npm run dev` | Jalankan Nuxt dev server |
 | `frontend-web/` | `npm run typecheck` | Cek tipe Vue + TypeScript |
 | `frontend-web/` | `npm run build` | Build produksi |
@@ -315,16 +327,17 @@ Semua response memakai envelope `{ success, message, data }`.
 
 ## Catatan Deployment
 
-- Set `NODE_ENV=production`, `JWT_SECRET` acak yang panjang, `CORS_ORIGIN`, dan `APP_URL` sesuai domain.
-- Isi kredensial DOKU dan SMTP agar mode simulasi serta token verifikasi console tidak aktif.
+- Set `APP_ENV=production`, `APP_DEBUG=false`, `APP_KEY` acak, `CORS_ORIGIN`, dan `APP_URL` sesuai domain.
+- Isi kredensial DOKU dan SMTP agar mode simulasi serta token verifikasi log tidak aktif.
 - Arahkan `NUXT_PUBLIC_API_BASE` ke URL API publik, lalu build dengan `npm run build`.
-- Folder `backend/uploads/` harus persisten (volume) atau diganti object storage.
-- Jalankan `npm run prisma:deploy` saat deploy pertama dan setiap ada migrasi baru.
-- Gunakan reverse proxy (Nginx/Caddy) dengan HTTPS agar cookie `secure` bekerja.
+- Folder `backend/public/uploads/` harus persisten (volume) atau diganti object storage.
+- Jalankan `php artisan migrate --force` saat deploy pertama dan setiap ada migrasi baru.
+- Gunakan reverse proxy (Nginx/Caddy) dengan HTTPS agar cookie `secure` bekerja, dan arahkan document root ke `backend/public`.
+- Jalankan `php artisan config:cache` dan `php artisan route:cache` setelah konfigurasi final.
 
 ## Troubleshooting
 
-**Port sudah dipakai** — ubah `PORT` di `backend/.env` atau hentikan proses lama:
+**Port sudah dipakai** — ubah port `php artisan serve` atau hentikan proses lama:
 
 ```bash
 lsof -i :3000 -i :4000
@@ -333,32 +346,26 @@ lsof -i :3000 -i :4000
 **Database tidak muncul di phpMyAdmin** — pastikan:
 - Modul **MySQL** di XAMPP Control Panel sudah berstatus *Running* (port `3306`).
 - Database `mahapreneur` sudah dibuat lewat phpMyAdmin.
-- `DATABASE_URL` di `backend/.env` memakai port `3306` dan user `root`.
+- `DB_HOST`, `DB_PORT`, dan kredensial di `backend/.env` sudah benar.
 - Jangan menjalankan instance MySQL lain di port yang sama.
 
-**Gagal konek database** — pastikan MySQL XAMPP berjalan dan `DATABASE_URL` benar, lalu cek:
+**Gagal konek database** — pastikan MySQL XAMPP berjalan dan konfigurasi `DB_*` benar, lalu cek:
 
 ```bash
-npx prisma migrate status
+php artisan migrate:status
 ```
 
-**Prisma client tidak sinkron** — jalankan:
+**Perubahan kode tidak terbaca** — bersihkan cache konfigurasi:
 
 ```bash
-npx prisma generate
+php artisan optimize:clear
 ```
 
 **Ikon tidak muncul** — pastikan browser memuat aset dari `frontend-web/public/`, lalu hard refresh.
 
-**Pembayaran tidak berubah status** — cek log backend, pastikan signature webhook valid, dan `API_URL` bisa diakses oleh DOKU.
+**Pembayaran tidak berubah status** — cek `backend/storage/logs/laravel.log`, pastikan signature webhook valid, dan `API_URL` bisa diakses oleh DOKU.
 
-**`bcrypt` gagal dimuat setelah pindah mesin** — jalankan ulang:
-
-```bash
-npm rebuild bcrypt
-```
-
-**Upload tidak tampil** — pastikan `UPLOAD_DIR` ada dan `NUXT_PUBLIC_API_ORIGIN` menunjuk ke API yang benar.
+**Upload tidak tampil** — pastikan folder `backend/public/uploads` ada dan bisa ditulis, serta `NUXT_PUBLIC_API_ORIGIN` menunjuk ke API yang benar.
 
 ## Lisensi
 

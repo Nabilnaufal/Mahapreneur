@@ -9,7 +9,7 @@ export default defineNuxtConfig({
   components: [{ path: '~/components', pathPrefix: false }],
   runtimeConfig: {
     public: {
-      // URL REST API Express. Nilai bisa ditimpa lewat env NUXT_PUBLIC_API_BASE / NUXT_PUBLIC_API_ORIGIN.
+      // URL REST API Laravel. Nilai bisa ditimpa lewat env NUXT_PUBLIC_API_BASE / NUXT_PUBLIC_API_ORIGIN.
       apiBase: 'http://localhost:4000/api',
       apiOrigin: 'http://localhost:4000',
     },
