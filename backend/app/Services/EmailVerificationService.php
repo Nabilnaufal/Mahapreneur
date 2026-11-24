@@ -23,12 +23,14 @@ class EmailVerificationService
             ],
         );
 
-        Mail::to($user->email)->send(new ActionMail(
-            'Verifikasi email Mahapreneur',
-            "Halo {$user->name}, satu langkah lagi sebelum kamu bisa masuk. Klik tombol di bawah untuk memverifikasi alamat email ini.",
-            'Verifikasi Email',
-            config('mahapreneur.app_url')."/auth/verify-email?token={$token}",
-        ));
+        if (config('mahapreneur.mail_enabled')) {
+            Mail::to($user->email)->send(new ActionMail(
+                'Verifikasi email Mahapreneur',
+                "Halo {$user->name}, satu langkah lagi sebelum kamu bisa masuk. Klik tombol di bawah untuk memverifikasi alamat email ini.",
+                'Verifikasi Email',
+                config('mahapreneur.app_url')."/auth/verify-email?token={$token}",
+            ));
+        }
 
         return $token;
     }

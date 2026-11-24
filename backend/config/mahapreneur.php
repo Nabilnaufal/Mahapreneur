@@ -2,7 +2,7 @@
 
 return [
     // URL aplikasi frontend (dipakai untuk tautan email).
-    'app_url' => env('APP_URL', 'http://localhost:3000'),
+    'app_url' => env('FRONTEND_URL', 'http://localhost:3000'),
     // URL backend ini (dipakai untuk URL gambar dan callback DOKU).
     'api_url' => env('API_URL', 'http://localhost:4000'),
     'cors_origins' => array_map('trim', explode(',', env('CORS_ORIGIN', 'http://localhost:3000'))),
@@ -15,7 +15,8 @@ return [
 
     'email_verification_ttl_hours' => (int) env('EMAIL_VERIFICATION_TTL_HOURS', 24),
     'password_reset_ttl_minutes' => (int) env('PASSWORD_RESET_TTL_MINUTES', 60),
-    'mail_enabled' => env('MAIL_MAILER', 'log') !== 'log',
+    'mail_enabled' => env('MAIL_MAILER', 'resend') === 'resend'
+        && filled(env('RESEND_API_KEY')),
 
     'doku' => [
         'client_id' => env('DOKU_CLIENT_ID'),

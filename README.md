@@ -176,8 +176,10 @@ php artisan key:generate
 Sesuaikan `backend/.env`, minimal:
 
 ```env
-APP_URL=http://localhost:3000
+APP_URL=http://localhost:4000
+FRONTEND_URL=http://localhost:3000
 API_URL=http://localhost:4000
+APP_TIMEZONE=Asia/Jakarta
 CORS_ORIGIN=http://localhost:3000
 
 DB_CONNECTION=mysql
@@ -235,11 +237,14 @@ Semua akun memakai password yang sama: **`Mahapreneur1`**.
 | Variabel | Keterangan |
 | --- | --- |
 | `APP_KEY` | Kunci enkripsi Laravel — dibuat dengan `php artisan key:generate` |
-| `APP_URL` | URL frontend untuk link verifikasi & reset password |
+| `APP_URL` | URL backend Laravel |
+| `FRONTEND_URL` | URL frontend untuk link verifikasi & reset password |
 | `API_URL` | URL publik API, dipakai untuk URL gambar dan callback pembayaran |
+| `APP_TIMEZONE` | Zona waktu aplikasi, default `Asia/Jakarta` |
 | `CORS_ORIGIN` | Origin frontend yang diizinkan (boleh lebih dari satu, pisahkan koma) |
 | `DB_CONNECTION`, `DB_HOST`, `DB_PORT`, `DB_DATABASE`, `DB_USERNAME`, `DB_PASSWORD` | Koneksi database, default XAMPP |
-| `MAIL_*` | Konfigurasi email; dengan `MAIL_MAILER=log` email dicatat ke log dan token verifikasi ikut dikembalikan |
+| `MAIL_MAILER` / `RESEND_API_KEY` | Mailer Resend dan API key untuk email verifikasi/reset password |
+| `MAIL_FROM_ADDRESS` / `MAIL_FROM_NAME` | Identitas pengirim email; domain pengirim harus diverifikasi di Resend untuk produksi |
 | `DOKU_CLIENT_ID` / `DOKU_SECRET_KEY` | Kredensial DOKU; kosong berarti mode simulasi |
 | `MAX_UPLOAD_MB` | Batas ukuran file upload |
 | `AUTH_TTL_DAYS` / `EMAIL_VERIFICATION_TTL_HOURS` / `PASSWORD_RESET_TTL_MINUTES` | Masa berlaku token |
@@ -328,7 +333,7 @@ Semua response memakai envelope `{ success, message, data }` dengan field camelC
 ## Catatan Deployment
 
 - Set `APP_ENV=production`, `APP_DEBUG=false`, `APP_KEY` acak, `CORS_ORIGIN`, dan `APP_URL` sesuai domain.
-- Isi kredensial DOKU dan SMTP agar mode simulasi serta token verifikasi log tidak aktif.
+- Isi kredensial DOKU dan `RESEND_API_KEY` agar mode simulasi pembayaran dan email development tidak aktif.
 - Arahkan `NUXT_PUBLIC_API_BASE` ke URL API publik, lalu build dengan `npm run build`.
 - Folder `backend/public/uploads/` harus persisten (volume) atau diganti object storage.
 - Jalankan `php artisan migrate --force` saat deploy pertama dan setiap ada migrasi baru.

@@ -33,12 +33,14 @@ class PasswordResetLinkController extends Controller
             'expires_at' => now()->addMinutes(config('mahapreneur.password_reset_ttl_minutes')),
         ]);
 
-        Mail::to($user->email)->send(new ActionMail(
-            'Reset password Mahapreneur',
-            "Kami menerima permintaan reset password untuk {$user->name}. Klik tombol di bawah untuk membuat password baru.",
-            'Buat Password Baru',
-            config('mahapreneur.app_url')."/auth/reset-password?token={$token}",
-        ));
+        if (config('mahapreneur.mail_enabled')) {
+            Mail::to($user->email)->send(new ActionMail(
+                'Reset password Mahapreneur',
+                "Kami menerima permintaan reset password untuk {$user->name}. Klik tombol di bawah untuk membuat password baru.",
+                'Buat Password Baru',
+                config('mahapreneur.app_url')."/auth/reset-password?token={$token}",
+            ));
+        }
 
         return $this->ok(
             ['resetToken' => config('mahapreneur.mail_enabled') ? null : $token],
