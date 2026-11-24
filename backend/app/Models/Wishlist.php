@@ -6,7 +6,10 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Wishlist extends Model
 {
-    protected $guarded = [];
+    protected $fillable = [
+        'user_id',
+        'product_id',
+    ];
 
     public function product(): BelongsTo
     {

@@ -8,7 +8,21 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Store extends Model
 {
-    protected $guarded = [];
+    protected $fillable = [
+        'user_id',
+        'name',
+        'slug',
+        'description',
+        'logo',
+        'banner',
+        'phone',
+        'email',
+        'address',
+        'campus',
+        'open_time',
+        'close_time',
+        'status',
+    ];
 
     public function scopeActive(Builder $query): void
     {

@@ -6,7 +6,14 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class ActivityLog extends Model
 {
-    protected $guarded = [];
+    protected $fillable = [
+        'user_id',
+        'action',
+        'entity',
+        'entity_id',
+        'description',
+        'meta',
+    ];
 
     const UPDATED_AT = null;
 

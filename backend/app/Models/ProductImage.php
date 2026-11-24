@@ -6,7 +6,11 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class ProductImage extends Model
 {
-    protected $guarded = [];
+    protected $fillable = [
+        'product_id',
+        'url',
+        'sort_order',
+    ];
 
     public $timestamps = false;
 

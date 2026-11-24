@@ -6,7 +6,12 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class OrderStatusHistory extends Model
 {
-    protected $guarded = [];
+    protected $fillable = [
+        'order_id',
+        'status',
+        'note',
+        'created_by',
+    ];
 
     const UPDATED_AT = null;
 

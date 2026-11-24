@@ -6,7 +6,12 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class PasswordResetToken extends Model
 {
-    protected $guarded = [];
+    protected $fillable = [
+        'user_id',
+        'token',
+        'expires_at',
+        'used_at',
+    ];
 
     const UPDATED_AT = null;
 

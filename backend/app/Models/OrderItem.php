@@ -6,7 +6,14 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class OrderItem extends Model
 {
-    protected $guarded = [];
+    protected $fillable = [
+        'order_id',
+        'product_id',
+        'product_name',
+        'product_price',
+        'quantity',
+        'subtotal',
+    ];
 
     public $timestamps = false;
 
