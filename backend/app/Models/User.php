@@ -9,16 +9,13 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 
 class User extends Authenticatable
 {
-    use SerializesCamelCase;
+    protected $guarded = [];
 
-    protected $fillable = [
-        'name', 'email', 'password', 'role', 'is_active',
-        'email_verified_at', 'avatar', 'phone',
-    ];
+    use SerializesCamelCase;
 
     protected $hidden = ['password'];
 
-    protected function casts(): array
+    protected function casts()
     {
         return [
             'password' => 'hashed',

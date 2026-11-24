@@ -9,13 +9,15 @@ use Symfony\Component\HttpFoundation\Response;
 
 class EnsureRole
 {
-    public function handle(Request $request, Closure $next, string ...$roles): Response
+    public function handle(Request $request, Closure $next, string $roles): Response
     {
         $user = $request->user();
         if (! $user) {
             throw ApiException::unauthorized();
         }
-        if (! in_array($user->role, $roles, true)) {
+        $allowedRoles = explode(',', $roles);
+
+        if (! in_array($user->role, $allowedRoles, true)) {
             throw ApiException::forbidden();
         }
 

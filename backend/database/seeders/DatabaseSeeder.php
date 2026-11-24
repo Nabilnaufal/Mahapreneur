@@ -81,7 +81,7 @@ class DatabaseSeeder extends Seeder
             $sellerIds[$seller['store']['slug']] = $user->id;
             $stores[$seller['store']['slug']] = Store::updateOrCreate(
                 ['slug' => $seller['store']['slug']],
-                [...$seller['store'], 'user_id' => $user->id],
+                array_merge($seller['store'], ['user_id' => $user->id]),
             );
         }
 

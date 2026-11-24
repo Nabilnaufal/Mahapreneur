@@ -8,9 +8,7 @@ class Notification extends Model
 {
     const UPDATED_AT = null;
 
-    protected $fillable = ['user_id', 'title', 'message', 'type', 'link', 'is_read'];
-
-    protected function casts(): array
+    protected function casts()
     {
         return ['is_read' => 'boolean'];
     }

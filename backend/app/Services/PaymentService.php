@@ -25,7 +25,7 @@ class PaymentService
         ?string $channel = null,
         string $source = 'DOKU_WEBHOOK',
         ?array $rawPayload = null,
-    ): array {
+    ) {
         $payment = Payment::with('order.store')->where('invoice_number', $invoiceNumber)->first();
         if (! $payment) {
             return ['status' => 'NOT_FOUND'];
@@ -164,7 +164,7 @@ class PaymentService
     }
 
     /** Daftar channel pembayaran yang tersedia pada metode tertentu. */
-    public function availableChannels(string $method): array
+    public function availableChannels(string $method)
     {
         if (! DokuService::configured()) {
             return array_values(array_filter([

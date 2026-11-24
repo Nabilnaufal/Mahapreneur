@@ -8,8 +8,6 @@ class ProductImage extends Model
 {
     public $timestamps = false;
 
-    protected $fillable = ['product_id', 'url', 'sort_order'];
-
     public function product(): BelongsTo
     {
         return $this->belongsTo(Product::class);

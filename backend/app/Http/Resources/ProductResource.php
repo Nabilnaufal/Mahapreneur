@@ -8,7 +8,7 @@ use Illuminate\Http\Resources\Json\JsonResource;
 
 class ProductResource extends JsonResource
 {
-    public function toArray(Request $request): array
+    public function toArray(Request $request)
     {
         $images = $this->images ?? collect();
         $urls = $images->map(fn ($image) => FileUrl::make($image->url))->filter()->values();

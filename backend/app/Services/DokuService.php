@@ -16,7 +16,7 @@ class DokuService
         return filled(config('mahapreneur.doku.client_id')) && filled(config('mahapreneur.doku.secret_key'));
     }
 
-    public function createInvoice(string $invoiceNumber, int $amount, string $customerName, string $customerEmail, string $description): array
+    public function createInvoice(string $invoiceNumber, int $amount, string $customerName, string $customerEmail, string $description)
     {
         $response = $this->request('POST', '/checkout/v1/payment', [
             'order' => [
@@ -40,7 +40,7 @@ class DokuService
         ];
     }
 
-    public function listChannels(): array
+    public function listChannels()
     {
         $response = $this->request('GET', '/checkout/v1/payment/methods');
         $methods = data_get($response, 'response.payment_methods', []);
@@ -57,7 +57,7 @@ class DokuService
     }
 
     /** Aktifkan satu channel pada invoice, lalu ambil data bayar (QR / nomor VA). */
-    public function requestChannel(string $tokenId, string $channelCode): array
+    public function requestChannel(string $tokenId, string $channelCode)
     {
         $response = $this->request('POST', "/checkout/v1/payment/{$tokenId}/channels", [
             'channel_code' => $channelCode,
@@ -106,7 +106,7 @@ class DokuService
         return hash_equals($expected, $received);
     }
 
-    private function request(string $method, string $target, ?array $body = null): array
+    private function request(string $method, string $target, ?array $body = null)
     {
         $requestId = (string) Str::uuid();
         $timestamp = now()->utc()->format('Y-m-d\TH:i:s\Z');

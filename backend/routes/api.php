@@ -1,32 +1,56 @@
 <?php
 
-use App\Http\Controllers\Api\AdminController;
-use App\Http\Controllers\Api\AuthController;
-use App\Http\Controllers\Api\CustomerController;
-use App\Http\Controllers\Api\NotificationController;
-use App\Http\Controllers\Api\PaymentController;
-use App\Http\Controllers\Api\PublicController;
-use App\Http\Controllers\Api\SellerController;
+use App\Http\Controllers\Admin\ActivityController;
+use App\Http\Controllers\Admin\BannerController;
+use App\Http\Controllers\Admin\CategoryController as AdminCategoryController;
+use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
+use App\Http\Controllers\Admin\OrderController as AdminOrderController;
+use App\Http\Controllers\Admin\PaymentController as AdminPaymentController;
+use App\Http\Controllers\Admin\ProductController as AdminProductController;
+use App\Http\Controllers\Admin\StoreController as AdminStoreController;
+use App\Http\Controllers\Admin\UserController as AdminUserController;
+use App\Http\Controllers\Auth\AuthenticatedSessionController;
+use App\Http\Controllers\Auth\EmailVerificationNotificationController;
+use App\Http\Controllers\Auth\NewPasswordController;
+use App\Http\Controllers\Auth\PasswordResetLinkController;
+use App\Http\Controllers\Auth\RegisteredUserController;
+use App\Http\Controllers\Auth\VerifyEmailController;
+use App\Http\Controllers\Customer\AddressController as CustomerAddressController;
+use App\Http\Controllers\Customer\CartController;
+use App\Http\Controllers\Customer\CheckoutController;
+use App\Http\Controllers\Customer\OrderController as CustomerOrderController;
+use App\Http\Controllers\Customer\ProfileController as CustomerProfileController;
+use App\Http\Controllers\Customer\WishlistController;
+use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\Public\CategoryController;
+use App\Http\Controllers\Public\HomeController;
+use App\Http\Controllers\Public\ProductController as PublicProductController;
+use App\Http\Controllers\Public\StoreController as PublicStoreController;
+use App\Http\Controllers\Seller\DashboardController as SellerDashboardController;
+use App\Http\Controllers\Seller\OrderController as SellerOrderController;
+use App\Http\Controllers\Seller\ProductController as SellerProductController;
+use App\Http\Controllers\Seller\StoreController as SellerStoreController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('auth')->group(function () {
-    Route::post('register', [AuthController::class, 'register']);
-    Route::post('verify-email', [AuthController::class, 'verifyEmail']);
-    Route::post('resend-verification', [AuthController::class, 'resendVerification']);
-    Route::post('login', [AuthController::class, 'login']);
-    Route::post('logout', [AuthController::class, 'logout']);
-    Route::get('me', [AuthController::class, 'me'])->middleware('auth.api');
-    Route::post('forgot-password', [AuthController::class, 'forgotPassword']);
-    Route::post('reset-password', [AuthController::class, 'resetPassword']);
+    Route::post('register', [RegisteredUserController::class, 'store']);
+    Route::post('verify-email', [VerifyEmailController::class, 'store']);
+    Route::post('resend-verification', [EmailVerificationNotificationController::class, 'store']);
+    Route::post('login', [AuthenticatedSessionController::class, 'store']);
+    Route::post('logout', [AuthenticatedSessionController::class, 'destroy']);
+    Route::get('me', [AuthenticatedSessionController::class, 'show'])->middleware('auth.api');
+    Route::post('forgot-password', [PasswordResetLinkController::class, 'store']);
+    Route::post('reset-password', [NewPasswordController::class, 'store']);
 });
 
 Route::prefix('public')->group(function () {
-    Route::get('home', [PublicController::class, 'home']);
-    Route::get('categories', [PublicController::class, 'categories']);
-    Route::get('products', [PublicController::class, 'products']);
-    Route::get('products/{slug}', [PublicController::class, 'productDetail']);
-    Route::get('stores', [PublicController::class, 'stores']);
-    Route::get('stores/{slug}', [PublicController::class, 'storeDetail']);
+    Route::get('home', [HomeController::class, 'index']);
+    Route::get('categories', [CategoryController::class, 'index']);
+    Route::get('products', [PublicProductController::class, 'index']);
+    Route::get('products/{slug}', [PublicProductController::class, 'show']);
+    Route::get('stores', [PublicStoreController::class, 'index']);
+    Route::get('stores/{slug}', [PublicStoreController::class, 'show']);
 });
 
 Route::prefix('payments')->group(function () {
@@ -36,93 +60,93 @@ Route::prefix('payments')->group(function () {
 
 Route::middleware('auth.api')->group(function () {
     Route::get('notifications', [NotificationController::class, 'index']);
-    Route::patch('notifications/read-all', [NotificationController::class, 'readAll']);
-    Route::patch('notifications/{id}/read', [NotificationController::class, 'read']);
+    Route::patch('notifications/read-all', [NotificationController::class, 'updateAll']);
+    Route::patch('notifications/{id}/read', [NotificationController::class, 'update']);
 });
 
 Route::middleware(['auth.api', 'role:CUSTOMER'])->prefix('customer')->group(function () {
-    Route::get('cart', [CustomerController::class, 'getCart']);
-    Route::post('cart', [CustomerController::class, 'addToCart']);
-    Route::patch('cart/{itemId}', [CustomerController::class, 'updateCartItem']);
-    Route::delete('cart/{itemId}', [CustomerController::class, 'removeCartItem']);
+    Route::get('cart', [CartController::class, 'index']);
+    Route::post('cart', [CartController::class, 'store']);
+    Route::patch('cart/{itemId}', [CartController::class, 'update']);
+    Route::delete('cart/{itemId}', [CartController::class, 'destroy']);
 
-    Route::get('wishlist', [CustomerController::class, 'getWishlist']);
-    Route::post('wishlist', [CustomerController::class, 'addWishlist']);
-    Route::delete('wishlist/{productId}', [CustomerController::class, 'removeWishlist']);
+    Route::get('wishlist', [WishlistController::class, 'index']);
+    Route::post('wishlist', [WishlistController::class, 'store']);
+    Route::delete('wishlist/{productId}', [WishlistController::class, 'destroy']);
 
-    Route::get('addresses', [CustomerController::class, 'listAddresses']);
-    Route::post('addresses', [CustomerController::class, 'createAddress']);
-    Route::patch('addresses/{id}', [CustomerController::class, 'updateAddress']);
-    Route::delete('addresses/{id}', [CustomerController::class, 'deleteAddress']);
+    Route::get('addresses', [CustomerAddressController::class, 'index']);
+    Route::post('addresses', [CustomerAddressController::class, 'store']);
+    Route::patch('addresses/{id}', [CustomerAddressController::class, 'update']);
+    Route::delete('addresses/{id}', [CustomerAddressController::class, 'destroy']);
 
-    Route::post('checkout', [CustomerController::class, 'checkout']);
-    Route::get('orders', [CustomerController::class, 'listOrders']);
-    Route::get('orders/{id}', [CustomerController::class, 'getOrder']);
-    Route::post('orders/{id}/cancel', [CustomerController::class, 'cancelOrder']);
+    Route::post('checkout', [CheckoutController::class, 'store']);
+    Route::get('orders', [CustomerOrderController::class, 'index']);
+    Route::get('orders/{id}', [CustomerOrderController::class, 'show']);
+    Route::post('orders/{id}/cancel', [CustomerOrderController::class, 'cancel']);
 
-    Route::get('orders/{id}/payment', [CustomerController::class, 'getPayment']);
-    Route::post('orders/{id}/payment/channel', [CustomerController::class, 'choosePaymentChannel']);
-    Route::post('orders/{id}/payment/retry', [CustomerController::class, 'retryPayment']);
-    Route::post('orders/{id}/payment/simulate', [CustomerController::class, 'simulatePayment']);
+    Route::get('orders/{id}/payment', [CustomerOrderController::class, 'payment']);
+    Route::post('orders/{id}/payment/channel', [CustomerOrderController::class, 'chooseChannel']);
+    Route::post('orders/{id}/payment/retry', [CustomerOrderController::class, 'retryPayment']);
+    Route::post('orders/{id}/payment/simulate', [CustomerOrderController::class, 'simulatePayment']);
 
-    Route::get('profile', [CustomerController::class, 'getProfile']);
-    Route::patch('profile', [CustomerController::class, 'updateProfile']);
-    Route::patch('profile/password', [CustomerController::class, 'changePassword']);
+    Route::get('profile', [CustomerProfileController::class, 'show']);
+    Route::patch('profile', [CustomerProfileController::class, 'update']);
+    Route::patch('profile/password', [CustomerProfileController::class, 'changePassword']);
 });
 
 Route::middleware(['auth.api', 'role:SELLER'])->prefix('seller')->group(function () {
-    Route::get('dashboard', [SellerController::class, 'dashboard'])->middleware('store');
+    Route::get('dashboard', [SellerDashboardController::class, 'index'])->middleware('store');
 
-    Route::get('store', [SellerController::class, 'getStore']);
-    Route::post('store', [SellerController::class, 'createStore']);
-    Route::patch('store', [SellerController::class, 'updateStore'])->middleware('store');
-    Route::post('store/{kind}', [SellerController::class, 'uploadStoreImage'])
+    Route::get('store', [SellerStoreController::class, 'show']);
+    Route::post('store', [SellerStoreController::class, 'store']);
+    Route::patch('store', [SellerStoreController::class, 'update'])->middleware('store');
+    Route::post('store/{kind}', [SellerStoreController::class, 'uploadImage'])
         ->whereIn('kind', ['logo', 'banner'])
         ->middleware('store');
 
-    Route::get('products', [SellerController::class, 'listProducts'])->middleware('store');
-    Route::post('products', [SellerController::class, 'createProduct'])->middleware('store');
-    Route::get('products/{id}', [SellerController::class, 'getProduct'])->middleware('store');
-    Route::patch('products/{id}', [SellerController::class, 'updateProduct'])->middleware('store');
-    Route::delete('products/{id}', [SellerController::class, 'deleteProduct'])->middleware('store');
-    Route::post('products/{id}/images', [SellerController::class, 'addProductImages'])->middleware('store');
-    Route::delete('products/{id}/images/{imageId}', [SellerController::class, 'deleteProductImage'])->middleware('store');
+    Route::get('products', [SellerProductController::class, 'index'])->middleware('store');
+    Route::post('products', [SellerProductController::class, 'store'])->middleware('store');
+    Route::get('products/{id}', [SellerProductController::class, 'show'])->middleware('store');
+    Route::patch('products/{id}', [SellerProductController::class, 'update'])->middleware('store');
+    Route::delete('products/{id}', [SellerProductController::class, 'destroy'])->middleware('store');
+    Route::post('products/{id}/images', [SellerProductController::class, 'uploadImages'])->middleware('store');
+    Route::delete('products/{id}/images/{imageId}', [SellerProductController::class, 'deleteImage'])->middleware('store');
 
-    Route::get('orders', [SellerController::class, 'listOrders'])->middleware('store');
-    Route::get('orders/{id}', [SellerController::class, 'getOrder'])->middleware('store');
-    Route::patch('orders/{id}/status', [SellerController::class, 'updateOrderStatus'])->middleware('store');
-    Route::post('orders/{id}/cod-paid', [SellerController::class, 'markCodPaid'])->middleware('store');
+    Route::get('orders', [SellerOrderController::class, 'index'])->middleware('store');
+    Route::get('orders/{id}', [SellerOrderController::class, 'show'])->middleware('store');
+    Route::patch('orders/{id}/status', [SellerOrderController::class, 'updateStatus'])->middleware('store');
+    Route::post('orders/{id}/cod-paid', [SellerOrderController::class, 'markCodPaid'])->middleware('store');
 });
 
 Route::middleware(['auth.api', 'role:SUPERADMIN'])->prefix('admin')->group(function () {
-    Route::get('dashboard', [AdminController::class, 'dashboard']);
+    Route::get('dashboard', [AdminDashboardController::class, 'index']);
 
-    Route::get('users', [AdminController::class, 'listUsers']);
-    Route::get('users/{id}', [AdminController::class, 'getUser']);
-    Route::patch('users/{id}/status', [AdminController::class, 'setUserStatus']);
+    Route::get('users', [AdminUserController::class, 'index']);
+    Route::get('users/{id}', [AdminUserController::class, 'show']);
+    Route::patch('users/{id}/status', [AdminUserController::class, 'updateStatus']);
 
-    Route::get('categories', [AdminController::class, 'listCategories']);
-    Route::post('categories', [AdminController::class, 'createCategory']);
-    Route::patch('categories/{id}', [AdminController::class, 'updateCategory']);
-    Route::delete('categories/{id}', [AdminController::class, 'deleteCategory']);
+    Route::get('categories', [AdminCategoryController::class, 'index']);
+    Route::post('categories', [AdminCategoryController::class, 'store']);
+    Route::patch('categories/{id}', [AdminCategoryController::class, 'update']);
+    Route::delete('categories/{id}', [AdminCategoryController::class, 'destroy']);
 
-    Route::get('stores', [AdminController::class, 'listStores']);
-    Route::patch('stores/{id}/status', [AdminController::class, 'setStoreStatus']);
+    Route::get('stores', [AdminStoreController::class, 'index']);
+    Route::patch('stores/{id}/status', [AdminStoreController::class, 'updateStatus']);
 
-    Route::get('products', [AdminController::class, 'listProducts']);
-    Route::delete('products/{id}', [AdminController::class, 'deleteProduct']);
+    Route::get('products', [AdminProductController::class, 'index']);
+    Route::delete('products/{id}', [AdminProductController::class, 'destroy']);
 
-    Route::get('orders', [AdminController::class, 'listOrders']);
-    Route::get('orders/{id}', [AdminController::class, 'getOrder']);
-    Route::get('payments', [AdminController::class, 'listPayments']);
+    Route::get('orders', [AdminOrderController::class, 'index']);
+    Route::get('orders/{id}', [AdminOrderController::class, 'show']);
+    Route::get('payments', [AdminPaymentController::class, 'index']);
     Route::get('payment-notifications', [PaymentController::class, 'notifications']);
 
-    Route::get('banners', [AdminController::class, 'listBanners']);
-    Route::post('banners', [AdminController::class, 'createBanner']);
-    Route::post('banners/upload', [AdminController::class, 'uploadBannerImage']);
-    Route::patch('banners/{id}', [AdminController::class, 'updateBanner']);
-    Route::delete('banners/{id}', [AdminController::class, 'deleteBanner']);
+    Route::get('banners', [BannerController::class, 'index']);
+    Route::post('banners', [BannerController::class, 'store']);
+    Route::post('banners/upload', [BannerController::class, 'uploadImage']);
+    Route::patch('banners/{id}', [BannerController::class, 'update']);
+    Route::delete('banners/{id}', [BannerController::class, 'destroy']);
 
-    Route::get('activity', [AdminController::class, 'activity']);
-    Route::get('notifications', [AdminController::class, 'notifications']);
+    Route::get('activity', [ActivityController::class, 'index']);
+    Route::get('notifications', [ActivityController::class, 'notifications']);
 });

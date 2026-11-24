@@ -6,11 +6,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Address extends Model
 {
-    protected $fillable = [
-        'user_id', 'label', 'recipient_name', 'phone', 'address', 'campus', 'room', 'is_default',
-    ];
-
-    protected function casts(): array
+    protected function casts()
     {
         return ['is_default' => 'boolean'];
     }

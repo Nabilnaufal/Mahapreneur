@@ -6,12 +6,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Payment extends Model
 {
-    protected $fillable = [
-        'order_id', 'method', 'status', 'amount', 'doku_token_id', 'invoice_number',
-        'doku_payment_url', 'doku_qr_string', 'doku_va_number', 'doku_channel', 'expires_at', 'paid_at',
-    ];
-
-    protected function casts(): array
+    protected function casts()
     {
         return [
             'amount' => 'integer',

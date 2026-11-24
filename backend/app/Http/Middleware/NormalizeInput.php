@@ -17,7 +17,7 @@ class NormalizeInput
         return $next($request);
     }
 
-    private function keysToSnake(array $input): array
+    private function keysToSnake(array $input)
     {
         $result = [];
         foreach ($input as $key => $value) {

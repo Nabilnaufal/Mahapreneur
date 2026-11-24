@@ -1,8 +1,7 @@
 <?php
 
-namespace App\Http\Controllers\Api;
+namespace App\Http\Controllers;
 
-use App\Http\Controllers\Controller;
 use App\Models\Notification;
 use Illuminate\Http\Request;
 
@@ -20,16 +19,20 @@ class NotificationController extends Controller
         ]);
     }
 
-    public function read(Request $request, int $id)
+    public function update(Request $request, int $id)
     {
-        Notification::where('user_id', $request->user()->id)->whereKey($id)->update(['is_read' => true]);
+        Notification::where('user_id', $request->user()->id)
+            ->whereKey($id)
+            ->update(['is_read' => true]);
 
         return $this->ok(null, 'Notifikasi dibaca');
     }
 
-    public function readAll(Request $request)
+    public function updateAll(Request $request)
     {
-        Notification::where('user_id', $request->user()->id)->where('is_read', false)->update(['is_read' => true]);
+        Notification::where('user_id', $request->user()->id)
+            ->where('is_read', false)
+            ->update(['is_read' => true]);
 
         return $this->ok(null, 'Semua notifikasi ditandai sudah dibaca');
     }

@@ -18,7 +18,7 @@ abstract class Controller
         return min($max, max(1, (int) $request->query('limit', $default)));
     }
 
-    protected function meta(LengthAwarePaginator $paginator): array
+    protected function meta(LengthAwarePaginator $paginator)
     {
         return [
             'total' => $paginator->total(),

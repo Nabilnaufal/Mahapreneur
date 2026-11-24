@@ -8,11 +8,7 @@ class OrderItem extends Model
 {
     public $timestamps = false;
 
-    protected $fillable = [
-        'order_id', 'product_id', 'product_name', 'product_price', 'quantity', 'subtotal',
-    ];
-
-    protected function casts(): array
+    protected function casts()
     {
         return [
             'product_price' => 'integer',

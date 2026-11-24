@@ -6,9 +6,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Category extends Model
 {
-    protected $fillable = ['name', 'slug', 'icon', 'sort_order', 'is_active'];
-
-    protected function casts(): array
+    protected function casts()
     {
         return ['is_active' => 'boolean', 'sort_order' => 'integer'];
     }

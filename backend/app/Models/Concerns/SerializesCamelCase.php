@@ -8,7 +8,7 @@ use Illuminate\Support\Str;
 /** Kolom database memakai snake_case, sedangkan API memakai camelCase. */
 trait SerializesCamelCase
 {
-    public function toArray(): array
+    public function toArray()
     {
         return collect(parent::toArray())
             ->mapWithKeys(fn ($value, $key) => [Str::camel($key) => $value])
