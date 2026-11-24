@@ -214,21 +214,19 @@ Frontend berjalan di `http://localhost:3000`.
 
 ### 5. Masuk ke aplikasi
 
-Buka `http://localhost:3000`, lalu login memakai akun demo di bawah.
+Buka `http://localhost:3000`, lalu login memakai akun seed di bawah.
 
-## Akun Demo
+## Akun Seed Lokal
 
-Semua akun memakai password yang sama: **`Mahapreneur1`**.
+Gunakan tiga kredensial berikut untuk cross-check tiap role:
 
 | Peran | Email | Toko |
 | --- | --- | --- |
-| Superadmin | `admin@mahapreneur.test` | — |
-| Seller | `dapur@mahapreneur.test` | Dapur Nusantara |
-| Seller | `kopi@mahapreneur.test` | Kopi Senja |
-| Seller | `jasa@mahapreneur.test` | Studio Nadia |
-| Customer | `pembeli@mahapreneur.test` | — |
+| Customer | `tia.customer@mahapreneur.test` | — |
+| Seller | `tia@mahapreneur.test` | Tia Kitchen & Creative |
+| Superadmin | `tia.admin@mahapreneur.test` | — |
 
-> Akun demo dibuat oleh `php artisan migrate --seed` hanya untuk pengembangan lokal. Ganti atau hapus sebelum aplikasi dipasang di server publik.
+Password masing-masing: `TiaCustomer1!`, `TiaSeller1!`, dan `TiaAdmin1!`. Semua akun dibuat oleh `php artisan migrate --seed` hanya untuk pengembangan lokal.
 
 ## Konfigurasi Environment
 

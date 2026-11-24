@@ -57,30 +57,11 @@
       Belum punya akun?
       <NuxtLink to="/auth/register" class="font-semibold text-strong hover:underline">Daftar sekarang</NuxtLink>
     </p>
-
-    <div class="mt-7 rounded-2xl border border-line bg-surface-muted p-4">
-      <div class="flex flex-wrap items-center justify-between gap-1">
-        <p class="text-xs font-bold text-strong">Isi cepat akun demo</p>
-        <p class="text-[10px] text-muted">Password: <span class="font-semibold text-strong">Mahapreneur1</span></p>
-      </div>
-      <div class="mt-3 grid grid-cols-3 gap-2">
-        <button
-          v-for="demo in demoAccounts"
-          :key="demo.label"
-          type="button"
-          class="group rounded-xl border border-line bg-surface-raised px-2 py-2.5 text-center transition hover:-translate-y-0.5 hover:border-line-strong hover:shadow-sm"
-          @click="fillDemo(demo.email)"
-        >
-          <component :is="demo.icon" class="mx-auto size-4 text-muted transition group-hover:text-strong" />
-          <span class="mt-1 block text-[10px] font-bold uppercase tracking-wide text-body">{{ demo.label }}</span>
-        </button>
-      </div>
-    </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { AlertCircle, ArrowRight, Eye, EyeOff, Loader2, LockKeyhole, Mail, ShieldCheck, ShoppingBag, Store } from 'lucide-vue-next';
+import { AlertCircle, ArrowRight, Eye, EyeOff, Loader2, LockKeyhole, Mail } from 'lucide-vue-next';
 
 definePageMeta({ layout: 'auth', guestOnly: true });
 
@@ -94,18 +75,6 @@ const loading = ref(false);
 const error = ref('');
 const needsVerification = ref(false);
 const showPassword = ref(false);
-
-const demoAccounts = [
-  { label: 'Customer', email: 'pembeli@mahapreneur.test', icon: ShoppingBag },
-  { label: 'Seller', email: 'kopi@mahapreneur.test', icon: Store },
-  { label: 'Admin', email: 'admin@mahapreneur.test', icon: ShieldCheck },
-];
-
-function fillDemo(email: string) {
-  form.email = email;
-  form.password = 'Mahapreneur1';
-  error.value = '';
-}
 
 async function submit() {
   loading.value = true;

@@ -3,7 +3,8 @@
 return [
     'paths' => ['api/*', 'uploads/*'],
     'allowed_methods' => ['*'],
-    'allowed_origins' => config('mahapreneur.cors_origins'),
+    // Baca langsung dari env agar tidak bergantung pada urutan pemuatan file config.
+    'allowed_origins' => array_map('trim', explode(',', env('CORS_ORIGIN', 'http://localhost:3000'))),
     'allowed_origins_patterns' => [],
     'allowed_headers' => ['*'],
     'exposed_headers' => [],

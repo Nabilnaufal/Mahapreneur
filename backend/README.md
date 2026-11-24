@@ -12,7 +12,7 @@ php artisan migrate --seed
 php artisan serve --host=0.0.0.0 --port=4000
 ```
 
-Butuh PHP 8.2+, Composer, dan MySQL/MariaDB. Semua akun demo memakai password `Mahapreneur1`.
+Butuh PHP 8.2+, Composer, dan MySQL/MariaDB. Seeder lokal menyediakan tiga akun Tia untuk role `CUSTOMER`, `SELLER`, dan `SUPERADMIN`.
 
 ## Struktur
 
