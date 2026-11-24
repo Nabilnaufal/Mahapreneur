@@ -244,7 +244,7 @@ Semua akun memakai password yang sama: **`Mahapreneur1`**.
 | `CORS_ORIGIN` | Origin frontend yang diizinkan (boleh lebih dari satu, pisahkan koma) |
 | `DB_CONNECTION`, `DB_HOST`, `DB_PORT`, `DB_DATABASE`, `DB_USERNAME`, `DB_PASSWORD` | Koneksi database, default XAMPP |
 | `MAIL_MAILER` / `RESEND_API_KEY` | Mailer Resend dan API key untuk email verifikasi/reset password |
-| `MAIL_FROM_ADDRESS` / `MAIL_FROM_NAME` | Identitas pengirim email; domain pengirim harus diverifikasi di Resend untuk produksi |
+| `MAIL_FROM_ADDRESS` / `MAIL_FROM_NAME` | Identitas pengirim email dari domain `nabil-naufal.online` yang sudah diverifikasi di Resend |
 | `DOKU_CLIENT_ID` / `DOKU_SECRET_KEY` | Kredensial DOKU; kosong berarti mode simulasi |
 | `MAX_UPLOAD_MB` | Batas ukuran file upload |
 | `AUTH_TTL_DAYS` / `EMAIL_VERIFICATION_TTL_HOURS` / `PASSWORD_RESET_TTL_MINUTES` | Masa berlaku token |
