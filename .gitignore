@@ -12,7 +12,7 @@ dist/
 !.env.example
 
 # Upload pengguna
-backend/uploads/
+backend/public/uploads/
 
 # Log & OS
 *.log
