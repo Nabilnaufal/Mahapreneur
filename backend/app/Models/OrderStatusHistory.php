@@ -6,6 +6,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class OrderStatusHistory extends Model
 {
+    protected $guarded = [];
+
     const UPDATED_AT = null;
 
     public function order(): BelongsTo

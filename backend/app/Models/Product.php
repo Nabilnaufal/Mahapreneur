@@ -8,14 +8,13 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Product extends Model
 {
-    protected function casts()
-    {
-        return [
-            'price' => 'integer',
-            'stock' => 'integer',
-            'sold' => 'integer',
-        ];
-    }
+    protected $guarded = [];
+
+    protected $casts = [
+        'price' => 'integer',
+        'stock' => 'integer',
+        'sold' => 'integer',
+    ];
 
     /** Produk yang boleh tampil di katalog publik. */
     public function scopeVisible(Builder $query): void

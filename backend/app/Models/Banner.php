@@ -4,8 +4,7 @@ namespace App\Models;
 
 class Banner extends Model
 {
-    protected function casts()
-    {
-        return ['sort_order' => 'integer'];
-    }
+    protected $guarded = [];
+
+    protected $casts = ['sort_order' => 'integer'];
 }

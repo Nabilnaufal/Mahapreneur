@@ -6,12 +6,11 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class ActivityLog extends Model
 {
+    protected $guarded = [];
+
     const UPDATED_AT = null;
 
-    protected function casts()
-    {
-        return ['meta' => 'array'];
-    }
+    protected $casts = ['meta' => 'array'];
 
     public function user(): BelongsTo
     {

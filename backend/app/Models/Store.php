@@ -8,6 +8,8 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Store extends Model
 {
+    protected $guarded = [];
+
     public function scopeActive(Builder $query): void
     {
         $query->where('status', 'ACTIVE');

@@ -4,15 +4,14 @@ namespace App\Models;
 
 class PaymentNotification extends Model
 {
+    protected $guarded = [];
+
     const UPDATED_AT = null;
 
-    protected function casts()
-    {
-        return [
-            'amount' => 'integer',
-            'signature_valid' => 'boolean',
-            'processed' => 'boolean',
-            'raw_payload' => 'array',
-        ];
-    }
+    protected $casts = [
+        'amount' => 'integer',
+        'signature_valid' => 'boolean',
+        'processed' => 'boolean',
+        'raw_payload' => 'array',
+    ];
 }

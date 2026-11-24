@@ -8,16 +8,15 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Order extends Model
 {
-    protected function casts()
-    {
-        return [
-            'subtotal' => 'integer',
-            'total' => 'integer',
-            'confirmed_at' => 'datetime',
-            'completed_at' => 'datetime',
-            'cancelled_at' => 'datetime',
-        ];
-    }
+    protected $guarded = [];
+
+    protected $casts = [
+        'subtotal' => 'integer',
+        'total' => 'integer',
+        'confirmed_at' => 'datetime',
+        'completed_at' => 'datetime',
+        'cancelled_at' => 'datetime',
+    ];
 
     public function customer(): BelongsTo
     {

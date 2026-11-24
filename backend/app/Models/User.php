@@ -15,14 +15,11 @@ class User extends Authenticatable
 
     protected $hidden = ['password'];
 
-    protected function casts()
-    {
-        return [
-            'password' => 'hashed',
-            'is_active' => 'boolean',
-            'email_verified_at' => 'datetime',
-        ];
-    }
+    protected $casts = [
+        'password' => 'hashed',
+        'is_active' => 'boolean',
+        'email_verified_at' => 'datetime',
+    ];
 
     public function store(): HasOne
     {

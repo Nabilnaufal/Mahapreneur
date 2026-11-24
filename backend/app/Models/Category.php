@@ -6,10 +6,9 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Category extends Model
 {
-    protected function casts()
-    {
-        return ['is_active' => 'boolean', 'sort_order' => 'integer'];
-    }
+    protected $guarded = [];
+
+    protected $casts = ['is_active' => 'boolean', 'sort_order' => 'integer'];
 
     public function products(): HasMany
     {

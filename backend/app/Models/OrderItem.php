@@ -6,16 +6,15 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class OrderItem extends Model
 {
+    protected $guarded = [];
+
     public $timestamps = false;
 
-    protected function casts()
-    {
-        return [
-            'product_price' => 'integer',
-            'quantity' => 'integer',
-            'subtotal' => 'integer',
-        ];
-    }
+    protected $casts = [
+        'product_price' => 'integer',
+        'quantity' => 'integer',
+        'subtotal' => 'integer',
+    ];
 
     public function order(): BelongsTo
     {

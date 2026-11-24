@@ -6,10 +6,9 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Address extends Model
 {
-    protected function casts()
-    {
-        return ['is_default' => 'boolean'];
-    }
+    protected $guarded = [];
+
+    protected $casts = ['is_default' => 'boolean'];
 
     public function user(): BelongsTo
     {

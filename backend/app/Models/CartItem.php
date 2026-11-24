@@ -6,10 +6,9 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class CartItem extends Model
 {
-    protected function casts()
-    {
-        return ['quantity' => 'integer'];
-    }
+    protected $guarded = [];
+
+    protected $casts = ['quantity' => 'integer'];
 
     public function cart(): BelongsTo
     {
