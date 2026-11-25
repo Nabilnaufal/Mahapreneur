@@ -1,8 +1,14 @@
 <template>
   <div class="space-y-5">
-    <header>
-      <h1 class="text-xl font-extrabold text-strong">Profil saya</h1>
-      <p class="mt-1 text-sm text-muted">Kelola data akun dan keamanan.</p>
+    <header class="flex flex-wrap items-start justify-between gap-3">
+      <div>
+        <h1 class="text-xl font-extrabold text-strong">Profil saya</h1>
+        <p class="mt-1 text-sm text-muted">Kelola data akun dan keamanan.</p>
+      </div>
+      <!-- Alamat tidak lagi punya menu di mobile, jadi tautannya ditaruh di sini. -->
+      <NuxtLink to="/customer/addresses" class="btn btn-outline text-xs lg:hidden">
+        <MapPin class="size-4" /> Alamat
+      </NuxtLink>
     </header>
 
     <section class="card p-5">
@@ -75,7 +81,7 @@
 </template>
 
 <script setup lang="ts">
-import { AlertCircle, BadgeCheck, Loader2, Moon, Sun } from 'lucide-vue-next';
+import { AlertCircle, BadgeCheck, Loader2, MapPin, Moon, Sun } from 'lucide-vue-next';
 
 definePageMeta({ layout: 'account', requiresAuth: true, roles: ['CUSTOMER'] });
 

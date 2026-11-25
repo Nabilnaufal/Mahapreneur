@@ -3,7 +3,7 @@
     <AppNavbar />
     <main class="page-container flex-1 py-6 pb-24 md:pb-10">
       <div class="grid gap-6 lg:grid-cols-[240px_1fr]">
-        <aside>
+        <aside class="hidden lg:block">
           <div class="card p-4">
             <div class="hidden items-center gap-3 border-b border-line pb-4 lg:flex">
               <span class="grid size-11 place-items-center rounded-full bg-primary text-sm font-bold text-tertiary">{{ auth.initials }}</span>
