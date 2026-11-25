@@ -25,46 +25,28 @@
       </button>
     </div>
 
-    <div v-if="orders.length" class="card overflow-hidden">
-      <div class="hidden grid-cols-[1fr_150px_160px_120px_120px] gap-3 border-b border-line px-5 py-3 text-[11px] font-bold uppercase tracking-wide text-muted lg:grid">
-        <span>Pesanan</span><span>Penerima</span><span>Status</span><span>Pembayaran</span><span class="text-right">Total</span>
-      </div>
-      <div class="divide-y divide-[color:var(--line)]">
-        <article
+    <div v-if="orders.length" class="space-y-3">
+        <NuxtLink
           v-for="order in orders"
           :key="order.id"
-          class="grid gap-3 px-5 py-4 transition hover:bg-surface-muted lg:grid-cols-[1fr_150px_190px_120px_120px] lg:items-center"
+          :to="'/seller/orders/' + order.id"
+          class="card grid gap-3 px-5 py-4 transition hover:-translate-y-0.5 hover:border-line-strong hover:bg-surface-muted lg:grid-cols-[1fr_150px_170px_140px_120px] lg:items-center"
         >
           <div class="min-w-0">
-            <NuxtLink :to="`/seller/orders/${order.id}`" class="font-mono text-xs font-bold text-strong hover:underline">{{ order.orderNumber }}</NuxtLink>
+            <p class="font-mono text-xs font-bold text-strong">{{ order.orderNumber }}</p>
             <p class="text-[11px] text-muted">{{ formatDate(order.createdAt, true) }} · {{ order.items.length }} item</p>
           </div>
           <div class="min-w-0 text-xs">
             <p class="truncate font-semibold text-body">{{ order.recipientName }}</p>
             <p class="truncate text-muted">{{ order.campus || order.address }}</p>
           </div>
-          <div class="min-w-0" @click.stop>
-            <label class="mb-1 block text-[10px] font-semibold uppercase tracking-wide text-muted lg:hidden">Perbarui status</label>
-            <select
-              v-if="statusOptions(order).length > 1"
-              :value="order.status"
-              :disabled="statusUpdating === order.id"
-              class="input !rounded-full !py-2 !pl-3 !pr-8 text-xs font-bold uppercase tracking-wide"
-              aria-label="Perbarui status pesanan"
-              @click.stop
-              @change.stop="changeOrderStatus(order, $event)"
-            >
-              <option v-for="option in statusOptions(order)" :key="option" :value="option">{{ orderStatusLabel(option) }}</option>
-            </select>
-            <StatusBadge v-else :status="order.status" kind="order" />
-          </div>
+          <StatusBadge :status="order.status" kind="order" />
           <StatusBadge :status="order.paymentStatus" kind="payment" />
           <div class="flex items-center justify-between gap-2 lg:justify-end">
             <span class="text-sm font-extrabold text-strong">{{ formatRupiah(order.total) }}</span>
             <ChevronRight class="size-4 text-muted" />
           </div>
-        </article>
-      </div>
+        </NuxtLink>
     </div>
 
     <EmptyState v-else title="Belum ada pesanan" description="Pesanan dari customer akan muncul di sini beserta info penerima dan status pembayarannya." />
@@ -75,24 +57,15 @@
 
 <script setup lang="ts">
 import { ChevronRight, Search } from 'lucide-vue-next';
-import type { Order, OrderStatus, PaginationMeta } from '~/types';
+import type { Order, PaginationMeta } from '~/types';
 
 definePageMeta({ layout: 'dashboard', requiresAuth: true, roles: ['SELLER'] });
 
 const api = useApi();
-const ui = useUiStore();
 
 const keyword = ref('');
 const status = ref('');
 const page = ref(1);
-const statusUpdating = ref<number | null>(null);
-
-const STATUS_FLOW: Partial<Record<OrderStatus, OrderStatus[]>> = {
-  CONFIRMED: ['PROCESSING'],
-  PROCESSING: ['READY'],
-  READY: ['ON_DELIVERY'],
-  ON_DELIVERY: ['COMPLETED'],
-};
 
 const tabs = [
   { label: 'Semua', value: '' },
@@ -118,27 +91,6 @@ const { data, refresh } = await useAsyncData('seller-orders', () => api.get<{ or
 
 const orders = computed(() => data.value?.orders ?? []);
 const meta = computed(() => data.value?.meta ?? { total: 0, page: 1, limit: 10, totalPages: 1 });
-
-function statusOptions(order: Order): OrderStatus[] {
-  return [order.status, ...(STATUS_FLOW[order.status] ?? [])];
-}
-
-async function changeOrderStatus(order: Order, event: Event) {
-  const nextStatus = (event.target as HTMLSelectElement).value as OrderStatus;
-  if (!nextStatus || nextStatus === order.status) return;
-
-  statusUpdating.value = order.id;
-  try {
-    await api.patch(`/seller/orders/${order.id}/status`, { status: nextStatus });
-    ui.toast(`Status diperbarui: ${orderStatusLabel(nextStatus)}`, 'success');
-    await refresh();
-  } catch (error) {
-    ui.toast(apiError(error), 'error');
-    await refresh();
-  } finally {
-    statusUpdating.value = null;
-  }
-}
 
 function apply() {
   page.value = 1;
