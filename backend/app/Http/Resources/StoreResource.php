@@ -29,6 +29,8 @@ class StoreResource extends JsonResource
             'updatedAt' => $this->updated_at?->toISOString(),
             'productCount' => $this->when(isset($this->products_count), fn () => $this->products_count),
             'orderCount' => $this->when(isset($this->orders_count), fn () => $this->orders_count),
+            'rating' => $this->reviews_avg_rating !== null ? round((float) $this->reviews_avg_rating, 1) : null,
+            'ratingCount' => (int) ($this->reviews_count ?? 0),
             '_count' => $this->when(isset($this->products_count) || isset($this->orders_count), fn () => [
                 'products' => $this->products_count ?? 0,
                 'orders' => $this->orders_count ?? 0,

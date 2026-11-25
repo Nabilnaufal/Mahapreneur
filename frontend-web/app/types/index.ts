@@ -55,6 +55,8 @@ export interface Store {
   status: StoreStatus;
   productCount?: number;
   orderCount?: number;
+  rating?: number | null;
+  ratingCount?: number;
   owner?: { id: number; name: string; email: string; isActive?: boolean };
   user?: { name: string; createdAt: string };
   _count?: { products: number };
@@ -70,6 +72,8 @@ export interface Product {
   type: ProductType;
   status: ProductStatus;
   sold: number;
+  rating?: number | null;
+  ratingCount?: number;
   serviceTerms: string | null;
   serviceDuration: string | null;
   createdAt: string;
@@ -78,6 +82,15 @@ export interface Product {
   imageRecords?: { id: number; url: string }[];
   category: { id: number; name: string; slug: string; icon: string | null } | null;
   store: { id: number; name: string; slug: string; logo: string | null } | null;
+  reviews?: ProductReview[];
+}
+
+export interface ProductReview {
+  id: number;
+  rating: number;
+  comment: string | null;
+  createdAt: string;
+  customer: { name: string } | null;
 }
 
 export interface Banner {

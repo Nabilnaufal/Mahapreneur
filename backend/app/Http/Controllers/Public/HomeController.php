@@ -32,7 +32,12 @@ class HomeController extends Controller
         $latest = (clone $productQuery)->latest('created_at')->take(8)->get();
         $bestsellers = (clone $productQuery)->orderByDesc('sold')->take(8)->get()->where('sold', '>', 0)->values();
         $recommended = (clone $productQuery)->where('sold', 0)->where('stock', '>', 0)->latest('created_at')->take(8)->get();
-        $topStores = Store::active()->withCount('products')->latest('created_at')->take(6)->get();
+        $topStores = Store::active()
+            ->withAvg('reviews', 'rating')
+            ->withCount(['reviews', 'products'])
+            ->latest('created_at')
+            ->take(6)
+            ->get();
 
         $categorySections = $categories->take(4)
             ->map(function (Category $category) use ($productQuery) {

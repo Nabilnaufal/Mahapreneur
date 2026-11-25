@@ -16,9 +16,12 @@ class StoreController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Store::active()->withCount(['products' => function ($productQuery) {
-            $productQuery->visible();
-        }]);
+        $query = Store::active()
+            ->withAvg('reviews', 'rating')
+            ->withCount('reviews')
+            ->withCount(['products' => function ($productQuery) {
+                $productQuery->visible();
+            }]);
 
         $keyword = $request->query('q');
 
@@ -41,6 +44,8 @@ class StoreController extends Controller
     {
         $store = Store::active()
             ->with('user:id,name,created_at')
+            ->withAvg('reviews', 'rating')
+            ->withCount('reviews')
             ->withCount(['products' => function ($productQuery) {
                 $productQuery->visible();
             }])

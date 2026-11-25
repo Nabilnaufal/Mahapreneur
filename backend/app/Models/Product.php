@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 
 class Product extends Model
 {
@@ -43,7 +44,7 @@ class Product extends Model
             'images' => fn ($images) => $images->orderBy('sort_order'),
             'category:id,name,slug,icon',
             'store:id,name,slug,logo,status',
-        ]);
+        ])->withAvg('reviews', 'rating')->withCount('reviews');
     }
 
     public function store(): BelongsTo
@@ -64,5 +65,10 @@ class Product extends Model
     public function wishlists(): HasMany
     {
         return $this->hasMany(Wishlist::class);
+    }
+
+    public function reviews(): HasManyThrough
+    {
+        return $this->hasManyThrough(OrderReview::class, OrderItem::class, 'product_id', 'order_id', 'id', 'order_id');
     }
 }

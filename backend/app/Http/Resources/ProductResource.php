@@ -23,6 +23,8 @@ class ProductResource extends JsonResource
             'type' => $this->type,
             'status' => $this->status,
             'sold' => $this->sold,
+            'rating' => $this->reviews_avg_rating !== null ? round((float) $this->reviews_avg_rating, 1) : null,
+            'ratingCount' => (int) ($this->reviews_count ?? 0),
             'serviceTerms' => $this->service_terms,
             'serviceDuration' => $this->service_duration,
             'createdAt' => $this->created_at?->toISOString(),
@@ -45,6 +47,15 @@ class ProductResource extends JsonResource
                 'logo' => FileUrl::make($this->store->logo),
                 'status' => $this->store->status,
             ] : null),
+            'reviews' => $this->whenLoaded('reviews', fn () => $this->reviews->map(fn ($review) => [
+                'id' => $review->id,
+                'rating' => $review->rating,
+                'comment' => $review->comment,
+                'createdAt' => $review->created_at?->toISOString(),
+                'customer' => $review->customer ? [
+                    'name' => $review->customer->name,
+                ] : null,
+            ])),
         ];
     }
 }

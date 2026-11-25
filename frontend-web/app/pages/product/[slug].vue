@@ -24,6 +24,7 @@
         </p>
 
         <h1 class="mt-2 text-2xl font-extrabold leading-tight text-strong sm:text-3xl">{{ product.name }}</h1>
+        <RatingStars class="mt-3 text-sm" :rating="product.rating" :count="product.ratingCount" show-count />
 
         <div class="mt-4 flex flex-wrap items-end gap-3">
           <p class="text-3xl font-extrabold text-strong">{{ formatRupiah(product.price) }}</p>
@@ -48,6 +49,7 @@
           </span>
           <div class="min-w-0 flex-1">
             <p class="truncate text-sm font-bold text-strong">{{ store.name }}</p>
+            <RatingStars class="mt-1 text-[11px]" :rating="store.rating" :count="store.ratingCount" show-count />
             <p class="flex items-center gap-1.5 truncate text-xs text-muted">
               <MapPin class="size-3.5" /> {{ store.campus || store.address || 'Lokasi toko belum diisi' }}
             </p>
@@ -129,6 +131,36 @@
       </div>
     </section>
 
+    <!-- Ulasan pembeli -->
+    <section class="card p-6">
+      <div class="flex flex-wrap items-end justify-between gap-3 border-b border-line pb-5">
+        <div>
+          <h2 class="text-lg font-extrabold text-strong">Ulasan pembeli</h2>
+          <p class="mt-1 text-xs text-muted">Pengalaman customer yang sudah menyelesaikan pesanan ini.</p>
+        </div>
+        <RatingStars :rating="product.rating" :count="product.ratingCount" show-count />
+      </div>
+
+      <div v-if="reviews.length" class="divide-y divide-[color:var(--line)]">
+        <article v-for="review in reviews" :key="review.id" class="py-5 first:pt-0 last:pb-0">
+          <div class="flex flex-wrap items-center justify-between gap-2">
+            <div class="flex items-center gap-2">
+              <span class="grid size-8 place-items-center rounded-full bg-primary text-xs font-bold text-tertiary">
+                {{ review.customer?.name?.slice(0, 1).toUpperCase() || '?' }}
+              </span>
+              <p class="text-sm font-bold text-strong">{{ review.customer?.name || 'Customer' }}</p>
+            </div>
+            <div class="flex items-center gap-3">
+              <RatingStars :rating="review.rating" :show-value="false" size="size-4" />
+              <span class="text-[11px] text-muted">{{ formatDate(review.createdAt) }}</span>
+            </div>
+          </div>
+          <p class="mt-3 text-sm leading-relaxed text-body">{{ review.comment || 'Customer memberikan rating untuk produk ini.' }}</p>
+        </article>
+      </div>
+      <p v-else class="py-8 text-center text-sm text-muted">Belum ada ulasan untuk produk ini.</p>
+    </section>
+
     <section v-if="fromStore.length">
       <SectionHeading eyebrow="Toko yang sama" title="Produk lain dari toko ini" :to="store ? `/store/${store.slug}` : undefined" />
       <div class="grid grid-cols-2 gap-4 lg:grid-cols-4">
@@ -175,6 +207,7 @@ const product = computed(() => data.value?.product ?? null);
 const store = computed(() => data.value?.store ?? null);
 const fromStore = computed(() => data.value?.fromStore ?? []);
 const related = computed(() => data.value?.related ?? []);
+const reviews = computed(() => product.value?.reviews ?? []);
 const wishlisted = computed(() => (product.value ? wishlist.has(product.value.id) : false));
 
 function requireLogin() {

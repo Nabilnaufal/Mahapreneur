@@ -42,6 +42,7 @@
         <CategoryIcon :name="product.category?.icon" size="size-3.5" />
         {{ product.category?.name ?? 'Tanpa kategori' }}
       </p>
+      <RatingStars class="mt-2 text-[11px]" :rating="product.rating" :count="product.ratingCount" show-count />
 
       <div class="mt-auto flex items-end justify-between gap-2 pt-4">
         <div>

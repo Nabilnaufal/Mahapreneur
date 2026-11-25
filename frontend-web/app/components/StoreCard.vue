@@ -13,6 +13,7 @@
         <span class="badge mb-1 bg-tertiary text-neutral">{{ store.productCount ?? store._count?.products ?? 0 }} produk</span>
       </div>
       <h3 class="mt-3 truncate text-base font-extrabold text-strong group-hover:underline">{{ store.name }}</h3>
+      <RatingStars class="mt-2 text-xs" :rating="store.rating" :count="store.ratingCount" show-count />
       <p class="mt-1 line-clamp-2 text-xs leading-relaxed text-muted">{{ store.description || 'Toko mahasiswa di Mahapreneur.' }}</p>
       <p v-if="store.campus" class="mt-3 flex items-center gap-1.5 text-[11px] font-semibold text-muted">
         <MapPin class="size-3.5" /> {{ store.campus }}

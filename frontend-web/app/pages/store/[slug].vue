@@ -25,6 +25,7 @@
                 class="badge bg-rose-100 text-rose-700 dark:bg-rose-500/15 dark:text-rose-300"
               >Sedang tidak aktif</span>
             </div>
+            <RatingStars class="mt-2 text-xs" :rating="store.rating" :count="store.ratingCount" show-count />
 
             <p class="mt-2 max-w-3xl text-sm leading-relaxed text-body">{{ store.description || 'Toko ini belum menuliskan deskripsi.' }}</p>
 

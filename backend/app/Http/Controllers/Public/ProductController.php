@@ -76,7 +76,12 @@ class ProductController extends Controller
 
     public function show(string $slug)
     {
-        $product = Product::query()->visible()->withCard()->where('slug', $slug)->first();
+        $product = Product::query()
+            ->visible()
+            ->withCard()
+            ->with(['reviews.customer', 'store' => fn ($store) => $store->withAvg('reviews', 'rating')->withCount('reviews')])
+            ->where('slug', $slug)
+            ->first();
 
         if (! $product) {
             throw ApiException::notFound('Produk tidak ditemukan atau sudah tidak aktif');
