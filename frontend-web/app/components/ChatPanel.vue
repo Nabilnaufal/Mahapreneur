@@ -143,7 +143,7 @@ watch(
 onMounted(() => {
   timer = setInterval(() => {
     if (document.visibilityState === 'visible') load(true);
-  }, 3000);
+  }, 2000);
 });
 
 onBeforeUnmount(() => {
