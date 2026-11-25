@@ -10,6 +10,7 @@
       :me-id="auth.user?.id ?? 0"
       partner="customer"
       subtitle="Customer atau seller"
+      :accent-header="true"
       heading="Pesan pelayanan"
       empty-text="Belum ada customer yang menghubungi pelayanan."
     />

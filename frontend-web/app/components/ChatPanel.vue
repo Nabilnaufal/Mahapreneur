@@ -1,13 +1,13 @@
 <template>
   <section class="card flex min-h-[520px] flex-col overflow-hidden">
-    <header class="flex items-center gap-3 border-b border-line p-4">
-      <span class="grid size-10 shrink-0 place-items-center overflow-hidden rounded-full bg-surface-muted text-xs font-bold text-primary dark:text-tertiary">
+    <header class="flex items-center gap-3 border-b border-line p-4" :class="accentHeader ? 'border-tertiary bg-tertiary' : ''">
+      <span class="grid size-10 shrink-0 place-items-center overflow-hidden rounded-full text-xs font-bold" :class="accentHeader ? 'bg-neutral text-tertiary' : 'bg-surface-muted text-primary dark:text-tertiary'">
         <img v-if="avatar" :src="avatar" :alt="title" class="size-full object-cover" />
         <template v-else>{{ initials }}</template>
       </span>
       <div class="min-w-0">
-        <p class="truncate text-sm font-bold text-strong">{{ title }}</p>
-        <p class="truncate text-xs text-muted">{{ subtitle || 'Pesan akan diperbarui otomatis.' }}</p>
+        <p class="truncate text-sm font-bold" :class="accentHeader ? 'text-neutral' : 'text-strong'">{{ title }}</p>
+        <p class="truncate text-xs" :class="accentHeader ? 'text-neutral/70' : 'text-muted'">{{ subtitle || 'Pesan akan diperbarui otomatis.' }}</p>
       </div>
     </header>
 
@@ -65,6 +65,7 @@ const props = defineProps<{
   subtitle?: string;
   avatar?: string | null;
   emptyText?: string;
+  accentHeader?: boolean;
 }>();
 
 const emit = defineEmits<{ sent: [] }>();

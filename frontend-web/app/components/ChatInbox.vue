@@ -1,9 +1,9 @@
 <template>
   <div class="grid gap-4 lg:grid-cols-[320px_1fr]">
     <aside class="card overflow-hidden" :class="activeId ? 'hidden lg:block' : ''">
-      <div class="border-b border-line p-4">
-        <p class="text-sm font-bold text-strong">{{ heading }}</p>
-        <p class="mt-0.5 text-xs text-muted">
+      <div class="border-b border-line p-4" :class="useAccentHeader ? 'border-tertiary bg-tertiary' : ''">
+        <p class="text-sm font-bold" :class="useAccentHeader ? 'text-neutral' : 'text-strong'">{{ heading }}</p>
+        <p class="mt-0.5 text-xs" :class="useAccentHeader ? 'text-neutral/70' : 'text-muted'">
           {{ conversations.length }} percakapan · {{ unreadTotal }} belum dibaca
         </p>
       </div>
@@ -54,6 +54,7 @@
         :title="partnerName(active)"
         :avatar="partnerAvatar(active)"
         :subtitle="subtitle || (partner === 'store' ? 'Penjual toko' : partner === 'support' ? 'Customer Service Mahapreneur' : 'Customer / Seller')"
+        :accent-header="useAccentHeader"
         :empty-text="emptyText"
         @sent="refresh()"
       />
@@ -79,12 +80,14 @@ const props = defineProps<{
   partner: 'store' | 'customer' | 'support';
   heading?: string;
   subtitle?: string;
+  accentHeader?: boolean;
   queryKey?: string;
   emptyText?: string;
 }>();
 
 const heading = computed(() => props.heading ?? 'Daftar chat');
 const queryKey = computed(() => props.queryKey ?? 'conversation');
+const useAccentHeader = computed(() => props.accentHeader ?? props.partner === 'support');
 
 const api = useApi();
 const route = useRoute();
