@@ -38,6 +38,57 @@
       </p>
     </div>
 
+    <!-- Ulasan setelah pesanan selesai -->
+    <section v-if="order.status === 'COMPLETED'" class="card overflow-hidden border-emerald-200 dark:border-emerald-500/30">
+      <header class="flex items-center gap-3 border-b border-line px-5 py-4">
+        <span class="grid size-9 place-items-center rounded-xl bg-amber-100 text-amber-500 dark:bg-amber-500/15"><Star class="size-4" fill="currentColor" /></span>
+        <div>
+          <h2 class="text-sm font-bold text-strong">Bagaimana pengalamanmu?</h2>
+          <p class="text-xs text-muted">Bantu seller dengan ulasan singkat tentang pesanan ini.</p>
+        </div>
+      </header>
+
+      <div v-if="order.review && !editingReview" class="flex flex-wrap items-center justify-between gap-4 p-5">
+        <div>
+          <div class="flex items-center gap-1 text-amber-400" aria-label="Rating pesanan">
+            <Star v-for="star in 5" :key="star" class="size-5" :fill="star <= order.review.rating ? 'currentColor' : 'none'" />
+          </div>
+          <p v-if="order.review.comment" class="mt-2 text-sm text-body">“{{ order.review.comment }}”</p>
+          <p class="mt-1 text-[11px] text-muted">Ulasanmu sudah tersimpan.</p>
+        </div>
+        <button class="btn btn-outline !py-2 text-xs" @click="startEditingReview">Ubah ulasan</button>
+      </div>
+
+      <form v-else class="space-y-4 p-5" @submit.prevent="submitReview">
+        <div>
+          <p class="text-xs font-semibold text-strong">Beri rating</p>
+          <div class="mt-2 flex gap-1" role="radiogroup" aria-label="Pilih rating">
+            <button
+              v-for="star in 5"
+              :key="star"
+              type="button"
+              class="rounded-lg p-1 transition hover:scale-110"
+              :class="star <= reviewRating ? 'text-amber-400' : 'text-muted/40'"
+              :aria-label="`${star} bintang`"
+              :aria-checked="reviewRating === star"
+              role="radio"
+              @click="reviewRating = star"
+            >
+              <Star class="size-7" :fill="star <= reviewRating ? 'currentColor' : 'none'" />
+            </button>
+          </div>
+        </div>
+        <textarea v-model="reviewComment" class="input min-h-24 resize-y" maxlength="1000" placeholder="Ceritakan pengalamanmu (opsional)…" />
+        <div class="flex flex-wrap items-center justify-between gap-3">
+          <p class="text-xs text-muted">Rating membantu customer lain menemukan seller yang terpercaya.</p>
+          <button class="btn btn-primary" type="submit" :disabled="reviewing || reviewRating === 0">
+            <Loader2 v-if="reviewing" class="size-4 animate-spin" />
+            {{ reviewing ? 'Menyimpan…' : order.review ? 'Simpan perubahan' : 'Kirim ulasan' }}
+          </button>
+        </div>
+      </form>
+    </section>
+
     <div class="grid gap-5 lg:grid-cols-[1fr_340px]">
       <div class="space-y-5">
         <!-- Item -->
@@ -182,8 +233,8 @@
 </template>
 
 <script setup lang="ts">
-import { ArrowLeft, Banknote, Bike, History, MapPin, MessageCircle, Package, QrCode, Store } from 'lucide-vue-next';
-import type { Order, Store as StoreType } from '~/types';
+import { ArrowLeft, Banknote, Bike, History, Loader2, MapPin, MessageCircle, Package, QrCode, Star, Store } from 'lucide-vue-next';
+import type { Order, OrderReview, Store as StoreType } from '~/types';
 
 definePageMeta({ layout: 'account', requiresAuth: true, roles: ['CUSTOMER'] });
 
@@ -194,6 +245,10 @@ const ui = useUiStore();
 const showCancel = ref(false);
 const cancelling = ref(false);
 const startingChat = ref(false);
+const editingReview = ref(false);
+const reviewing = ref(false);
+const reviewRating = ref(0);
+const reviewComment = ref('');
 
 const { data, refresh } = await useAsyncData(`order-${route.params.id}`, () =>
   api.get<{ order: Order; store: StoreType }>(`/customer/orders/${route.params.id}`),
@@ -203,6 +258,37 @@ const order = computed(() => data.value?.order ?? null);
 const canCancel = computed(
   () => Boolean(order.value) && ['WAITING_PAYMENT', 'CONFIRMED'].includes(order.value!.status) && order.value!.paymentStatus !== 'PAID',
 );
+
+watch(order, (value) => {
+  if (value?.review && !editingReview.value) {
+    reviewRating.value = value.review.rating;
+    reviewComment.value = value.review.comment ?? '';
+  }
+}, { immediate: true });
+
+function startEditingReview() {
+  reviewRating.value = order.value?.review?.rating ?? 0;
+  reviewComment.value = order.value?.review?.comment ?? '';
+  editingReview.value = true;
+}
+
+async function submitReview() {
+  if (!order.value || reviewRating.value < 1 || reviewing.value) return;
+  reviewing.value = true;
+  try {
+    await api.post<{ review: OrderReview }>(`/customer/orders/${order.value.id}/review`, {
+      rating: reviewRating.value,
+      comment: reviewComment.value.trim() || null,
+    });
+    ui.toast('Ulasan berhasil disimpan. Terima kasih!', 'success');
+    editingReview.value = false;
+    await refresh();
+  } catch (error) {
+    ui.toast(apiError(error), 'error');
+  } finally {
+    reviewing.value = false;
+  }
+}
 
 async function startChat() {
   if (!order.value?.store || startingChat.value) return;

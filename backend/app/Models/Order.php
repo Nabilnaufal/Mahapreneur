@@ -60,4 +60,9 @@ class Order extends Model
     {
         return $this->hasMany(OrderStatusHistory::class)->orderBy('created_at');
     }
+
+    public function review(): HasOne
+    {
+        return $this->hasOne(OrderReview::class);
+    }
 }

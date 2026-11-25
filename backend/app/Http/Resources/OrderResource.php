@@ -55,6 +55,13 @@ class OrderResource extends JsonResource
                 'createdBy' => $history->created_by,
                 'createdAt' => $history->created_at?->toISOString(),
             ])),
+            'review' => $this->whenLoaded('review', fn () => $this->review ? [
+                'id' => $this->review->id,
+                'rating' => $this->review->rating,
+                'comment' => $this->review->comment,
+                'createdAt' => $this->review->created_at?->toISOString(),
+                'updatedAt' => $this->review->updated_at?->toISOString(),
+            ] : null),
         ];
     }
 }

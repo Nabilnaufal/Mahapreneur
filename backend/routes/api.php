@@ -85,6 +85,7 @@ Route::middleware(['auth.api', 'role:CUSTOMER'])->prefix('customer')->group(func
     Route::get('orders', [CustomerOrderController::class, 'index']);
     Route::get('orders/{id}', [CustomerOrderController::class, 'show']);
     Route::post('orders/{id}/cancel', [CustomerOrderController::class, 'cancel']);
+    Route::post('orders/{id}/review', [CustomerOrderController::class, 'review']);
 
     Route::get('orders/{id}/payment', [CustomerOrderController::class, 'payment']);
     Route::post('orders/{id}/payment/channel', [CustomerOrderController::class, 'chooseChannel']);

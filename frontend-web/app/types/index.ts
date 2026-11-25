@@ -113,6 +113,14 @@ export interface OrderItem {
   image?: string | null;
 }
 
+export interface OrderReview {
+  id: number;
+  rating: number;
+  comment: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
 export interface Payment {
   id: number;
   method: PaymentMethod;
@@ -147,6 +155,7 @@ export interface Order {
   items: OrderItem[];
   payment: Payment | null;
   histories?: { id: number; status: OrderStatus; note: string | null; createdAt: string }[];
+  review?: OrderReview | null;
 }
 
 export interface Address {

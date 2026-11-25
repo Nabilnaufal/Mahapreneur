@@ -18,8 +18,13 @@
       <header class="flex flex-wrap items-end justify-between gap-3">
         <div>
           <h1 class="text-xl font-extrabold text-strong">Ringkasan toko</h1>
-          <p class="mt-1 text-sm text-muted">{{ auth.user?.store?.name }} · data diperbarui otomatis dari pesanan nyata.</p>
+          <p class="mt-1 text-sm text-muted">{{ auth.user?.store?.name }} · diperbarui otomatis setiap beberapa detik.</p>
         </div>
+        <button class="btn btn-outline !px-3 text-xs" :disabled="refreshing" @click="refreshDashboard">
+          <Loader2 v-if="refreshing" class="size-3.5 animate-spin" />
+          <RefreshCw v-else class="size-3.5" />
+          {{ refreshing ? 'Memuat…' : 'Segarkan' }}
+        </button>
       </header>
 
       <div class="grid grid-cols-2 gap-3 sm:grid-cols-4">
@@ -101,7 +106,7 @@
 
 <script setup lang="ts">
 import {
-  Boxes, CheckCircle2, ChevronRight, ClipboardList, Clock, ExternalLink, PackageCheck, Plus, ShoppingBag, Store, Wallet,
+  Boxes, CheckCircle2, ChevronRight, ClipboardList, Clock, ExternalLink, Loader2, PackageCheck, Plus, RefreshCw, ShoppingBag, Store, Wallet,
 } from 'lucide-vue-next';
 import type { Order, Product } from '~/types';
 
@@ -117,11 +122,38 @@ interface DashboardData {
   topProducts: Product[];
 }
 
-const { data } = await useAsyncData(
+const { data, refresh } = await useAsyncData(
   'seller-dashboard',
   () => (auth.hasStore ? api.get<DashboardData>('/seller/dashboard') : Promise.resolve(null)),
   { watch: [() => auth.hasStore] },
 );
+
+const refreshing = ref(false);
+let refreshTimer: ReturnType<typeof setInterval> | undefined;
+
+async function refreshDashboard() {
+  if (refreshing.value || !auth.hasStore) return;
+  refreshing.value = true;
+  try {
+    await refresh();
+  } finally {
+    refreshing.value = false;
+  }
+}
+
+function refreshWhenVisible() {
+  if (document.visibilityState === 'visible') refreshDashboard();
+}
+
+onMounted(() => {
+  refreshTimer = setInterval(refreshDashboard, 15000);
+  document.addEventListener('visibilitychange', refreshWhenVisible);
+});
+
+onBeforeUnmount(() => {
+  if (refreshTimer) clearInterval(refreshTimer);
+  document.removeEventListener('visibilitychange', refreshWhenVisible);
+});
 
 const stats = computed(() => data.value?.stats ?? ({} as DashboardData['stats']));
 const recentOrders = computed(() => data.value?.recentOrders ?? []);

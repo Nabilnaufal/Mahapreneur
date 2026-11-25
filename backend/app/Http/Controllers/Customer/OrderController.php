@@ -35,7 +35,7 @@ class OrderController extends Controller
 
     public function show(Request $request, int $id)
     {
-        $order = Order::with(['store', 'items.product.images', 'payment', 'histories'])
+        $order = Order::with(['store', 'items.product.images', 'payment', 'histories', 'review'])
             ->where('customer_id', $request->user()->id)
             ->find($id);
         if (! $order) {
@@ -46,6 +46,51 @@ class OrderController extends Controller
             'order' => OrderResource::make($order),
             'store' => StoreResource::make($order->store),
         ]);
+    }
+
+    public function review(Request $request, int $id)
+    {
+        $data = $request->validate([
+            'rating' => ['required', 'integer', 'min:1', 'max:5'],
+            'comment' => ['nullable', 'string', 'max:1000'],
+        ]);
+
+        $order = Order::with('review')
+            ->where('customer_id', $request->user()->id)
+            ->find($id);
+        if (! $order) {
+            throw ApiException::notFound('Pesanan tidak ditemukan');
+        }
+        if ($order->status !== 'COMPLETED') {
+            throw ApiException::badRequest('Ulasan baru bisa diberikan setelah pesanan selesai');
+        }
+
+        $review = $order->review()->updateOrCreate(
+            [],
+            [
+                'customer_id' => $request->user()->id,
+                'rating' => $data['rating'],
+                'comment' => $data['comment'] ?? null,
+            ],
+        );
+
+        Activity::log(
+            $request->user()->id,
+            $review->wasRecentlyCreated ? 'ORDER_REVIEW_CREATED' : 'ORDER_REVIEW_UPDATED',
+            'Order',
+            $order->id,
+            "Ulasan pesanan {$order->order_number} diberi rating {$review->rating}/5",
+        );
+
+        return $this->ok([
+            'review' => [
+                'id' => $review->id,
+                'rating' => $review->rating,
+                'comment' => $review->comment,
+                'createdAt' => $review->created_at?->toISOString(),
+                'updatedAt' => $review->updated_at?->toISOString(),
+            ],
+        ], 'Ulasan berhasil disimpan');
     }
 
     public function cancel(Request $request, int $id)

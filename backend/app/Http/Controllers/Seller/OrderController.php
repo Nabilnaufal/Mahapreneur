@@ -14,6 +14,21 @@ use Illuminate\Validation\Rule;
 
 class OrderController extends Controller
 {
+    private const NEXT_STATUS = [
+        'CONFIRMED' => ['PROCESSING', 'CANCELLED'],
+        'PROCESSING' => ['READY', 'CANCELLED'],
+        'READY' => ['ON_DELIVERY'],
+        'ON_DELIVERY' => ['COMPLETED'],
+    ];
+
+    private const STATUS_LABEL = [
+        'PROCESSING' => 'sedang diproses',
+        'READY' => 'siap diserahkan',
+        'ON_DELIVERY' => 'sedang diantarkan',
+        'COMPLETED' => 'selesai',
+        'CANCELLED' => 'dibatalkan',
+    ];
+
     public function index(Request $request)
     {
         $orders = Order::with(['customer', 'items.product.images', 'payment'])
