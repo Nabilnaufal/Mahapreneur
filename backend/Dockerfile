@@ -55,6 +55,6 @@ RUN composer dump-autoload --no-dev --optimize \
         storage/logs \
     && chown -R www-data:www-data bootstrap/cache public/uploads storage
 
-EXPOSE 80
+EXPOSE 8080
 
-CMD ["apache2-foreground"]
+CMD ["sh", "-c", "port=\"${PORT:-8080}\"; sed -ri \"s/^Listen [0-9]+/Listen ${port}/\" /etc/apache2/ports.conf; sed -ri \"s#<VirtualHost \\*:[0-9]+>#<VirtualHost *:${port}>#\" /etc/apache2/sites-available/000-default.conf; exec apache2-foreground"]
