@@ -55,6 +55,7 @@ async function save(payload: Record<string, unknown>) {
 
     await refresh();
     ui.toast(images.length ? 'Produk dan foto berhasil diperbarui.' : 'Produk diperbarui.', 'success');
+    await navigateTo('/seller/products');
   } catch (error) {
     ui.toast(apiError(error, 'Gagal menyimpan produk atau mengunggah foto'), 'error');
   } finally {

@@ -45,7 +45,7 @@ async function create(payload: Record<string, unknown>) {
     }
 
     ui.toast(images.length ? 'Produk dan gambar berhasil ditambahkan.' : 'Produk berhasil ditambahkan.', 'success');
-    router.push(`/seller/products/${result.product.id}`);
+    router.push('/seller/products');
   } catch (error) {
     ui.toast(apiError(error, 'Gagal membuat produk atau mengunggah gambar'), 'error');
   } finally {
