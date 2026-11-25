@@ -25,7 +25,7 @@
         </div>
         <div class="mt-4 space-y-2">
           <div v-for="rating in [5, 4, 3, 2, 1]" :key="rating" class="flex items-center gap-3 text-xs">
-            <span class="w-10 shrink-0 font-semibold text-body">{{ rating }} bintang</span>
+            <span class="w-5 shrink-0 font-semibold text-body">{{ rating }}</span>
             <div class="h-2 flex-1 overflow-hidden rounded-full bg-surface-muted">
               <div class="h-full rounded-full bg-amber-400 transition-all" :style="{ width: distributionWidth(rating) }" />
             </div>
