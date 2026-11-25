@@ -35,10 +35,10 @@ async function create(payload: Record<string, unknown>) {
     if (images.length) {
       try {
         const body = new FormData();
-        images.forEach((file) => body.append('images', file));
+        images.forEach((file) => body.append('images[]', file));
         await api.upload('/seller/products/' + result.product.id + '/images', body);
-      } catch {
-        ui.toast('Produk berhasil dibuat, tetapi foto gagal diunggah. Silakan coba dari halaman edit.', 'error');
+      } catch (error) {
+        ui.toast(`Produk berhasil dibuat, tetapi foto gagal diunggah: ${apiError(error, 'silakan coba dari halaman edit')}`, 'error');
         router.push('/seller/products/' + result.product.id);
         return;
       }

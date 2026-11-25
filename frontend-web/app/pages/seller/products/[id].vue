@@ -49,7 +49,7 @@ async function save(payload: Record<string, unknown>) {
 
     if (images.length) {
       const body = new FormData();
-      images.forEach((file) => body.append('images', file));
+      images.forEach((file) => body.append('images[]', file));
       await api.upload('/seller/products/' + product.value.id + '/images', body);
     }
 
