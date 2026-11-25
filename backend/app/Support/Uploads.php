@@ -11,7 +11,13 @@ class Uploads
     public static function image(UploadedFile $file, string $folder): string
     {
         $name = (string) Str::ulid().'.'.$file->extension();
-        $file->move(public_path('uploads/'.$folder), $name);
+        $directory = public_path('uploads/'.$folder);
+
+        if (! is_dir($directory) && ! mkdir($directory, 0755, true) && ! is_dir($directory)) {
+            throw new \RuntimeException('Folder penyimpanan foto tidak dapat dibuat.');
+        }
+
+        $file->move($directory, $name);
 
         return 'uploads/'.$folder.'/'.$name;
     }

@@ -13,43 +13,12 @@
       </NuxtLink>
     </header>
 
-    <!-- Gambar -->
-    <section class="card p-5">
-      <div class="flex flex-wrap items-center justify-between gap-2">
-        <div>
-          <h2 class="text-sm font-bold text-strong">Gambar produk</h2>
-          <p class="mt-0.5 text-xs text-muted">Maksimal 5 gambar. Gambar pertama menjadi thumbnail.</p>
-        </div>
-        <label class="btn btn-outline cursor-pointer !py-2 text-xs">
-          <Upload class="size-3.5" /> Unggah gambar
-          <input type="file" accept="image/*" multiple class="hidden" @change="uploadImages" />
-        </label>
-      </div>
-
-      <div class="mt-4 flex flex-wrap gap-3">
-        <div v-for="(image, index) in images" :key="index" class="group relative size-24 overflow-hidden rounded-2xl border border-line">
-          <img :src="image.url" :alt="`Gambar ${index + 1}`" class="size-full object-cover" />
-          <span v-if="index === 0" class="badge absolute left-1.5 top-1.5 bg-tertiary text-neutral">Utama</span>
-          <button
-            class="absolute inset-0 grid place-items-center bg-neutral/60 text-white opacity-0 transition group-hover:opacity-100"
-            aria-label="Hapus gambar"
-            @click="removeImage(image.id)"
-          >
-            <Trash2 class="size-5" />
-          </button>
-        </div>
-        <div v-if="!images.length" class="grid size-24 place-items-center rounded-2xl border border-dashed border-line-strong text-muted">
-          <ImageIcon class="size-6" />
-        </div>
-      </div>
-    </section>
-
-    <ProductForm :product="product" :categories="categories" :saving="saving" @submit="save" />
+    <ProductForm :product="product" :categories="categories" :saving="saving" @submit="save" @remove-image="removeImage" />
   </div>
 </template>
 
 <script setup lang="ts">
-import { ArrowLeft, ExternalLink, Image as ImageIcon, Trash2, Upload } from 'lucide-vue-next';
+import { ArrowLeft, ExternalLink } from 'lucide-vue-next';
 import type { Category, Product } from '~/types';
 
 definePageMeta({ layout: 'dashboard', requiresAuth: true, roles: ['SELLER'] });
@@ -65,8 +34,6 @@ const { data, refresh } = await useAsyncData(`seller-product-${route.params.id}`
 );
 
 const product = computed(() => data.value?.product ?? null);
-const images = computed(() => product.value?.imageRecords ?? []);
-
 const { data: categoryData } = await useAsyncData('product-categories-edit', () => api.get<{ categories: Category[] }>('/public/categories'));
 const categories = computed(() => categoryData.value?.categories ?? []);
 
@@ -74,30 +41,24 @@ async function save(payload: Record<string, unknown>) {
   if (!product.value) return;
   saving.value = true;
   try {
-    await api.patch(`/seller/products/${product.value.id}`, payload);
+    const images = (payload.images as File[] | undefined) ?? [];
+    const productPayload = { ...payload };
+    delete productPayload.images;
+
+    await api.patch('/seller/products/' + product.value.id, productPayload);
+
+    if (images.length) {
+      const body = new FormData();
+      images.forEach((file) => body.append('images', file));
+      await api.upload('/seller/products/' + product.value.id + '/images', body);
+    }
+
     await refresh();
-    ui.toast('Produk diperbarui.', 'success');
+    ui.toast(images.length ? 'Produk dan foto berhasil diperbarui.' : 'Produk diperbarui.', 'success');
   } catch (error) {
-    ui.toast(apiError(error, 'Gagal menyimpan produk'), 'error');
+    ui.toast(apiError(error, 'Gagal menyimpan produk atau mengunggah foto'), 'error');
   } finally {
     saving.value = false;
-  }
-}
-
-async function uploadImages(event: Event) {
-  const input = event.target as HTMLInputElement;
-  const files = Array.from(input.files ?? []);
-  if (!files.length || !product.value) return;
-  const body = new FormData();
-  for (const file of files) body.append('images', file);
-  try {
-    await api.upload(`/seller/products/${product.value.id}/images`, body);
-    await refresh();
-    ui.toast('Gambar diunggah.', 'success');
-  } catch (error) {
-    ui.toast(apiError(error, 'Gagal mengunggah gambar'), 'error');
-  } finally {
-    input.value = '';
   }
 }
 

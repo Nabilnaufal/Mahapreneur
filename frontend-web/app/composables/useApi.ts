@@ -47,7 +47,25 @@ export function useApi() {
 
 /** Ambil pesan error yang ramah dari kegagalan API. */
 export function apiError(error: unknown, fallback = 'Terjadi kesalahan. Coba lagi.'): string {
-  const data = (error as { data?: { message?: string } })?.data;
+  const data = (error as { data?: { message?: string; errors?: unknown } })?.data;
+  const errors = data?.errors;
+
+  if (Array.isArray(errors)) {
+    const messages = errors
+      .map((item) => (typeof item === 'string' ? item : (item as { message?: string })?.message))
+      .filter((message): message is string => Boolean(message));
+
+    if (messages.length) return messages.slice(0, 3).join(' ');
+  }
+
+  if (errors && typeof errors === 'object') {
+    const messages = Object.values(errors)
+      .flatMap((value) => Array.isArray(value) ? value : [value])
+      .filter((message): message is string => typeof message === 'string');
+
+    if (messages.length) return messages.slice(0, 3).join(' ');
+  }
+
   if (data?.message) return data.message;
   const message = (error as { message?: string })?.message;
   if (message && !message.includes('fetch')) return message;

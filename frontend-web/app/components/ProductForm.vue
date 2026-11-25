@@ -26,29 +26,37 @@
           </div>
         </section>
 
-        <section v-if="!product" class="card p-5">
+        <section class="card p-5">
           <div class="flex flex-wrap items-start justify-between gap-3">
             <div>
               <h2 class="text-sm font-bold text-strong">Gambar produk</h2>
-              <p class="mt-1 text-xs text-muted">Pilih hingga 5 foto sekaligus. Foto pertama akan menjadi thumbnail.</p>
+              <p class="mt-1 text-xs text-muted">{{ totalImageCount }}/5 foto dipilih. Foto pertama menjadi thumbnail.</p>
             </div>
-            <label class="btn btn-outline cursor-pointer !py-2 text-xs">
+            <label v-if="canAddImages" class="btn btn-outline cursor-pointer !py-2 text-xs">
               <Upload class="size-3.5" /> Pilih foto
               <input ref="imageInput" type="file" accept="image/jpeg,image/png,image/webp,image/gif" multiple class="hidden" @change="selectImages" />
             </label>
+            <span v-else class="badge bg-surface-muted text-muted">Maksimal tercapai</span>
           </div>
 
-          <div v-if="selectedImages.length" class="mt-4 grid grid-cols-3 gap-3 sm:grid-cols-5">
-            <div v-for="(image, index) in selectedImages" :key="image.url" class="group relative aspect-square overflow-hidden rounded-2xl border border-line">
-              <img :src="image.url" :alt="'Preview foto ' + (index + 1)" class="size-full object-cover" />
+          <div v-if="existingImages.length || selectedImages.length" class="mt-4 grid grid-cols-3 gap-3 sm:grid-cols-5">
+            <div v-for="(image, index) in existingImages" :key="'existing-' + image.id" class="group relative aspect-square overflow-hidden rounded-2xl border border-line">
+              <img :src="image.url" :alt="'Gambar ' + (index + 1)" class="size-full object-cover" />
               <span v-if="index === 0" class="badge absolute left-1.5 top-1.5 bg-tertiary text-neutral">Utama</span>
-              <button type="button" class="absolute right-1.5 top-1.5 grid size-6 place-items-center rounded-full bg-neutral/70 text-white opacity-0 transition group-hover:opacity-100" :aria-label="'Hapus foto ' + (index + 1)" @click="removeImage(index)">
+              <button type="button" class="absolute right-1.5 top-1.5 grid size-6 place-items-center rounded-full bg-neutral/70 text-white opacity-0 transition group-hover:opacity-100" :aria-label="'Hapus gambar ' + (index + 1)" @click="emit('removeImage', image.id)">
+                <X class="size-3.5" />
+              </button>
+            </div>
+            <div v-for="(image, index) in selectedImages" :key="image.url" class="group relative aspect-square overflow-hidden rounded-2xl border border-dashed border-primary">
+              <img :src="image.url" :alt="'Preview foto baru ' + (index + 1)" class="size-full object-cover" />
+              <span class="badge absolute left-1.5 top-1.5 bg-primary text-white">Baru</span>
+              <button type="button" class="absolute right-1.5 top-1.5 grid size-6 place-items-center rounded-full bg-neutral/70 text-white opacity-0 transition group-hover:opacity-100" :aria-label="'Hapus foto baru ' + (index + 1)" @click="removeImage(index)">
                 <X class="size-3.5" />
               </button>
             </div>
           </div>
 
-          <label v-else class="mt-4 grid min-h-28 cursor-pointer place-items-center rounded-2xl border border-dashed border-line-strong bg-surface-muted p-5 text-center transition hover:border-primary">
+          <label v-if="!totalImageCount" class="mt-4 grid min-h-28 cursor-pointer place-items-center rounded-2xl border border-dashed border-line-strong bg-surface-muted p-5 text-center transition hover:border-primary">
             <span>
               <ImageIcon class="mx-auto size-7 text-muted" />
               <span class="mt-2 block text-xs font-semibold text-body">Klik untuk memilih beberapa foto</span>
@@ -135,7 +143,10 @@ const props = withDefaults(defineProps<{ product?: Product | null; categories: C
   product: null,
   saving: false,
 });
-const emit = defineEmits<{ submit: [payload: Record<string, unknown>] }>();
+const emit = defineEmits<{
+  submit: [payload: Record<string, unknown>];
+  removeImage: [imageId: number];
+}>();
 const ui = useUiStore();
 
 const typeOptions: { label: string; value: ProductType }[] = [
@@ -160,11 +171,14 @@ const form = reactive({
 });
 
 const selectedImages = ref<{ file: File; url: string }[]>([]);
+const existingImages = computed(() => props.product?.imageRecords ?? []);
+const totalImageCount = computed(() => existingImages.value.length + selectedImages.value.length);
+const canAddImages = computed(() => totalImageCount.value < 5);
 
 function selectImages(event: Event) {
   const input = event.target as HTMLInputElement;
   const files = Array.from(input.files ?? []);
-  const remaining = 5 - selectedImages.value.length;
+  const remaining = 5 - totalImageCount.value;
 
   if (files.length > remaining) {
     ui.toast(
@@ -194,7 +208,7 @@ function submit() {
   if (!form.categoryId) return;
   emit('submit', {
     ...form,
-    ...(props.product ? {} : { images: selectedImages.value.map((image) => image.file) }),
+    ...(selectedImages.value.length ? { images: selectedImages.value.map((image) => image.file) } : {}),
   });
 }
 

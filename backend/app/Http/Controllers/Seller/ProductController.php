@@ -93,11 +93,18 @@ class ProductController extends Controller
         $request->validate([
             'images' => ['required', 'array', 'min:1'],
             'images.*' => ['image', 'mimes:jpeg,png,webp,gif', 'max:'.config('mahapreneur.max_upload_kb')],
+        ], [
+            'images.required' => 'Pilih minimal satu foto produk.',
+            'images.array' => 'Format unggahan foto tidak valid.',
+            'images.min' => 'Pilih minimal satu foto produk.',
+            'images.*.image' => 'Setiap file harus berupa gambar.',
+            'images.*.mimes' => 'Format foto harus JPG, PNG, WEBP, atau GIF.',
+            'images.*.max' => 'Ukuran setiap foto maksimal '.(config('mahapreneur.max_upload_kb') / 1024).' MB.',
         ]);
 
         $files = $request->file('images');
         if ($product->images()->count() + count($files) > 5) {
-            throw ApiException::badRequest('Maksimal 5 gambar per produk');
+            throw ApiException::badRequest('Foto tidak dapat diunggah. Maksimal 5 foto per produk.');
         }
 
         $start = $product->images()->count();
