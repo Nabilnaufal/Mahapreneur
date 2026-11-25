@@ -11,6 +11,11 @@
         <input v-model="keyword" type="search" placeholder="Cari nomor pesanan atau nama penerima…" class="w-full bg-transparent text-sm text-strong outline-none" @keyup.enter="apply" />
       </label>
       <button class="btn btn-outline text-xs" @click="apply">Cari</button>
+      <button class="btn btn-primary text-xs" :disabled="exporting" @click="exportCsv">
+        <Loader2 v-if="exporting" class="size-4 animate-spin" />
+        <Download v-else class="size-4" />
+        Export CSV
+      </button>
     </div>
 
     <div class="flex gap-2 overflow-x-auto pb-1 no-scrollbar">
@@ -61,7 +66,7 @@
 </template>
 
 <script setup lang="ts">
-import { ChevronRight, Search } from 'lucide-vue-next';
+import { ChevronRight, Download, Loader2, Search } from 'lucide-vue-next';
 import type { Order, PaginationMeta } from '~/types';
 
 definePageMeta({ layout: 'dashboard', requiresAuth: true, roles: ['SELLER'] });
@@ -71,6 +76,8 @@ const api = useApi();
 const keyword = ref('');
 const status = ref('');
 const page = ref(1);
+const exporting = ref(false);
+const ui = useUiStore();
 
 const tabs = [
   { label: 'Semua', value: '' },
@@ -109,6 +116,38 @@ function setStatus(value: string) {
 
 function changePage(next: number) {
   page.value = next;
+}
+
+async function exportCsv() {
+  exporting.value = true;
+  try {
+    const params = new URLSearchParams();
+    if (keyword.value.trim()) params.set('q', keyword.value.trim());
+    if (status.value) params.set('status', status.value);
+
+    const response = await fetch(`${api.baseURL}/seller/orders/export?${params.toString()}`, {
+      credentials: 'include',
+    });
+    if (!response.ok) {
+      const body = await response.json().catch(() => null);
+      throw new Error(body?.message || 'Laporan gagal diunduh.');
+    }
+
+    const blob = await response.blob();
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `laporan-penjualan-${new Date().toISOString().slice(0, 10)}.csv`;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    URL.revokeObjectURL(url);
+    ui.toast('Laporan penjualan berhasil diunduh.', 'success');
+  } catch (error) {
+    ui.toast(apiError(error), 'error');
+  } finally {
+    exporting.value = false;
+  }
 }
 
 useSeoMeta({ title: 'Pesanan Masuk' });

@@ -10,7 +10,9 @@ use App\Models\Product;
 use App\Support\Activity;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Validation\Rule;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class OrderController extends Controller
 {
@@ -29,15 +31,35 @@ class OrderController extends Controller
         'CANCELLED' => 'dibatalkan',
     ];
 
+    private const STATUS_LABELS = [
+        'WAITING_PAYMENT' => 'menunggu pembayaran',
+        'CONFIRMED' => 'dikonfirmasi',
+        'PROCESSING' => 'diproses',
+        'READY' => 'siap',
+        'ON_DELIVERY' => 'diantar',
+        'COMPLETED' => 'selesai',
+        'CANCELLED' => 'dibatalkan',
+    ];
+
+    private const PAYMENT_STATUS_LABELS = [
+        'PENDING' => 'menunggu pembayaran',
+        'PAID' => 'lunas',
+        'FAILED' => 'gagal',
+        'EXPIRED' => 'kedaluwarsa',
+        'UNPAID_COD' => 'COD belum lunas',
+        'REFUNDED' => 'dikembalikan',
+    ];
+
+    private const PAYMENT_METHOD_LABELS = [
+        'QRIS' => 'QRIS',
+        'VIRTUAL_ACCOUNT' => 'Virtual Account',
+        'EWALLET' => 'E-Wallet',
+        'COD' => 'COD',
+    ];
+
     public function index(Request $request)
     {
-        $orders = Order::with(['customer', 'items.product.images', 'payment'])
-            ->where('store_id', $this->storeId($request))
-            ->when($request->query('status'), fn ($query, string $status) => $query->where('status', $status))
-            ->when($request->query('q'), fn ($query, string $keyword) => $query->where(
-                fn ($search) => $search->where('order_number', 'like', "%{$keyword}%")
-                    ->orWhere('recipient_name', 'like', "%{$keyword}%"),
-            ))
+        $orders = $this->ordersQuery($request)
             ->latest('created_at')
             ->paginate($this->perPage($request));
 
@@ -45,6 +67,58 @@ class OrderController extends Controller
             'orders' => OrderResource::collection($orders),
             'meta' => $this->meta($orders),
         ]);
+    }
+
+    public function export(Request $request): StreamedResponse
+    {
+        $filename = 'laporan-penjualan-'.now()->format('Ymd-His').'.csv';
+
+        return response()->streamDownload(function () use ($request) {
+            $output = fopen('php://output', 'w');
+            fwrite($output, "\xEF\xBB\xBF");
+            fputcsv($output, [
+                'Nomor Pesanan',
+                'Tanggal',
+                'Penerima',
+                'Telepon',
+                'Produk',
+                'Jumlah Item',
+                'Status Pesanan',
+                'Status Pembayaran',
+                'Metode Pembayaran',
+                'Subtotal',
+                'Total',
+                'Alamat',
+                'Kampus / Area',
+                'Catatan',
+            ]);
+
+            $this->ordersQuery($request)
+                ->with('items')
+                ->latest('created_at')
+                ->chunk(500, function ($orders) use ($output) {
+                    foreach ($orders as $order) {
+                        fputcsv($output, [
+                            $order->order_number,
+                            $order->created_at?->format('Y-m-d H:i:s'),
+                            $order->recipient_name,
+                            $order->recipient_phone,
+                            $order->items->map(fn ($item) => $item->product_name.' ('.$item->quantity.')')->implode(' | '),
+                            $order->items->sum('quantity'),
+                            self::STATUS_LABELS[$order->status] ?? $order->status,
+                            self::PAYMENT_STATUS_LABELS[$order->payment_status] ?? $order->payment_status,
+                            self::PAYMENT_METHOD_LABELS[$order->payment_method] ?? $order->payment_method,
+                            $order->subtotal,
+                            $order->total,
+                            $order->address,
+                            $order->campus,
+                            $order->note,
+                        ]);
+                    }
+                });
+
+            fclose($output);
+        }, $filename, ['Content-Type' => 'text/csv; charset=UTF-8']);
     }
 
     public function show(Request $request, int $id)
@@ -124,5 +198,16 @@ class OrderController extends Controller
     private function storeId(Request $request): int
     {
         return $request->user()->store->id;
+    }
+
+    private function ordersQuery(Request $request): Builder
+    {
+        return Order::with(['customer', 'items.product.images', 'payment'])
+            ->where('store_id', $this->storeId($request))
+            ->when($request->query('status'), fn ($query, string $status) => $query->where('status', $status))
+            ->when($request->query('q'), fn ($query, string $keyword) => $query->where(
+                fn ($search) => $search->where('order_number', 'like', "%{$keyword}%")
+                    ->orWhere('recipient_name', 'like', "%{$keyword}%"),
+            ));
     }
 }

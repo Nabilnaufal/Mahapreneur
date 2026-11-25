@@ -127,6 +127,7 @@ Route::middleware(['auth.api', 'role:SELLER'])->prefix('seller')->group(function
     Route::delete('products/{id}/images/{imageId}', [SellerProductController::class, 'deleteImage'])->middleware('store');
 
     Route::get('orders', [SellerOrderController::class, 'index'])->middleware('store');
+    Route::get('orders/export', [SellerOrderController::class, 'export'])->middleware('store');
     Route::get('orders/{id}', [SellerOrderController::class, 'show'])->middleware('store');
     Route::patch('orders/{id}/status', [SellerOrderController::class, 'updateStatus'])->middleware('store');
 
