@@ -87,7 +87,7 @@ const props = defineProps<{
 
 const heading = computed(() => props.heading ?? 'Daftar chat');
 const queryKey = computed(() => props.queryKey ?? 'conversation');
-const useAccentHeader = computed(() => props.accentHeader ?? props.partner === 'support');
+const useAccentHeader = computed(() => props.accentHeader === true || props.heading === 'Chat pelayanan' || props.partner === 'support');
 
 const api = useApi();
 const route = useRoute();

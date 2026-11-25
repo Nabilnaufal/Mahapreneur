@@ -18,6 +18,7 @@
       :me-id="auth.user?.id ?? 0"
       partner="support"
       heading="Chat pelayanan"
+      :accent-header="true"
       query-key="supportConversation"
       empty-text="Belum ada percakapan dengan customer service."
     />
