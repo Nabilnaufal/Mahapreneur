@@ -128,9 +128,9 @@
             </div>
           </div>
           <div class="mt-4 space-y-2 text-xs">
-            <a v-if="order.store.phone" :href="`tel:${order.store.phone}`" class="btn btn-outline w-full !py-2 text-xs">
-              <Phone class="size-3.5" /> Hubungi seller
-            </a>
+            <button class="btn btn-outline w-full !py-2 text-xs" :disabled="startingChat" @click="startChat">
+              <MessageCircle class="size-3.5" /> {{ startingChat ? 'Membuka chat…' : 'Chat seller' }}
+            </button>
             <NuxtLink :to="`/store/${order.store.slug}`" class="btn btn-ghost w-full !py-2 text-xs">Kunjungi toko</NuxtLink>
           </div>
         </section>
@@ -182,7 +182,7 @@
 </template>
 
 <script setup lang="ts">
-import { ArrowLeft, Banknote, Bike, History, MapPin, Package, Phone, QrCode, Store } from 'lucide-vue-next';
+import { ArrowLeft, Banknote, Bike, History, MapPin, MessageCircle, Package, QrCode, Store } from 'lucide-vue-next';
 import type { Order, Store as StoreType } from '~/types';
 
 definePageMeta({ layout: 'account', requiresAuth: true, roles: ['CUSTOMER'] });
@@ -193,6 +193,7 @@ const ui = useUiStore();
 
 const showCancel = ref(false);
 const cancelling = ref(false);
+const startingChat = ref(false);
 
 const { data, refresh } = await useAsyncData(`order-${route.params.id}`, () =>
   api.get<{ order: Order; store: StoreType }>(`/customer/orders/${route.params.id}`),
@@ -202,6 +203,20 @@ const order = computed(() => data.value?.order ?? null);
 const canCancel = computed(
   () => Boolean(order.value) && ['WAITING_PAYMENT', 'CONFIRMED'].includes(order.value!.status) && order.value!.paymentStatus !== 'PAID',
 );
+
+async function startChat() {
+  if (!order.value?.store || startingChat.value) return;
+
+  startingChat.value = true;
+  try {
+    const data = await api.post<{ conversation: { id: number } }>('/customer/chats', { storeId: order.value.store.id });
+    await navigateTo(`/chat?conversation=${data.conversation.id}`);
+  } catch (error) {
+    ui.toast(apiError(error), 'error');
+  } finally {
+    startingChat.value = false;
+  }
+}
 
 async function cancel() {
   if (!order.value) return;

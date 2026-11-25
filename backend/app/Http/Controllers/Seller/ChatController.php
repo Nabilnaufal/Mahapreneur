@@ -10,6 +10,7 @@ use App\Models\Conversation;
 use App\Models\Message;
 use App\Models\Store;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class ChatController extends Controller
 {
@@ -36,6 +37,35 @@ class ChatController extends Controller
                 ->all(),
             'unread' => (int) $conversations->sum('unread_count'),
         ]);
+    }
+
+    public function store(Request $request)
+    {
+        $storeId = $this->storeId($request);
+        if (! $storeId) {
+            throw ApiException::forbidden('Buat toko dulu sebelum mengirim pesan');
+        }
+
+        $data = $request->validate([
+            'customer_id' => [
+                'required',
+                'integer',
+                Rule::exists('orders', 'customer_id')->where('store_id', $storeId),
+            ],
+        ]);
+
+        $conversation = Conversation::firstOrCreate(
+            [
+                'store_id' => $storeId,
+                'customer_id' => $data['customer_id'],
+            ],
+            ['last_message_at' => now()],
+        );
+
+        return $this->ok(
+            ['conversation' => $this->payload($conversation, $request->user()->id)],
+            'Chat dibuka',
+        );
     }
 
     public function show(Request $request, int $id)

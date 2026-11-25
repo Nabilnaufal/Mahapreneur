@@ -125,6 +125,7 @@ Route::middleware(['auth.api', 'role:SELLER'])->prefix('seller')->group(function
     Route::post('orders/{id}/cod-paid', [SellerOrderController::class, 'markCodPaid'])->middleware('store');
 
     Route::get('chats', [SellerChatController::class, 'index']);
+    Route::post('chats', [SellerChatController::class, 'store']);
     Route::get('chats/{id}', [SellerChatController::class, 'show']);
     Route::post('chats/{id}/messages', [SellerChatController::class, 'sendMessage']);
 });

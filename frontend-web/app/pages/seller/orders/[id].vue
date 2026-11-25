@@ -63,9 +63,12 @@
           <h2 class="flex items-center gap-2 text-sm font-bold text-strong"><Bike class="size-4" /> Antar ke lokasi ini</h2>
           <div class="mt-4 rounded-2xl bg-surface-muted p-4">
             <p class="text-base font-bold text-strong">{{ order.recipientName }}</p>
-            <a :href="`tel:${order.recipientPhone}`" class="mt-1 flex items-center gap-1.5 text-sm font-semibold text-primary hover:underline dark:text-tertiary">
+            <p class="mt-1 flex items-center gap-1.5 text-sm font-semibold text-primary dark:text-tertiary">
               <Phone class="size-3.5" /> {{ order.recipientPhone }}
-            </a>
+            </p>
+            <button class="btn btn-outline mt-3 !py-1.5 text-xs" :disabled="startingChat" @click="startChat">
+              <MessageCircle class="size-3.5" /> {{ startingChat ? 'Membuka chat…' : 'Chat pembeli' }}
+            </button>
             <p class="mt-2 text-sm text-body">{{ order.address }}</p>
             <p v-if="order.campus || order.room" class="mt-1 text-xs text-muted">
               {{ [order.campus, order.room].filter(Boolean).join(' · ') }}
@@ -171,7 +174,7 @@
 
 <script setup lang="ts">
 import {
-  ArrowLeft, BadgeCheck, Banknote, Bike, CheckCircle2, Clock, History, Loader2, Package, Phone, PlayCircle, Send, Truck,
+  ArrowLeft, BadgeCheck, Banknote, Bike, CheckCircle2, Clock, History, Loader2, MessageCircle, Package, Phone, PlayCircle, Send, Truck,
 } from 'lucide-vue-next';
 import type { Order, OrderStatus } from '~/types';
 
@@ -183,6 +186,7 @@ const ui = useUiStore();
 
 const updating = ref(false);
 const showCancel = ref(false);
+const startingChat = ref(false);
 
 const { data, refresh } = await useAsyncData(`seller-order-${route.params.id}`, () =>
   api.get<{ order: Order }>(`/seller/orders/${route.params.id}`),
@@ -218,6 +222,21 @@ async function updateStatus(status: OrderStatus, note?: string) {
   } finally {
     updating.value = false;
     showCancel.value = false;
+  }
+}
+
+async function startChat() {
+  const customerId = order.value?.customer?.id;
+  if (!customerId || startingChat.value) return;
+
+  startingChat.value = true;
+  try {
+    const data = await api.post<{ conversation: { id: number } }>('/seller/chats', { customerId });
+    await navigateTo(`/seller/chats?conversation=${data.conversation.id}`);
+  } catch (error) {
+    ui.toast(apiError(error), 'error');
+  } finally {
+    startingChat.value = false;
   }
 }
 

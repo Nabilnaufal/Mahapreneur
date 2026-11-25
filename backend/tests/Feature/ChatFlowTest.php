@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Models\Order;
 use App\Models\Store;
 use App\Models\User;
 use App\Support\AuthToken;
@@ -83,6 +84,44 @@ class ChatFlowTest extends TestCase
         $this->withToken(AuthToken::issue($other))
             ->getJson("/api/customer/chats/{$conversationId}")
             ->assertNotFound();
+    }
+
+    public function test_seller_can_open_chat_from_an_order(): void
+    {
+        $seller = $this->makeUser('seller-chat-3@example.test', 'SELLER');
+        $customer = $this->makeUser('customer-chat-3@example.test', 'CUSTOMER');
+        $stranger = $this->makeUser('stranger-chat-3@example.test', 'CUSTOMER');
+
+        $store = Store::create([
+            'user_id' => $seller->id,
+            'name' => 'Toko Chat 3',
+            'slug' => 'toko-chat-3',
+            'status' => 'ACTIVE',
+        ]);
+
+        Order::create([
+            'order_number' => 'MP-TEST-CHAT-1',
+            'customer_id' => $customer->id,
+            'store_id' => $store->id,
+            'status' => 'CONFIRMED',
+            'payment_status' => 'UNPAID_COD',
+            'payment_method' => 'COD',
+            'subtotal' => 18000,
+            'total' => 18000,
+            'recipient_name' => 'Pembeli Chat',
+            'recipient_phone' => '081234567890',
+            'address' => 'Gedung A',
+        ]);
+
+        $this->withToken(AuthToken::issue($seller))
+            ->postJson('/api/seller/chats', ['customerId' => $customer->id])
+            ->assertOk()
+            ->assertJsonPath('data.conversation.customerId', $customer->id);
+
+        // Seller tidak boleh membuka chat dengan orang yang tidak pernah memesan.
+        $this->withToken(AuthToken::issue($seller))
+            ->postJson('/api/seller/chats', ['customerId' => $stranger->id])
+            ->assertUnprocessable();
     }
 
     private function makeUser(string $email, string $role)
