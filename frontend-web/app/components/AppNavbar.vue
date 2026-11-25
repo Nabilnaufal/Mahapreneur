@@ -84,7 +84,7 @@
         </NuxtLink>
 
         <template v-if="auth.isAuthenticated">
-          <div class="relative" v-click-outside="() => (menuOpen = false)">
+          <div v-click-outside="() => (menuOpen = false)" class="relative hidden md:block">
             <button class="btn btn-ghost gap-2 !px-2" @click="menuOpen = !menuOpen">
               <span class="grid size-8 place-items-center rounded-full bg-primary text-xs font-bold text-tertiary">
                 {{ auth.initials }}

@@ -24,7 +24,7 @@
 </template>
 
 <script setup lang="ts">
-import { Compass, Heart, Home, Package, User } from 'lucide-vue-next';
+import { Compass, Home, MessageCircle, Package, User } from 'lucide-vue-next';
 
 const auth = useAuthStore();
 const ui = useUiStore();
@@ -32,7 +32,7 @@ const ui = useUiStore();
 const items = computed(() => [
   { label: 'Home', to: '/', icon: Home },
   { label: 'Explore', to: '/catalog', icon: Compass },
-  { label: 'Wishlist', to: '/customer/wishlist', icon: Heart },
+  { label: 'Chat', to: auth.isAuthenticated ? (auth.isSeller ? '/seller/chats' : '/chat') : '', icon: MessageCircle },
   { label: 'Pesanan', to: '/customer/orders', icon: Package },
   { label: 'Profil', to: auth.isAuthenticated ? '/customer/profile' : '', icon: User },
 ]);

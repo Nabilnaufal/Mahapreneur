@@ -124,8 +124,9 @@ watch(
 );
 
 onMounted(() => {
-  if (!activeId.value && conversations.value.length && window.matchMedia('(min-width: 1024px)').matches) {
-    select(conversations.value[0].id);
+  const first = conversations.value[0];
+  if (!activeId.value && first && window.matchMedia('(min-width: 1024px)').matches) {
+    select(first.id);
   }
 
   timer = setInterval(() => {
