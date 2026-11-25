@@ -230,6 +230,14 @@ export interface ActivityLog {
   user?: { id: number; name: string; email: string; role: Role } | null;
 }
 
+export interface PlatformFeedback {
+  id: number;
+  rating: number;
+  comment: string;
+  createdAt: string;
+  user?: { id: number; name: string; email: string; role: Role } | null;
+}
+
 export interface PaymentNotification {
   id: number;
   notificationKey: string;

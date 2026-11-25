@@ -97,7 +97,7 @@
 
 <script setup lang="ts">
 import {
-  ArrowLeft, Bell, Boxes, LayoutDashboard, Menu, MessageCircle, Moon, Package, ShoppingBag, Store, Sun, Tag, Users, Wallet, X, Image as ImageIcon,
+  ArrowLeft, Bell, Boxes, LayoutDashboard, Menu, MessageCircle, MessageSquare, Moon, Package, ShoppingBag, Store, Sun, Tag, Users, Wallet, X, Image as ImageIcon,
 } from 'lucide-vue-next';
 import type { Notification } from '~/types';
 
@@ -115,6 +115,7 @@ const sellerNav = [
   { label: 'Toko Saya', to: '/seller/store', icon: Store },
   { label: 'Produk', to: '/seller/products', icon: Boxes },
   { label: 'Pesanan Masuk', to: '/seller/orders', icon: ShoppingBag },
+  { label: 'Beri masukan', to: '/seller/feedback', icon: MessageSquare },
 ];
 
 const adminNav = [
@@ -127,6 +128,7 @@ const adminNav = [
   { label: 'Pembayaran', to: '/admin/payments', icon: Wallet },
   { label: 'Banner', to: '/admin/banners', icon: ImageIcon },
   { label: 'Aktivitas', to: '/admin/activity', icon: Package },
+  { label: 'Saran Pengguna', to: '/admin/feedback', icon: MessageSquare },
 ];
 
 const navItems = computed(() => (auth.isAdmin ? adminNav : sellerNav));
@@ -139,6 +141,7 @@ const titles: Record<string, string> = {
   '/seller/products': 'Manajemen Produk',
   '/seller/products/new': 'Tambah Produk',
   '/seller/orders': 'Pesanan Masuk',
+  '/seller/feedback': 'Beri Masukan',
   '/admin': 'Dashboard Superadmin',
   '/admin/users': 'Manajemen Pengguna',
   '/admin/categories': 'Manajemen Kategori',
@@ -148,6 +151,7 @@ const titles: Record<string, string> = {
   '/admin/payments': 'Transaksi & Pembayaran',
   '/admin/banners': 'Banner Homepage',
   '/admin/activity': 'Riwayat Aktivitas',
+  '/admin/feedback': 'Saran Pengguna',
 };
 
 const pageTitle = computed(() => titles[route.path] ?? 'Dashboard');

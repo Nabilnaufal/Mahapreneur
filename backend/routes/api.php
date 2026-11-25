@@ -22,6 +22,7 @@ use App\Http\Controllers\Customer\CheckoutController;
 use App\Http\Controllers\Customer\OrderController as CustomerOrderController;
 use App\Http\Controllers\Customer\ProfileController as CustomerProfileController;
 use App\Http\Controllers\Customer\WishlistController;
+use App\Http\Controllers\FeedbackController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\Public\CategoryController;
@@ -61,6 +62,7 @@ Route::prefix('payments')->group(function () {
 });
 
 Route::middleware('auth.api')->group(function () {
+    Route::post('feedback', [FeedbackController::class, 'store']);
     Route::get('notifications', [NotificationController::class, 'index']);
     Route::patch('notifications/read-all', [NotificationController::class, 'updateAll']);
     Route::patch('notifications/{id}/read', [NotificationController::class, 'update']);
@@ -103,6 +105,10 @@ Route::middleware(['auth.api', 'role:CUSTOMER'])->prefix('customer')->group(func
 });
 
 Route::middleware(['auth.api', 'role:SELLER'])->prefix('seller')->group(function () {
+    Route::get('profile', [CustomerProfileController::class, 'show']);
+    Route::patch('profile', [CustomerProfileController::class, 'update']);
+    Route::patch('profile/password', [CustomerProfileController::class, 'changePassword']);
+
     Route::get('dashboard', [SellerDashboardController::class, 'index'])->middleware('store');
 
     Route::get('store', [SellerStoreController::class, 'show']);
@@ -161,4 +167,5 @@ Route::middleware(['auth.api', 'role:SUPERADMIN'])->prefix('admin')->group(funct
 
     Route::get('activity', [ActivityController::class, 'index']);
     Route::get('notifications', [ActivityController::class, 'notifications']);
+    Route::get('feedback', [FeedbackController::class, 'index']);
 });

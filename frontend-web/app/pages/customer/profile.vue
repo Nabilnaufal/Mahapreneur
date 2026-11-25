@@ -66,22 +66,12 @@
       </button>
     </section>
 
-    <section class="card p-5">
-      <h2 class="text-sm font-bold text-strong">Preferensi tampilan</h2>
-      <div class="mt-3 flex items-center justify-between gap-4">
-        <p class="text-sm text-muted">Mode {{ ui.theme === 'dark' ? 'gelap' : 'terang' }} aktif. Preferensi disimpan di perangkat ini.</p>
-        <button class="btn btn-outline" @click="ui.toggleTheme()">
-          <Sun v-if="ui.theme === 'dark'" class="size-4" />
-          <Moon v-else class="size-4" />
-          Ganti mode
-        </button>
-      </div>
-    </section>
+    <PlatformFeedbackCard />
   </div>
 </template>
 
 <script setup lang="ts">
-import { AlertCircle, BadgeCheck, Loader2, MapPin, Moon, Sun } from 'lucide-vue-next';
+import { AlertCircle, BadgeCheck, Loader2, MapPin } from 'lucide-vue-next';
 
 definePageMeta({ layout: 'account', requiresAuth: true, roles: ['CUSTOMER'] });
 
