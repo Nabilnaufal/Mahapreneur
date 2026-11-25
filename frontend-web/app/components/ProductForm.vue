@@ -26,6 +26,38 @@
           </div>
         </section>
 
+        <section v-if="!product" class="card p-5">
+          <div class="flex flex-wrap items-start justify-between gap-3">
+            <div>
+              <h2 class="text-sm font-bold text-strong">Gambar produk</h2>
+              <p class="mt-1 text-xs text-muted">Pilih hingga 5 foto sekaligus. Foto pertama akan menjadi thumbnail.</p>
+            </div>
+            <label class="btn btn-outline cursor-pointer !py-2 text-xs">
+              <Upload class="size-3.5" /> Pilih foto
+              <input ref="imageInput" type="file" accept="image/jpeg,image/png,image/webp,image/gif" multiple class="hidden" @change="selectImages" />
+            </label>
+          </div>
+
+          <div v-if="selectedImages.length" class="mt-4 grid grid-cols-3 gap-3 sm:grid-cols-5">
+            <div v-for="(image, index) in selectedImages" :key="image.url" class="group relative aspect-square overflow-hidden rounded-2xl border border-line">
+              <img :src="image.url" :alt="'Preview foto ' + (index + 1)" class="size-full object-cover" />
+              <span v-if="index === 0" class="badge absolute left-1.5 top-1.5 bg-tertiary text-neutral">Utama</span>
+              <button type="button" class="absolute right-1.5 top-1.5 grid size-6 place-items-center rounded-full bg-neutral/70 text-white opacity-0 transition group-hover:opacity-100" :aria-label="'Hapus foto ' + (index + 1)" @click="removeImage(index)">
+                <X class="size-3.5" />
+              </button>
+            </div>
+          </div>
+
+          <label v-else class="mt-4 grid min-h-28 cursor-pointer place-items-center rounded-2xl border border-dashed border-line-strong bg-surface-muted p-5 text-center transition hover:border-primary">
+            <span>
+              <ImageIcon class="mx-auto size-7 text-muted" />
+              <span class="mt-2 block text-xs font-semibold text-body">Klik untuk memilih beberapa foto</span>
+              <span class="mt-1 block text-[11px] text-muted">JPG, PNG, WEBP, atau GIF</span>
+            </span>
+            <input type="file" accept="image/jpeg,image/png,image/webp,image/gif" multiple class="hidden" @change="selectImages" />
+          </label>
+        </section>
+
         <section v-if="form.type === 'SERVICE'" class="card p-5">
           <h2 class="flex items-center gap-2 text-sm font-bold text-strong"><Briefcase class="size-4" /> Detail layanan</h2>
           <div class="mt-4 space-y-4">
@@ -96,7 +128,7 @@
 </template>
 
 <script setup lang="ts">
-import { Briefcase, Loader2 } from 'lucide-vue-next';
+import { Briefcase, Image as ImageIcon, Loader2, Upload, X } from 'lucide-vue-next';
 import type { Category, Product, ProductStatus, ProductType } from '~/types';
 
 const props = withDefaults(defineProps<{ product?: Product | null; categories: Category[]; saving?: boolean }>(), {
@@ -104,6 +136,7 @@ const props = withDefaults(defineProps<{ product?: Product | null; categories: C
   saving: false,
 });
 const emit = defineEmits<{ submit: [payload: Record<string, unknown>] }>();
+const ui = useUiStore();
 
 const typeOptions: { label: string; value: ProductType }[] = [
   { label: 'Barang', value: 'GOODS' },
@@ -126,8 +159,46 @@ const form = reactive({
   serviceTerms: props.product?.serviceTerms ?? '',
 });
 
+const selectedImages = ref<{ file: File; url: string }[]>([]);
+
+function selectImages(event: Event) {
+  const input = event.target as HTMLInputElement;
+  const files = Array.from(input.files ?? []);
+  const remaining = 5 - selectedImages.value.length;
+
+  if (files.length > remaining) {
+    ui.toast(
+      remaining
+        ? 'Maksimal 5 foto. Hanya ' + remaining + ' foto yang ditambahkan.'
+        : 'Maksimal 5 foto. Hapus foto terlebih dahulu.',
+      'info',
+    );
+  }
+
+  const images = files
+    .filter((file) => file.type.startsWith('image/'))
+    .slice(0, Math.max(remaining, 0))
+    .map((file) => ({ file, url: URL.createObjectURL(file) }));
+
+  selectedImages.value = [...selectedImages.value, ...images];
+  input.value = '';
+}
+
+function removeImage(index: number) {
+  const image = selectedImages.value[index];
+  if (image) URL.revokeObjectURL(image.url);
+  selectedImages.value.splice(index, 1);
+}
+
 function submit() {
   if (!form.categoryId) return;
-  emit('submit', { ...form });
+  emit('submit', {
+    ...form,
+    ...(props.product ? {} : { images: selectedImages.value.map((image) => image.file) }),
+  });
 }
+
+onBeforeUnmount(() => {
+  selectedImages.value.forEach((image) => URL.revokeObjectURL(image.url));
+});
 </script>

@@ -2,7 +2,7 @@
   <div class="space-y-5">
     <header>
       <h1 class="text-xl font-extrabold text-strong">Tambah produk baru</h1>
-      <p class="mt-1 text-sm text-muted">Setelah produk dibuat, kamu bisa mengunggah hingga 5 gambar di halaman edit.</p>
+      <p class="mt-1 text-sm text-muted">Lengkapi informasi produk dan tambahkan hingga 5 foto sekaligus.</p>
     </header>
 
     <ProductForm :categories="categories" :saving="saving" @submit="create" />
@@ -26,11 +26,28 @@ const categories = computed(() => data.value?.categories ?? []);
 async function create(payload: Record<string, unknown>) {
   saving.value = true;
   try {
-    const result = await api.post<{ product: Product }>('/seller/products', payload);
-    ui.toast('Produk dibuat. Sekarang unggah gambarnya.', 'success');
+    const images = (payload.images as File[] | undefined) ?? [];
+    const productPayload = { ...payload };
+    delete productPayload.images;
+
+    const result = await api.post<{ product: Product }>('/seller/products', productPayload);
+
+    if (images.length) {
+      try {
+        const body = new FormData();
+        images.forEach((file) => body.append('images', file));
+        await api.upload('/seller/products/' + result.product.id + '/images', body);
+      } catch {
+        ui.toast('Produk berhasil dibuat, tetapi foto gagal diunggah. Silakan coba dari halaman edit.', 'error');
+        router.push('/seller/products/' + result.product.id);
+        return;
+      }
+    }
+
+    ui.toast(images.length ? 'Produk dan gambar berhasil ditambahkan.' : 'Produk berhasil ditambahkan.', 'success');
     router.push(`/seller/products/${result.product.id}`);
   } catch (error) {
-    ui.toast(apiError(error, 'Gagal membuat produk'), 'error');
+    ui.toast(apiError(error, 'Gagal membuat produk atau mengunggah gambar'), 'error');
   } finally {
     saving.value = false;
   }
