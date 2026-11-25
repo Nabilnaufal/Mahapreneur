@@ -1,13 +1,13 @@
 <template>
   <section class="card flex min-h-[520px] flex-col overflow-hidden">
-    <header class="flex items-center gap-3 border-b border-line p-4" :class="accentHeader ? 'border-tertiary bg-tertiary' : ''">
-      <span class="grid size-10 shrink-0 place-items-center overflow-hidden rounded-full text-xs font-bold" :class="accentHeader ? 'bg-neutral text-tertiary' : 'bg-surface-muted text-primary dark:text-tertiary'">
+    <header class="flex items-center gap-3 border-b border-line p-4" :class="accentHeader ? 'chat-support-header' : ''">
+      <span class="grid size-10 shrink-0 place-items-center overflow-hidden rounded-full text-xs font-bold" :class="accentHeader ? 'chat-support-avatar' : 'bg-surface-muted text-primary dark:text-tertiary'">
         <img v-if="avatar" :src="avatar" :alt="title" class="size-full object-cover" />
         <template v-else>{{ initials }}</template>
       </span>
       <div class="min-w-0">
-        <p class="truncate text-sm font-bold" :class="accentHeader ? 'text-neutral' : 'text-strong'">{{ title }}</p>
-        <p class="truncate text-xs" :class="accentHeader ? 'text-neutral/70' : 'text-muted'">{{ subtitle || 'Pesan akan diperbarui otomatis.' }}</p>
+        <p class="truncate text-sm font-bold" :class="accentHeader ? 'chat-support-title' : 'text-strong'">{{ title }}</p>
+        <p class="truncate text-xs" :class="accentHeader ? 'chat-support-subtitle' : 'text-muted'">{{ subtitle || 'Pesan akan diperbarui otomatis.' }}</p>
       </div>
     </header>
 

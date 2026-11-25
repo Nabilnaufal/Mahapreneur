@@ -185,6 +185,24 @@
   .hairline {
     border-color: var(--line);
   }
+
+  .chat-support-header {
+    background-color: var(--color-tertiary);
+    border-color: var(--color-tertiary);
+  }
+
+  .chat-support-title {
+    color: var(--color-neutral);
+  }
+
+  .chat-support-subtitle {
+    color: color-mix(in srgb, var(--color-neutral) 68%, transparent);
+  }
+
+  .chat-support-avatar {
+    background-color: var(--color-neutral);
+    color: var(--color-tertiary);
+  }
 }
 
 .page-container {

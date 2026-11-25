@@ -1,9 +1,9 @@
 <template>
   <div class="grid gap-4 lg:grid-cols-[320px_1fr]">
     <aside class="card overflow-hidden" :class="activeId ? 'hidden lg:block' : ''">
-      <div class="border-b border-line p-4" :class="useAccentHeader ? 'border-tertiary bg-tertiary' : ''">
-        <p class="text-sm font-bold" :class="useAccentHeader ? 'text-neutral' : 'text-strong'">{{ heading }}</p>
-        <p class="mt-0.5 text-xs" :class="useAccentHeader ? 'text-neutral/70' : 'text-muted'">
+      <div class="border-b border-line p-4" :class="useAccentHeader ? 'chat-support-header' : ''">
+        <p class="text-sm font-bold" :class="useAccentHeader ? 'chat-support-title' : 'text-strong'">{{ heading }}</p>
+        <p class="mt-0.5 text-xs" :class="useAccentHeader ? 'chat-support-subtitle' : 'text-muted'">
           {{ conversations.length }} percakapan · {{ unreadTotal }} belum dibaca
         </p>
       </div>
