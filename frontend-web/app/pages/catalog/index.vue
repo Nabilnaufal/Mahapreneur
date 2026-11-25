@@ -179,6 +179,22 @@ const meta = computed(() => data.value?.meta ?? { total: 0, page: 1, limit: 9, t
 const categories = computed(() => categoryData.value?.categories ?? []);
 const activeCategory = computed(() => categories.value.find((category) => category.slug === filters.category));
 
+watch(
+  () => route.query,
+  (next) => {
+    filters.q = typeof next.q === 'string' ? next.q : '';
+    filters.category = typeof next.category === 'string' ? next.category : '';
+    filters.store = typeof next.store === 'string' ? next.store : '';
+    filters.minPrice = typeof next.minPrice === 'string' ? next.minPrice : '';
+    filters.maxPrice = typeof next.maxPrice === 'string' ? next.maxPrice : '';
+    filters.type = typeof next.type === 'string' ? next.type : '';
+    filters.sort = typeof next.sort === 'string' ? next.sort : 'newest';
+    filters.inStock = typeof next.inStock === 'string' ? next.inStock : '';
+    page.value = Number(next.page) || 1;
+  },
+  { deep: true },
+);
+
 // Opsi filter toko diambil dari produk yang sedang tampil agar tetap relevan.
 const storeOptions = computed(() => {
   const map = new Map<number, Store>();

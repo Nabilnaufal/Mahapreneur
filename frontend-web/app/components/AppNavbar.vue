@@ -151,7 +151,7 @@ const ui = useUiStore();
 const router = useRouter();
 const route = useRoute();
 
-const keyword = ref('');
+const keyword = ref(typeof route.query.q === 'string' ? route.query.q : '');
 const menuOpen = ref(false);
 const cartBump = ref(false);
 
@@ -214,4 +214,11 @@ watch(() => route.fullPath, () => {
   menuOpen.value = false;
   ui.searchOpen = false;
 });
+
+watch(
+  () => route.query.q,
+  (value) => {
+    keyword.value = typeof value === 'string' ? value : '';
+  },
+);
 </script>
