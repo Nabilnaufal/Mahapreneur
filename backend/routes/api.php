@@ -8,6 +8,7 @@ use App\Http\Controllers\Admin\OrderController as AdminOrderController;
 use App\Http\Controllers\Admin\PaymentController as AdminPaymentController;
 use App\Http\Controllers\Admin\ProductController as AdminProductController;
 use App\Http\Controllers\Admin\StoreController as AdminStoreController;
+use App\Http\Controllers\Admin\SupportChatController as AdminSupportChatController;
 use App\Http\Controllers\Admin\UserController as AdminUserController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Auth\EmailVerificationNotificationController;
@@ -22,6 +23,7 @@ use App\Http\Controllers\Customer\CheckoutController;
 use App\Http\Controllers\Customer\OrderController as CustomerOrderController;
 use App\Http\Controllers\Customer\ProfileController as CustomerProfileController;
 use App\Http\Controllers\Customer\WishlistController;
+use App\Http\Controllers\Customer\SupportChatController as CustomerSupportChatController;
 use App\Http\Controllers\FeedbackController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\PaymentController;
@@ -102,6 +104,10 @@ Route::middleware(['auth.api', 'role:CUSTOMER'])->prefix('customer')->group(func
     Route::post('chats', [CustomerChatController::class, 'store']);
     Route::get('chats/{id}', [CustomerChatController::class, 'show']);
     Route::post('chats/{id}/messages', [CustomerChatController::class, 'sendMessage']);
+
+    Route::get('support-chats', [CustomerSupportChatController::class, 'index']);
+    Route::get('support-chats/{id}', [CustomerSupportChatController::class, 'show']);
+    Route::post('support-chats/{id}/messages', [CustomerSupportChatController::class, 'sendMessage']);
 });
 
 Route::middleware(['auth.api', 'role:SELLER'])->prefix('seller')->group(function () {
@@ -169,4 +175,7 @@ Route::middleware(['auth.api', 'role:SUPERADMIN'])->prefix('admin')->group(funct
     Route::get('activity', [ActivityController::class, 'index']);
     Route::get('notifications', [ActivityController::class, 'notifications']);
     Route::get('feedback', [FeedbackController::class, 'index']);
+    Route::get('support-chats', [AdminSupportChatController::class, 'index']);
+    Route::get('support-chats/{id}', [AdminSupportChatController::class, 'show']);
+    Route::post('support-chats/{id}/messages', [AdminSupportChatController::class, 'sendMessage']);
 });

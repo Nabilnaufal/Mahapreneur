@@ -97,7 +97,7 @@
 
 <script setup lang="ts">
 import {
-  ArrowLeft, Bell, Boxes, LayoutDashboard, Menu, MessageCircle, MessageSquare, Moon, Package, ShoppingBag, Store, Sun, Tag, Users, Wallet, X, Image as ImageIcon,
+  ArrowLeft, Bell, Boxes, Headphones, LayoutDashboard, Menu, MessageCircle, MessageSquare, Moon, Package, ShoppingBag, Store, Sun, Tag, Users, Wallet, X, Image as ImageIcon,
 } from 'lucide-vue-next';
 import type { Notification } from '~/types';
 
@@ -129,6 +129,7 @@ const adminNav = [
   { label: 'Banner', to: '/admin/banners', icon: ImageIcon },
   { label: 'Aktivitas', to: '/admin/activity', icon: Package },
   { label: 'Saran Pengguna', to: '/admin/feedback', icon: MessageSquare },
+  { label: 'Customer Service', to: '/admin/customer-service', icon: Headphones },
 ];
 
 const navItems = computed(() => (auth.isAdmin ? adminNav : sellerNav));
@@ -152,6 +153,7 @@ const titles: Record<string, string> = {
   '/admin/banners': 'Banner Homepage',
   '/admin/activity': 'Riwayat Aktivitas',
   '/admin/feedback': 'Saran Pengguna',
+  '/admin/customer-service': 'Customer Service',
 };
 
 const pageTitle = computed(() => titles[route.path] ?? 'Dashboard');
