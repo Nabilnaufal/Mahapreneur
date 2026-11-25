@@ -5,10 +5,10 @@
       <p class="mt-1 text-sm text-muted">Dengarkan pengalaman customer dan seller untuk mengembangkan Mahapreneur.</p>
     </header>
 
-    <section class="grid gap-4 sm:grid-cols-2 lg:grid-cols-[220px_1fr]">
-      <div class="card flex flex-col justify-center p-5">
+    <section class="grid gap-4 sm:grid-cols-2 lg:grid-cols-[minmax(280px,0.75fr)_minmax(0,2.25fr)]">
+      <div class="card flex min-w-0 flex-col justify-center p-5">
         <p class="text-xs font-bold uppercase tracking-wide text-muted">Rating rata-rata</p>
-        <div class="mt-3 flex items-center gap-3">
+        <div class="mt-3 flex flex-wrap items-center gap-x-3 gap-y-1">
           <span class="text-4xl font-extrabold text-strong">{{ summary.average.toFixed(1) }}</span>
           <RatingStars :rating="summary.average || null" size="size-5" :show-count="false" />
         </div>
@@ -16,7 +16,7 @@
       </div>
 
       <div class="card p-5">
-        <div class="flex items-center justify-between">
+        <div class="flex flex-wrap items-center justify-between gap-2">
           <h2 class="text-sm font-bold text-strong">Distribusi rating</h2>
           <select v-model="ratingFilter" class="input !w-auto !py-2 text-xs" @change="applyFilter">
             <option value="">Semua rating</option>
