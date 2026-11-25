@@ -4,7 +4,7 @@ return [
     // URL aplikasi frontend (dipakai untuk tautan email).
     'app_url' => env('FRONTEND_URL', 'http://localhost:3000'),
     // URL backend ini (dipakai untuk URL gambar dan callback DOKU).
-    'api_url' => env('API_URL', 'http://localhost:4000'),
+    'api_url' => env('API_URL', 'http://localhost:8000'),
     'cors_origins' => array_map('trim', explode(',', env('CORS_ORIGIN', 'http://localhost:3000'))),
 
     'upload_dir' => 'uploads',

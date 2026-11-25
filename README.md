@@ -176,9 +176,9 @@ php artisan key:generate
 Sesuaikan `backend/.env`, minimal:
 
 ```env
-APP_URL=http://localhost:4000
+APP_URL=http://localhost:8000
 FRONTEND_URL=http://localhost:3000
-API_URL=http://localhost:4000
+API_URL=http://localhost:8000
 APP_TIMEZONE=Asia/Jakarta
 CORS_ORIGIN=http://localhost:3000
 
@@ -194,10 +194,10 @@ Lalu buat tabel dan isi data demo:
 
 ```bash
 php artisan migrate --seed
-php artisan serve --host=0.0.0.0 --port=4000
+php artisan serve --host=0.0.0.0 --port=8000
 ```
 
-Backend berjalan di `http://localhost:4000`. Endpoint kesehatan: `GET /health`.
+Backend berjalan di `http://localhost:8000`. Endpoint kesehatan: `GET /health`.
 
 ### 4. Jalankan frontend
 
@@ -239,7 +239,7 @@ Password ketiga akun: `password`. Semua akun dibuat oleh `php artisan migrate --
 | `FRONTEND_URL` | URL frontend untuk link verifikasi & reset password |
 | `API_URL` | URL publik API, dipakai untuk URL gambar dan callback pembayaran |
 | `APP_TIMEZONE` | Zona waktu aplikasi, default `Asia/Jakarta` |
-| `CORS_ORIGIN` | Origin frontend yang diizinkan (boleh lebih dari satu, pisahkan koma) |
+| `CORS_ORIGIN` | Origin frontend yang diizinkan, yaitu port `3000` — bukan port backend (boleh lebih dari satu, pisahkan koma) |
 | `DB_CONNECTION`, `DB_HOST`, `DB_PORT`, `DB_DATABASE`, `DB_USERNAME`, `DB_PASSWORD` | Koneksi database, default XAMPP |
 | `MAIL_MAILER` / `RESEND_API_KEY` | Mailer Resend dan API key untuk email verifikasi/reset password |
 | `MAIL_FROM_ADDRESS` / `MAIL_FROM_NAME` | Identitas pengirim email dari domain `nabil-naufal.online` yang sudah diverifikasi di Resend |
@@ -252,7 +252,7 @@ Password ketiga akun: `password`. Semua akun dibuat oleh `php artisan migrate --
 
 | Variabel | Keterangan |
 | --- | --- |
-| `NUXT_PUBLIC_API_BASE` | URL API, mis. `http://localhost:4000/api` |
+| `NUXT_PUBLIC_API_BASE` | URL API, mis. `http://localhost:8000/api` |
 | `NUXT_PUBLIC_API_ORIGIN` | Origin API untuk URL gambar upload |
 
 ## Pembayaran DOKU
@@ -316,8 +316,8 @@ Semua response memakai envelope `{ success, message, data }` dengan field camelC
 
 | Lokasi | Perintah | Fungsi |
 | --- | --- | --- |
-| `backend/` | `php artisan serve --port=4000` | Jalankan API |
-| `backend/` | `composer dev` | Jalankan API di port `4000` |
+| `backend/` | `php artisan serve --port=8000` | Jalankan API |
+| `backend/` | `composer dev` | Jalankan API di port `8000` |
 | `backend/` | `php artisan migrate --seed` | Buat tabel dan isi data demo |
 | `backend/` | `php artisan migrate:fresh --seed` | Reset database lalu isi data demo |
 | `backend/` | `php artisan test` | Jalankan test PHPUnit |
@@ -343,7 +343,7 @@ Semua response memakai envelope `{ success, message, data }` dengan field camelC
 **Port sudah dipakai** — ubah port `php artisan serve` atau hentikan proses lama:
 
 ```bash
-lsof -i :3000 -i :4000
+lsof -i :3000 -i :8000
 ```
 
 **Database tidak muncul di phpMyAdmin** — pastikan:

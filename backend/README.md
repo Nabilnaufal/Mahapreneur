@@ -9,14 +9,14 @@ composer install
 cp .env.example .env
 php artisan key:generate
 php artisan migrate --seed
-php artisan serve --host=0.0.0.0 --port=4000
+php artisan serve --host=0.0.0.0 --port=8000
 ```
 
-Butuh PHP 8.2+, Composer, dan MySQL/MariaDB. Seeder lokal menyediakan tiga akun Tia untuk role `CUSTOMER`, `SELLER`, dan `SUPERADMIN`.
+Butuh PHP 8.2+, Composer, dan MySQL/MariaDB. Seeder lokal menyediakan akun `customer@gmail.com`, `seller@gmail.com`, dan `admin@gmail.com` (password: `password`) untuk role `CUSTOMER`, `SELLER`, dan `SUPERADMIN`.
 
 ## Struktur
 
-- `app/Http/Controllers/Api` — endpoint publik, auth, customer, seller, admin, payment.
+- `app/Http/Controllers/{Auth,Public,Customer,Seller,Admin}` — endpoint per role dan menu.
 - `app/Models` — model Eloquent; response memakai camelCase.
 - `app/Services` — DOKU dan alur pembayaran.
 - `routes/api.php` — daftar endpoint.
