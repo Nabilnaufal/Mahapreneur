@@ -65,7 +65,7 @@ class OrderController extends Controller
             'status' => ['required', Rule::in(['PROCESSING', 'READY', 'ON_DELIVERY', 'COMPLETED', 'CANCELLED'])],
             'note' => ['nullable', 'string', 'max:300'],
         ]);
-        $order = Order::with('items')->where('store_id', $this->storeId($request))->find($id);
+        $order = Order::with(['items', 'payment'])->where('store_id', $this->storeId($request))->find($id);
         if (! $order) {
             throw ApiException::notFound('Pesanan tidak ditemukan');
         }
@@ -76,12 +76,20 @@ class OrderController extends Controller
             throw ApiException::badRequest('Pesanan belum dibayar');
         }
 
-        DB::transaction(function () use ($order, $data, $request) {
+        $codCompleted = $data['status'] === 'COMPLETED'
+            && $order->payment_method === 'COD'
+            && $order->payment_status === 'UNPAID_COD';
+
+        DB::transaction(function () use ($order, $data, $request, $codCompleted) {
             $order->update([
                 'status' => $data['status'],
+                'payment_status' => $codCompleted ? 'PAID' : $order->payment_status,
                 'completed_at' => $data['status'] === 'COMPLETED' ? now() : $order->completed_at,
                 'cancelled_at' => $data['status'] === 'CANCELLED' ? now() : $order->cancelled_at,
             ]);
+            if ($codCompleted) {
+                $order->payment?->update(['status' => 'PAID', 'paid_at' => now()]);
+            }
             $order->histories()->create([
                 'status' => $data['status'],
                 'note' => $data['note'] ?? null,
@@ -107,40 +115,10 @@ class OrderController extends Controller
             'ORDER_STATUS_UPDATED',
             'Order',
             $order->id,
-            "Status {$order->order_number} diubah ke {$data['status']}",
+            "Status {$order->order_number} diubah ke {$data['status']}".($codCompleted ? ' dan pembayaran COD otomatis ditandai lunas' : ''),
         );
 
         return $this->ok(['orderId' => $order->id, 'status' => $data['status']], "Status pesanan diperbarui menjadi {$data['status']}");
-    }
-
-    public function markCodPaid(Request $request, int $id)
-    {
-        $order = Order::with('payment')->where('store_id', $this->storeId($request))->find($id);
-        if (! $order) {
-            throw ApiException::notFound('Pesanan tidak ditemukan');
-        }
-        if ($order->payment_method !== 'COD') {
-            throw ApiException::badRequest('Pesanan ini bukan pesanan COD');
-        }
-        if ($order->payment_status === 'PAID') {
-            throw ApiException::badRequest('Pembayaran COD sudah ditandai lunas');
-        }
-
-        DB::transaction(function () use ($order) {
-            $order->update(['payment_status' => 'PAID']);
-            $order->payment?->update(['status' => 'PAID', 'paid_at' => now()]);
-        });
-
-        Activity::notify(
-            $order->customer_id,
-            'Pembayaran COD diterima',
-            "Seller sudah menerima pembayaran untuk pesanan {$order->order_number}. Terima kasih!",
-            'success',
-            "/customer/orders/{$order->id}",
-        );
-        Activity::log($request->user()->id, 'COD_PAID', 'Order', $order->id, "Pembayaran COD {$order->order_number} ditandai lunas");
-
-        return $this->ok(['orderId' => $order->id], 'Pembayaran COD ditandai lunas');
     }
 
     private function storeId(Request $request): int

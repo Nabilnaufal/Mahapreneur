@@ -25,7 +25,7 @@
 
       <p v-else-if="order.paymentStatus === 'UNPAID_COD'" class="mt-2 flex items-start gap-2 rounded-xl bg-orange-50 p-3 text-xs text-orange-800 dark:bg-orange-500/10 dark:text-orange-300">
         <Banknote class="mt-0.5 size-3.5 shrink-0" />
-        Pesanan COD. Tagih {{ formatRupiah(order.total) }} saat menyerahkan pesanan, lalu tandai pembayaran lunas di bawah.
+        Pesanan COD. Pembayaran otomatis menjadi lunas setelah pesanan diterima customer.
       </p>
 
       <div class="mt-4 flex flex-wrap gap-2">
@@ -42,14 +42,6 @@
           {{ action.label }}
         </button>
 
-        <button
-          v-if="order.paymentMethod === 'COD' && order.paymentStatus === 'UNPAID_COD'"
-          class="btn btn-tertiary"
-          :disabled="updating"
-          @click="markCodPaid"
-        >
-          <BadgeCheck class="size-4" /> Tandai pembayaran COD lunas
-        </button>
       </div>
 
       <div v-if="order.status === 'COMPLETED'" class="mt-3 text-xs text-muted">Pesanan ini sudah selesai.</div>
@@ -174,7 +166,7 @@
 
 <script setup lang="ts">
 import {
-  ArrowLeft, BadgeCheck, Banknote, Bike, CheckCircle2, Clock, History, Loader2, MessageCircle, Package, Phone, PlayCircle, Send, Truck,
+  ArrowLeft, Banknote, Bike, CheckCircle2, Clock, History, Loader2, MessageCircle, Package, Phone, PlayCircle, Send, Truck,
 } from 'lucide-vue-next';
 import type { Order, OrderStatus } from '~/types';
 
@@ -237,20 +229,6 @@ async function startChat() {
     ui.toast(apiError(error), 'error');
   } finally {
     startingChat.value = false;
-  }
-}
-
-async function markCodPaid() {
-  if (!order.value) return;
-  updating.value = true;
-  try {
-    await api.post(`/seller/orders/${order.value.id}/cod-paid`);
-    ui.toast('Pembayaran COD ditandai lunas.', 'success');
-    await refresh();
-  } catch (error) {
-    ui.toast(apiError(error), 'error');
-  } finally {
-    updating.value = false;
   }
 }
 

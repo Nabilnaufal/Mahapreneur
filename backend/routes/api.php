@@ -123,7 +123,6 @@ Route::middleware(['auth.api', 'role:SELLER'])->prefix('seller')->group(function
     Route::get('orders', [SellerOrderController::class, 'index'])->middleware('store');
     Route::get('orders/{id}', [SellerOrderController::class, 'show'])->middleware('store');
     Route::patch('orders/{id}/status', [SellerOrderController::class, 'updateStatus'])->middleware('store');
-    Route::post('orders/{id}/cod-paid', [SellerOrderController::class, 'markCodPaid'])->middleware('store');
 
     Route::get('chats', [SellerChatController::class, 'index']);
     Route::post('chats', [SellerChatController::class, 'store']);

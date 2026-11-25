@@ -88,6 +88,10 @@
         </div>
       </form>
     </section>
+    <p v-else-if="!['CANCELLED', 'COMPLETED'].includes(order.status)" class="flex items-start gap-2 rounded-2xl bg-surface-muted p-4 text-xs leading-relaxed text-muted">
+      <Star class="mt-0.5 size-4 shrink-0 text-amber-400" />
+      Form ulasan bintang akan muncul setelah seller menandai pesanan ini sebagai telah diterima customer.
+    </p>
 
     <div class="grid gap-5 lg:grid-cols-[1fr_340px]">
       <div class="space-y-5">
