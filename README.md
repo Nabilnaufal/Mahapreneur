@@ -298,8 +298,8 @@ Semua response memakai envelope `{ success, message, data }` dengan field camelC
 | --- | --- |
 | `/api/public/*` | Homepage, katalog, detail produk, daftar toko |
 | `/api/auth/*` | Registrasi, login, logout, verifikasi email, reset password |
-| `/api/customer/*` | Keranjang, wishlist, alamat, checkout, pesanan, profil |
-| `/api/seller/*` | Toko, produk, pesanan masuk, dashboard |
+| `/api/customer/*` | Keranjang, wishlist, alamat, checkout, pesanan, profil, chat penjual |
+| `/api/seller/*` | Toko, produk, pesanan masuk, chat pembeli, dashboard |
 | `/api/admin/*` | Moderasi pengguna, toko, produk, pesanan, banner, log |
 | `/api/notifications/*` | Notifikasi in-app |
 | `/api/payments/*` | Metode pembayaran dan webhook DOKU |

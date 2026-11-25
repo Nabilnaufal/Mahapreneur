@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use App\Models\ActivityLog;
 use App\Models\Banner;
 use App\Models\Category;
+use App\Models\Conversation;
 use App\Models\Order;
 use App\Models\Product;
 use App\Models\Store;
@@ -51,7 +52,7 @@ class DatabaseSeeder extends Seeder
                 'phone' => '081234567899',
             ],
         );
-        User::updateOrCreate(
+        $tiaCustomer = User::updateOrCreate(
             ['email' => 'customer@gmail.com'],
             [
                 'name' => 'Tia Customer',
@@ -175,6 +176,20 @@ class DatabaseSeeder extends Seeder
             ['title' => 'Bayar fleksibel: QRIS, VA, atau COD.', 'description' => 'Pilih pembayaran online lewat DOKU atau bayar langsung saat pesanan diterima.', 'image' => $image('photo-1556742049-0cfed4f6a45d'), 'cta_label' => 'Cara Berbelanja', 'cta_url' => '/catalog', 'sort_order' => 3],
         ] as $banner) {
             Banner::updateOrCreate(['sort_order' => $banner['sort_order']], $banner);
+        }
+
+        $conversation = Conversation::firstOrCreate(
+            ['store_id' => $stores['tia-store']->id, 'customer_id' => $tiaCustomer->id],
+            ['last_message_at' => now()],
+        );
+
+        if ($conversation->messages()->doesntExist()) {
+            $conversation->messages()->createMany([
+                ['sender_id' => $tiaCustomer->id, 'body' => 'Halo, paket katering mingguannya bisa untuk 2 orang?'],
+                ['sender_id' => $tiaSeller->id, 'body' => 'Bisa, Kak. Porsinya bisa disesuaikan, tinggal tulis catatan saat checkout.'],
+                ['sender_id' => $tiaCustomer->id, 'body' => 'Oke, kalau pengantaran ke Gedung A jam 11 masih bisa?'],
+            ]);
+            $conversation->update(['last_message_at' => now()]);
         }
 
         ActivityLog::create([

@@ -43,4 +43,9 @@ class Store extends Model
     {
         return $this->hasMany(Order::class);
     }
+
+    public function conversations(): HasMany
+    {
+        return $this->hasMany(Conversation::class);
+    }
 }

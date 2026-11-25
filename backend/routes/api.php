@@ -17,6 +17,7 @@ use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\Auth\VerifyEmailController;
 use App\Http\Controllers\Customer\AddressController as CustomerAddressController;
 use App\Http\Controllers\Customer\CartController;
+use App\Http\Controllers\Customer\ChatController as CustomerChatController;
 use App\Http\Controllers\Customer\CheckoutController;
 use App\Http\Controllers\Customer\OrderController as CustomerOrderController;
 use App\Http\Controllers\Customer\ProfileController as CustomerProfileController;
@@ -27,6 +28,7 @@ use App\Http\Controllers\Public\CategoryController;
 use App\Http\Controllers\Public\HomeController;
 use App\Http\Controllers\Public\ProductController as PublicProductController;
 use App\Http\Controllers\Public\StoreController as PublicStoreController;
+use App\Http\Controllers\Seller\ChatController as SellerChatController;
 use App\Http\Controllers\Seller\DashboardController as SellerDashboardController;
 use App\Http\Controllers\Seller\OrderController as SellerOrderController;
 use App\Http\Controllers\Seller\ProductController as SellerProductController;
@@ -92,6 +94,11 @@ Route::middleware(['auth.api', 'role:CUSTOMER'])->prefix('customer')->group(func
     Route::get('profile', [CustomerProfileController::class, 'show']);
     Route::patch('profile', [CustomerProfileController::class, 'update']);
     Route::patch('profile/password', [CustomerProfileController::class, 'changePassword']);
+
+    Route::get('chats', [CustomerChatController::class, 'index']);
+    Route::post('chats', [CustomerChatController::class, 'store']);
+    Route::get('chats/{id}', [CustomerChatController::class, 'show']);
+    Route::post('chats/{id}/messages', [CustomerChatController::class, 'sendMessage']);
 });
 
 Route::middleware(['auth.api', 'role:SELLER'])->prefix('seller')->group(function () {
@@ -116,6 +123,10 @@ Route::middleware(['auth.api', 'role:SELLER'])->prefix('seller')->group(function
     Route::get('orders/{id}', [SellerOrderController::class, 'show'])->middleware('store');
     Route::patch('orders/{id}/status', [SellerOrderController::class, 'updateStatus'])->middleware('store');
     Route::post('orders/{id}/cod-paid', [SellerOrderController::class, 'markCodPaid'])->middleware('store');
+
+    Route::get('chats', [SellerChatController::class, 'index']);
+    Route::get('chats/{id}', [SellerChatController::class, 'show']);
+    Route::post('chats/{id}/messages', [SellerChatController::class, 'sendMessage']);
 });
 
 Route::middleware(['auth.api', 'role:SUPERADMIN'])->prefix('admin')->group(function () {

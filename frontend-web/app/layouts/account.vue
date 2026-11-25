@@ -36,12 +36,13 @@
 </template>
 
 <script setup lang="ts">
-import { Heart, MapPin, Package, User } from 'lucide-vue-next';
+import { Heart, MapPin, MessageCircle, Package, User } from 'lucide-vue-next';
 
 const auth = useAuthStore();
 
 const items = [
   { label: 'Profil', to: '/customer/profile', icon: User },
+  { label: 'Pesan', to: '/chat', icon: MessageCircle },
   { label: 'Pesanan', to: '/customer/orders', icon: Package },
   { label: 'Wishlist', to: '/customer/wishlist', icon: Heart },
   { label: 'Alamat', to: '/customer/addresses', icon: MapPin },

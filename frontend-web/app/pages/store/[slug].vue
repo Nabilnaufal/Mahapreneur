@@ -53,9 +53,14 @@
             </dl>
 
             <div class="mt-4 flex flex-wrap items-center gap-2 text-xs">
-              <a v-if="store.phone" :href="`tel:${store.phone}`" class="btn btn-outline !py-1.5 text-xs">
-                <Phone class="size-3.5" /> {{ store.phone }}
-              </a>
+              <button
+                v-if="(auth.isCustomer || !auth.isAuthenticated) && store.status === 'ACTIVE'"
+                class="btn btn-primary !py-1.5 text-xs"
+                :disabled="startingChat"
+                @click="startChat"
+              >
+                <MessageCircle class="size-3.5" /> {{ startingChat ? 'Membuka chat…' : 'Chat penjual' }}
+              </button>
               <a v-if="store.email" :href="`mailto:${store.email}`" class="btn btn-outline !py-1.5 text-xs">
                 <Mail class="size-3.5" /> {{ store.email }}
               </a>
@@ -125,14 +130,17 @@
 </template>
 
 <script setup lang="ts">
-import { Bike, Clock, Mail, MapPin, Phone, Search, Store, User } from 'lucide-vue-next';
+import { Bike, Clock, Mail, MapPin, MessageCircle, Search, Store, User } from 'lucide-vue-next';
 import type { Category, PaginationMeta, Product, Store as StoreType } from '~/types';
 
 const route = useRoute();
 const router = useRouter();
 const api = useApi();
 const auth = useAuthStore();
+const ui = useUiStore();
 const wishlist = useWishlistStore();
+
+const startingChat = ref(false);
 
 const keyword = ref((route.query.q as string) ?? '');
 const category = ref((route.query.category as string) ?? '');
@@ -184,6 +192,24 @@ function changePage(next: number) {
   page.value = next;
   sync();
   refresh();
+}
+
+async function startChat() {
+  if (!auth.isAuthenticated) {
+    ui.openLogin(route.fullPath);
+    return;
+  }
+  if (!store.value || !auth.isCustomer || startingChat.value) return;
+
+  startingChat.value = true;
+  try {
+    const data = await api.post<{ conversation: { id: number } }>('/customer/chats', { storeId: store.value.id });
+    await navigateTo(`/chat?conversation=${data.conversation.id}`);
+  } catch (error) {
+    ui.toast(apiError(error), 'error');
+  } finally {
+    startingChat.value = false;
+  }
 }
 
 watch(sort, applySearch);

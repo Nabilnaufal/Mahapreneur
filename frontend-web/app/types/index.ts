@@ -170,6 +170,27 @@ export interface Notification {
   createdAt: string;
 }
 
+export interface ChatMessage {
+  id: number;
+  conversationId: number;
+  body: string;
+  senderId: number;
+  senderName?: string | null;
+  readAt: string | null;
+  createdAt: string;
+}
+
+export interface ChatConversation {
+  id: number;
+  customerId: number;
+  storeId: number;
+  store?: { id: number; name: string; slug: string; logo: string | null } | null;
+  customer?: { id: number; name: string; avatar: string | null } | null;
+  lastMessage: ChatMessage | null;
+  unreadCount: number;
+  lastMessageAt: string | null;
+}
+
 export interface PaginationMeta {
   total: number;
   page: number;

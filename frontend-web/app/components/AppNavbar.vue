@@ -141,7 +141,7 @@
 
 <script setup lang="ts">
 import {
-  ChevronDown, Heart, LayoutDashboard, LogOut, Moon, Package, Search, ShoppingBag, Sun, User,
+  ChevronDown, Heart, LayoutDashboard, LogOut, MessageCircle, Moon, Package, Search, ShoppingBag, Sun, User,
 } from 'lucide-vue-next';
 import { vClickOutside } from '~/utils/clickOutside';
 
@@ -183,11 +183,13 @@ const accountMenu = computed(() => {
   if (auth.isSeller) {
     return [
       { label: 'Dashboard Seller', to: '/seller', icon: LayoutDashboard },
+      { label: 'Pesan', to: '/seller/chats', icon: MessageCircle },
       { label: 'Produk Saya', to: '/seller/products', icon: Package },
       { label: 'Pesanan Masuk', to: '/seller/orders', icon: ShoppingBag },
     ];
   }
   return [
+    { label: 'Pesan', to: '/chat', icon: MessageCircle },
     { label: 'Pesanan Saya', to: '/customer/orders', icon: Package },
     { label: 'Wishlist', to: '/customer/wishlist', icon: Heart },
     { label: 'Profil', to: '/customer/profile', icon: User },

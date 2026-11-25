@@ -97,7 +97,7 @@
 
 <script setup lang="ts">
 import {
-  ArrowLeft, Bell, Boxes, LayoutDashboard, Menu, Moon, Package, ShoppingBag, Store, Sun, Tag, Users, Wallet, X, Image as ImageIcon,
+  ArrowLeft, Bell, Boxes, LayoutDashboard, Menu, MessageCircle, Moon, Package, ShoppingBag, Store, Sun, Tag, Users, Wallet, X, Image as ImageIcon,
 } from 'lucide-vue-next';
 import type { Notification } from '~/types';
 
@@ -111,6 +111,7 @@ const unread = ref(0);
 
 const sellerNav = [
   { label: 'Dashboard', to: '/seller', icon: LayoutDashboard },
+  { label: 'Pesan', to: '/seller/chats', icon: MessageCircle },
   { label: 'Toko Saya', to: '/seller/store', icon: Store },
   { label: 'Produk', to: '/seller/products', icon: Boxes },
   { label: 'Pesanan Masuk', to: '/seller/orders', icon: ShoppingBag },
@@ -133,6 +134,7 @@ const roleLabel = computed(() => (auth.isAdmin ? 'Panel Superadmin' : 'Panel Sel
 
 const titles: Record<string, string> = {
   '/seller': 'Dashboard Seller',
+  '/seller/chats': 'Pesan Masuk',
   '/seller/store': 'Pengaturan Toko',
   '/seller/products': 'Manajemen Produk',
   '/seller/products/new': 'Tambah Produk',

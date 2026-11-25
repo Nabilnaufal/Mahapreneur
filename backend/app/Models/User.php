@@ -55,6 +55,11 @@ class User extends Authenticatable
         return $this->hasMany(Wishlist::class);
     }
 
+    public function conversations(): HasMany
+    {
+        return $this->hasMany(Conversation::class, 'customer_id');
+    }
+
     public function notifications(): HasMany
     {
         return $this->hasMany(Notification::class);
