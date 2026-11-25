@@ -32,6 +32,7 @@ use App\Http\Controllers\Public\HomeController;
 use App\Http\Controllers\Public\ProductController as PublicProductController;
 use App\Http\Controllers\Public\StoreController as PublicStoreController;
 use App\Http\Controllers\Seller\ChatController as SellerChatController;
+use App\Http\Controllers\Seller\AnalyticsController as SellerAnalyticsController;
 use App\Http\Controllers\Seller\DashboardController as SellerDashboardController;
 use App\Http\Controllers\Seller\OrderController as SellerOrderController;
 use App\Http\Controllers\Seller\ProductController as SellerProductController;
@@ -117,6 +118,7 @@ Route::middleware(['auth.api', 'role:SELLER'])->prefix('seller')->group(function
     Route::patch('profile/password', [CustomerProfileController::class, 'changePassword']);
 
     Route::get('dashboard', [SellerDashboardController::class, 'index'])->middleware('store');
+    Route::get('analytics', [SellerAnalyticsController::class, 'index'])->middleware('store');
 
     Route::get('store', [SellerStoreController::class, 'show']);
     Route::post('store', [SellerStoreController::class, 'store']);

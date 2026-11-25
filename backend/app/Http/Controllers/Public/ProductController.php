@@ -7,7 +7,9 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\ProductResource;
 use App\Http\Resources\StoreResource;
 use App\Models\Product;
+use App\Models\ProductView;
 use Illuminate\Http\Request;
+use Throwable;
 
 class ProductController extends Controller
 {
@@ -74,7 +76,7 @@ class ProductController extends Controller
         ]);
     }
 
-    public function show(string $slug)
+    public function show(Request $request, string $slug)
     {
         $product = Product::query()
             ->visible()
@@ -85,6 +87,20 @@ class ProductController extends Controller
 
         if (! $product) {
             throw ApiException::notFound('Produk tidak ditemukan atau sudah tidak aktif');
+        }
+
+        // Satu view dicatat saat pengguna benar-benar membuka detail produk,
+        // bukan saat kartu produk hanya muncul di katalog.
+        try {
+            ProductView::create([
+                'product_id' => $product->id,
+                'store_id' => $product->store_id,
+                'user_id' => $request->user()?->id,
+            ]);
+        } catch (Throwable $exception) {
+            // Analytics tidak boleh membuat halaman produk publik gagal tampil
+            // ketika tabel analytics belum tersedia di environment tertentu.
+            report($exception);
         }
 
         $fromStore = Product::query()->visible()->withCard()

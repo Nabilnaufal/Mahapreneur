@@ -3,9 +3,9 @@
     <div class="flex flex-wrap items-end justify-between gap-2">
       <div>
         <p class="text-xs font-bold uppercase tracking-wide text-muted">{{ title }}</p>
-        <p class="mt-1 text-lg font-extrabold text-strong">{{ formatRupiah(total) }}</p>
+        <p class="mt-1 text-lg font-extrabold text-strong">{{ formatValue(total) }}</p>
       </div>
-      <p class="text-xs text-muted">7 hari terakhir</p>
+      <p class="text-xs text-muted">{{ rangeLabel }}</p>
     </div>
 
     <div class="relative mt-6 h-44">
@@ -39,24 +39,33 @@
       >
         <span class="block size-2.5 rounded-full border-2 border-tertiary bg-white transition group-hover:scale-150 dark:bg-primary" />
         <span class="pointer-events-none absolute bottom-full left-1/2 mb-2 -translate-x-1/2 whitespace-nowrap rounded-md bg-primary px-2 py-1 text-[10px] font-bold text-tertiary opacity-0 shadow transition group-hover:opacity-100">
-          {{ formatRupiah(point.value) }}
+          {{ formatValue(point.value) }}
         </span>
       </div>
     </div>
 
     <div class="mt-2 flex justify-between">
-      <span v-for="point in points" :key="point.date" class="text-[10px] font-semibold uppercase text-muted">{{ point.label }}</span>
+      <span v-for="point in labelPoints" :key="point.date" class="text-[10px] font-semibold uppercase text-muted">{{ point.label }}</span>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-const props = withDefaults(defineProps<{ data: { date: string; label: string; value: number }[]; title?: string }>(), {
+const props = withDefaults(defineProps<{
+  data: { date: string; label: string; value: number }[];
+  title?: string;
+  rangeLabel?: string;
+  valueFormat?: 'currency' | 'number';
+}>(), {
   title: 'Penjualan',
+  rangeLabel: '7 hari terakhir',
+  valueFormat: 'currency',
 });
 
 const total = computed(() => props.data.reduce((sum, point) => sum + point.value, 0));
 const max = computed(() => Math.max(...props.data.map((point) => point.value), 1));
+const rangeLabel = computed(() => props.rangeLabel);
+const formatValue = (value: number) => props.valueFormat === 'number' ? value.toLocaleString('id-ID') : formatRupiah(value);
 
 /** Titik grafik: x tersebar merata, y menyisakan ruang 10% di atas dan bawah. */
 const points = computed(() =>
@@ -66,6 +75,12 @@ const points = computed(() =>
     y: 90 - (point.value / max.value) * 80,
   })),
 );
+
+const labelPoints = computed(() => {
+  if (points.value.length <= 10) return points.value;
+  const step = Math.ceil((points.value.length - 1) / 5);
+  return points.value.filter((point, index) => index === 0 || index === points.value.length - 1 || index % step === 0);
+});
 
 const linePath = computed(() => points.value.map((point, index) => `${index === 0 ? 'M' : 'L'} ${point.x},${point.y}`).join(' '));
 const areaPath = computed(() => {

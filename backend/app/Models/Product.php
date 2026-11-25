@@ -71,4 +71,9 @@ class Product extends Model
     {
         return $this->hasManyThrough(OrderReview::class, OrderItem::class, 'product_id', 'order_id', 'id', 'order_id');
     }
+
+    public function views(): HasMany
+    {
+        return $this->hasMany(ProductView::class);
+    }
 }

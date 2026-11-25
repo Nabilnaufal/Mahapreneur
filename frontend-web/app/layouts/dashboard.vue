@@ -97,7 +97,7 @@
 
 <script setup lang="ts">
 import {
-  ArrowLeft, Bell, Boxes, Headphones, LayoutDashboard, Menu, MessageCircle, MessageSquare, Moon, Package, ShoppingBag, Store, Sun, Tag, Users, Wallet, X, Image as ImageIcon,
+  ArrowLeft, BarChart3, Bell, Boxes, Headphones, LayoutDashboard, Menu, MessageCircle, MessageSquare, Moon, Package, ShoppingBag, Store, Sun, Tag, Users, Wallet, X, Image as ImageIcon,
 } from 'lucide-vue-next';
 import type { Notification } from '~/types';
 
@@ -115,6 +115,7 @@ const sellerNav = [
   { label: 'Toko Saya', to: '/seller/store', icon: Store },
   { label: 'Produk', to: '/seller/products', icon: Boxes },
   { label: 'Pesanan Masuk', to: '/seller/orders', icon: ShoppingBag },
+  { label: 'Analytics', to: '/seller/analytics', icon: BarChart3 },
   { label: 'Beri masukan', to: '/seller/feedback', icon: MessageSquare },
 ];
 
@@ -142,6 +143,7 @@ const titles: Record<string, string> = {
   '/seller/products': 'Manajemen Produk',
   '/seller/products/new': 'Tambah Produk',
   '/seller/orders': 'Pesanan Masuk',
+  '/seller/analytics': 'Analytics Toko',
   '/seller/feedback': 'Beri Masukan',
   '/admin': 'Dashboard Superadmin',
   '/admin/users': 'Manajemen Pengguna',
