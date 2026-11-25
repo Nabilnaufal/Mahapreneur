@@ -25,12 +25,16 @@
       </button>
     </div>
 
-    <div v-if="orders.length" class="space-y-3">
+    <div v-if="orders.length" class="card overflow-hidden">
+      <div class="hidden grid-cols-[1fr_150px_170px_140px_120px] gap-3 border-b border-line px-5 py-3 text-[11px] font-bold uppercase tracking-wide text-muted lg:grid">
+        <span>Pesanan</span><span>Penerima</span><span>Status</span><span>Pembayaran</span><span class="text-right">Total</span>
+      </div>
+      <div class="divide-y divide-[color:var(--line)]">
         <NuxtLink
           v-for="order in orders"
           :key="order.id"
           :to="'/seller/orders/' + order.id"
-          class="card grid gap-3 px-5 py-4 transition hover:-translate-y-0.5 hover:border-line-strong hover:bg-surface-muted lg:grid-cols-[1fr_150px_170px_140px_120px] lg:items-center"
+          class="grid gap-3 px-5 py-4 transition hover:bg-surface-muted lg:grid-cols-[1fr_150px_170px_140px_120px] lg:items-center"
         >
           <div class="min-w-0">
             <p class="font-mono text-xs font-bold text-strong">{{ order.orderNumber }}</p>
@@ -47,6 +51,7 @@
             <ChevronRight class="size-4 text-muted" />
           </div>
         </NuxtLink>
+      </div>
     </div>
 
     <EmptyState v-else title="Belum ada pesanan" description="Pesanan dari customer akan muncul di sini beserta info penerima dan status pembayarannya." />
