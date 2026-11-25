@@ -27,6 +27,9 @@ class DatabaseSeeder extends Seeder
             'kopi@mahapreneur.test',
             'jasa@mahapreneur.test',
             'pembeli@mahapreneur.test',
+            'tia@mahapreneur.test',
+            'tia.customer@mahapreneur.test',
+            'tia.admin@mahapreneur.test',
         ])->get();
 
         foreach ($dummyUsers as $dummyUser) {
@@ -39,30 +42,30 @@ class DatabaseSeeder extends Seeder
 
         // Tiga akun seed terpisah untuk cross-check setiap role.
         $tiaSeller = User::updateOrCreate(
-            ['email' => 'tia@mahapreneur.test'],
+            ['email' => 'seller@gmail.com'],
             [
                 'name' => 'Tia Seller',
-                'password' => Hash::make('TiaSeller1!'),
+                'password' => Hash::make('password'),
                 'role' => 'SELLER',
                 'email_verified_at' => now(),
                 'phone' => '081234567899',
             ],
         );
         User::updateOrCreate(
-            ['email' => 'tia.customer@mahapreneur.test'],
+            ['email' => 'customer@gmail.com'],
             [
                 'name' => 'Tia Customer',
-                'password' => Hash::make('TiaCustomer1!'),
+                'password' => Hash::make('password'),
                 'role' => 'CUSTOMER',
                 'email_verified_at' => now(),
                 'phone' => '081234567898',
             ],
         );
         $tiaAdmin = User::updateOrCreate(
-            ['email' => 'tia.admin@mahapreneur.test'],
+            ['email' => 'admin@gmail.com'],
             [
                 'name' => 'Tia Admin',
-                'password' => Hash::make('TiaAdmin1!'),
+                'password' => Hash::make('password'),
                 'role' => 'SUPERADMIN',
                 'email_verified_at' => now(),
                 'phone' => '081234567897',
@@ -167,9 +170,9 @@ class DatabaseSeeder extends Seeder
         }
 
         foreach ([
-                ['title' => 'Belanja dari tetangga kampusmu.', 'description' => 'Makanan, minuman, dan jasa dari mahasiswa lain — diantar langsung oleh seller ke kelas atau kosmu.', 'image' => $image('photo-1504674900247-0877df9cc836'), 'cta_label' => 'Jelajahi Produk', 'cta_url' => '/catalog', 'sort_order' => 1],
-                ['title' => 'Buka toko pertamamu di Mahapreneur.', 'description' => 'Daftar sebagai seller, unggah produk, dan mulai terima pesanan dari mahasiswa se-kampus.', 'image' => $image('photo-1521737604893-d14cc237f11d'), 'cta_label' => 'Mulai Berjualan', 'cta_url' => '/auth/register?role=SELLER', 'sort_order' => 2],
-                ['title' => 'Bayar fleksibel: QRIS, VA, atau COD.', 'description' => 'Pilih pembayaran online lewat DOKU atau bayar langsung saat pesanan diterima.', 'image' => $image('photo-1556742049-0cfed4f6a45d'), 'cta_label' => 'Cara Berbelanja', 'cta_url' => '/catalog', 'sort_order' => 3],
+            ['title' => 'Belanja dari tetangga kampusmu.', 'description' => 'Makanan, minuman, dan jasa dari mahasiswa lain — diantar langsung oleh seller ke kelas atau kosmu.', 'image' => $image('photo-1504674900247-0877df9cc836'), 'cta_label' => 'Jelajahi Produk', 'cta_url' => '/catalog', 'sort_order' => 1],
+            ['title' => 'Buka toko pertamamu di Mahapreneur.', 'description' => 'Daftar sebagai seller, unggah produk, dan mulai terima pesanan dari mahasiswa se-kampus.', 'image' => $image('photo-1521737604893-d14cc237f11d'), 'cta_label' => 'Mulai Berjualan', 'cta_url' => '/auth/register?role=SELLER', 'sort_order' => 2],
+            ['title' => 'Bayar fleksibel: QRIS, VA, atau COD.', 'description' => 'Pilih pembayaran online lewat DOKU atau bayar langsung saat pesanan diterima.', 'image' => $image('photo-1556742049-0cfed4f6a45d'), 'cta_label' => 'Cara Berbelanja', 'cta_url' => '/catalog', 'sort_order' => 3],
         ] as $banner) {
             Banner::updateOrCreate(['sort_order' => $banner['sort_order']], $banner);
         }
@@ -181,6 +184,6 @@ class DatabaseSeeder extends Seeder
             'description' => 'Data demo Mahapreneur dimuat',
         ]);
 
-        $this->command?->info('Seed selesai. Akun Tia tersedia untuk role CUSTOMER, SELLER, dan SUPERADMIN.');
+        $this->command?->info('Seed selesai. Akun demo tersedia untuk role CUSTOMER, SELLER, dan SUPERADMIN.');
     }
 }

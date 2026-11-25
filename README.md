@@ -222,11 +222,11 @@ Gunakan tiga kredensial berikut untuk cross-check tiap role:
 
 | Peran | Email | Toko |
 | --- | --- | --- |
-| Customer | `tia.customer@mahapreneur.test` | — |
-| Seller | `tia@mahapreneur.test` | Tia Kitchen & Creative |
-| Superadmin | `tia.admin@mahapreneur.test` | — |
+| Customer | `customer@gmail.com` | — |
+| Seller | `seller@gmail.com` | Tia Kitchen & Creative |
+| Superadmin | `admin@gmail.com` | — |
 
-Password masing-masing: `TiaCustomer1!`, `TiaSeller1!`, dan `TiaAdmin1!`. Semua akun dibuat oleh `php artisan migrate --seed` hanya untuk pengembangan lokal.
+Password ketiga akun: `password`. Semua akun dibuat oleh `php artisan migrate --seed` hanya untuk pengembangan lokal.
 
 ## Konfigurasi Environment
 
