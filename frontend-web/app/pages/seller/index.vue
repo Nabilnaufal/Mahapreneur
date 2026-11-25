@@ -26,6 +26,9 @@
           {{ refreshing ? 'Memuat…' : 'Segarkan' }}
         </button>
       </header>
+      <p v-if="error" class="rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-xs text-rose-700 dark:border-rose-500/30 dark:bg-rose-500/10 dark:text-rose-300">
+        Data dashboard belum berhasil dimuat. Tekan “Segarkan” setelah backend aktif.
+      </p>
 
       <div class="grid grid-cols-2 gap-3 sm:grid-cols-4">
         <NuxtLink
@@ -122,7 +125,7 @@ interface DashboardData {
   topProducts: Product[];
 }
 
-const { data, refresh } = await useAsyncData(
+const { data, error, refresh } = await useAsyncData(
   'seller-dashboard',
   () => (auth.hasStore ? api.get<DashboardData>('/seller/dashboard') : Promise.resolve(null)),
   { watch: [() => auth.hasStore] },

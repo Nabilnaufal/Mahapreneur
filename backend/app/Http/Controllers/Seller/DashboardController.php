@@ -48,4 +48,9 @@ class DashboardController extends Controller
             'topProducts' => ProductResource::collection($topProducts),
         ]);
     }
+
+    private function storeId(Request $request): int
+    {
+        return $request->user()->store->id;
+    }
 }
