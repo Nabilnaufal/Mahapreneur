@@ -1,0 +1,10 @@
+.env*
+.git
+.github
+node_modules
+storage/logs
+vendor
+Dockerfile
+docker-compose*.yml
+phpunit.xml
+tests
