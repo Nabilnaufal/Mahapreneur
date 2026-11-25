@@ -5,14 +5,14 @@
       <div class="grid gap-6 lg:grid-cols-[240px_1fr]">
         <aside>
           <div class="card p-4">
-            <div class="flex items-center gap-3 border-b border-line pb-4">
+            <div class="hidden items-center gap-3 border-b border-line pb-4 lg:flex">
               <span class="grid size-11 place-items-center rounded-full bg-primary text-sm font-bold text-tertiary">{{ auth.initials }}</span>
               <div class="min-w-0">
                 <p class="truncate text-sm font-bold text-strong">{{ auth.user?.name }}</p>
                 <p class="truncate text-xs text-muted">{{ auth.user?.email }}</p>
               </div>
             </div>
-            <nav class="mt-3 space-y-1">
+            <nav class="space-y-1 lg:mt-3">
               <NuxtLink
                 v-for="item in items"
                 :key="item.to"
