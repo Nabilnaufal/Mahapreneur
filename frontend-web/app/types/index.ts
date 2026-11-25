@@ -204,10 +204,11 @@ export interface ChatMessage {
 
 export interface ChatConversation {
   id: number;
-  customerId: number;
+  customerId: number | null;
   storeId: number | null;
   store?: { id: number; name: string; slug: string; logo: string | null } | null;
   customer?: { id: number; name: string; avatar: string | null } | null;
+  seller?: { id: number; name: string; avatar: string | null } | null;
   lastMessage: ChatMessage | null;
   unreadCount: number;
   lastMessageAt: string | null;

@@ -9,6 +9,7 @@
       endpoint="/admin/support-chats"
       :me-id="auth.user?.id ?? 0"
       partner="customer"
+      subtitle="Customer atau seller"
       heading="Pesan pelayanan"
       empty-text="Belum ada customer yang menghubungi pelayanan."
     />

@@ -10,6 +10,7 @@ class SupportConversation extends Model
 {
     protected $fillable = [
         'customer_id',
+        'seller_id',
         'last_message_at',
     ];
 
@@ -20,6 +21,11 @@ class SupportConversation extends Model
     public function customer(): BelongsTo
     {
         return $this->belongsTo(User::class, 'customer_id');
+    }
+
+    public function seller(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'seller_id');
     }
 
     public function messages(): HasMany

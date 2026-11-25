@@ -36,6 +36,7 @@ use App\Http\Controllers\Seller\DashboardController as SellerDashboardController
 use App\Http\Controllers\Seller\OrderController as SellerOrderController;
 use App\Http\Controllers\Seller\ProductController as SellerProductController;
 use App\Http\Controllers\Seller\StoreController as SellerStoreController;
+use App\Http\Controllers\Seller\SupportChatController as SellerSupportChatController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('auth')->group(function () {
@@ -141,6 +142,10 @@ Route::middleware(['auth.api', 'role:SELLER'])->prefix('seller')->group(function
     Route::post('chats', [SellerChatController::class, 'store']);
     Route::get('chats/{id}', [SellerChatController::class, 'show']);
     Route::post('chats/{id}/messages', [SellerChatController::class, 'sendMessage']);
+
+    Route::get('support-chats', [SellerSupportChatController::class, 'index']);
+    Route::get('support-chats/{id}', [SellerSupportChatController::class, 'show']);
+    Route::post('support-chats/{id}/messages', [SellerSupportChatController::class, 'sendMessage']);
 });
 
 Route::middleware(['auth.api', 'role:SUPERADMIN'])->prefix('admin')->group(function () {

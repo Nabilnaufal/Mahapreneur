@@ -53,7 +53,7 @@
         :me-id="meId"
         :title="partnerName(active)"
         :avatar="partnerAvatar(active)"
-        :subtitle="partner === 'store' ? 'Penjual toko' : partner === 'support' ? 'Customer Service Mahapreneur' : 'Pembeli'"
+        :subtitle="subtitle || (partner === 'store' ? 'Penjual toko' : partner === 'support' ? 'Customer Service Mahapreneur' : 'Customer / Seller')"
         :empty-text="emptyText"
         @sent="refresh()"
       />
@@ -78,6 +78,7 @@ const props = defineProps<{
   meId: number;
   partner: 'store' | 'customer' | 'support';
   heading?: string;
+  subtitle?: string;
   queryKey?: string;
   emptyText?: string;
 }>();
@@ -103,12 +104,12 @@ let timer: ReturnType<typeof setInterval> | undefined;
 
 const partnerName = (conversation: ChatConversation) => {
   if (props.partner === 'support') return 'Customer Service Mahapreneur';
-  return props.partner === 'store' ? conversation.store?.name ?? 'Toko' : conversation.customer?.name ?? 'Pembeli';
+  return props.partner === 'store' ? conversation.store?.name ?? 'Toko' : conversation.customer?.name ?? conversation.seller?.name ?? 'Pengguna';
 };
 
 const partnerAvatar = (conversation: ChatConversation) => {
   if (props.partner === 'support') return null;
-  return props.partner === 'store' ? conversation.store?.logo ?? null : conversation.customer?.avatar ?? null;
+  return props.partner === 'store' ? conversation.store?.logo ?? null : conversation.customer?.avatar ?? conversation.seller?.avatar ?? null;
 };
 
 const partnerInitials = (conversation: ChatConversation) =>

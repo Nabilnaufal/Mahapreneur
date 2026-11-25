@@ -15,10 +15,10 @@ class SupportChatController extends Controller
     public function index(Request $request)
     {
         $conversations = SupportConversation::query()
-            ->with(['customer', 'latestMessage'])
+            ->with(['customer', 'seller', 'latestMessage'])
             ->withCount(['messages as unread_count' => fn ($query) => $query
                 ->whereNull('read_at')
-                ->whereHas('sender', fn ($sender) => $sender->where('role', 'CUSTOMER'))
+                ->whereHas('sender', fn ($sender) => $sender->whereIn('role', ['CUSTOMER', 'SELLER']))
             ])
             ->orderByDesc('last_message_at')
             ->orderByDesc('id')
@@ -38,7 +38,7 @@ class SupportChatController extends Controller
 
         $conversation->messages()
             ->whereNull('read_at')
-            ->whereHas('sender', fn ($sender) => $sender->where('role', 'CUSTOMER'))
+            ->whereHas('sender', fn ($sender) => $sender->whereIn('role', ['CUSTOMER', 'SELLER']))
             ->update(['read_at' => now()]);
 
         return $this->ok([
@@ -68,7 +68,7 @@ class SupportChatController extends Controller
 
     private function findConversation(int $id): SupportConversation
     {
-        $conversation = SupportConversation::with(['customer', 'latestMessage'])->find($id);
+        $conversation = SupportConversation::with(['customer', 'seller', 'latestMessage'])->find($id);
         if (! $conversation) {
             throw ApiException::notFound('Chat pelayanan tidak ditemukan');
         }
@@ -78,7 +78,7 @@ class SupportChatController extends Controller
 
     private function payload(SupportConversation $conversation): array
     {
-        $conversation->loadMissing(['customer', 'latestMessage']);
+        $conversation->loadMissing(['customer', 'seller', 'latestMessage']);
 
         return SupportConversationResource::make($conversation)->resolve();
     }

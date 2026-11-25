@@ -13,6 +13,15 @@
       partner="customer"
       empty-text="Belum ada pembeli yang mengirim pesan."
     />
+
+    <ChatInbox
+      endpoint="/seller/support-chats"
+      :me-id="auth.user?.id ?? 0"
+      partner="support"
+      heading="Chat pelayanan"
+      query-key="sellerSupportConversation"
+      empty-text="Belum ada percakapan dengan customer service."
+    />
   </div>
 </template>
 

@@ -20,6 +20,11 @@ class SupportConversationResource extends JsonResource
                 'name' => $this->customer->name,
                 'avatar' => FileUrl::make($this->customer->avatar),
             ] : null),
+            'seller' => $this->whenLoaded('seller', fn () => $this->seller ? [
+                'id' => $this->seller->id,
+                'name' => $this->seller->name,
+                'avatar' => FileUrl::make($this->seller->avatar),
+            ] : null),
             'lastMessage' => $this->whenLoaded('latestMessage', fn () => $this->latestMessage
                 ? SupportMessageResource::make($this->latestMessage)->resolve()
                 : null),
