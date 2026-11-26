@@ -201,5 +201,4 @@ class OrderController extends Controller
 
         return $this->ok(['payment' => $prepared ? PaymentResource::make($prepared['payment']) : null], 'Instruksi pembayaran baru dibuat');
     }
-
 }

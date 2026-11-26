@@ -18,7 +18,7 @@ class SupportChatController extends Controller
             ->with(['customer', 'seller', 'latestMessage'])
             ->withCount(['messages as unread_count' => fn ($query) => $query
                 ->whereNull('read_at')
-                ->whereHas('sender', fn ($sender) => $sender->whereIn('role', ['CUSTOMER', 'SELLER']))
+                ->whereHas('sender', fn ($sender) => $sender->whereIn('role', ['CUSTOMER', 'SELLER'])),
             ])
             ->orderByDesc('last_message_at')
             ->orderByDesc('id')
