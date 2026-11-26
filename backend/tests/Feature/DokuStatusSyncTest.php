@@ -96,6 +96,13 @@ class DokuStatusSyncTest extends TestCase
         app(DokuService::class)->transactionStatus('INV-1');
     }
 
+    public function test_shopee_pay_uses_the_underscore_channel_code(): void
+    {
+        // DOKU menolak "EMONEY_SHOPEEPAY" dengan PAYMENT CHANNEL IS INACTIVE;
+        // kode yang benar adalah EMONEY_SHOPEE_PAY.
+        $this->assertSame('EMONEY_SHOPEE_PAY', config('mahapreneur.doku.channels.SHOPEEPAY'));
+    }
+
     private function orderWithPayment(): array
     {
         $seller = User::create([

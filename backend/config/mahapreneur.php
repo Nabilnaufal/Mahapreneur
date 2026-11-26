@@ -28,12 +28,14 @@ return [
         // sudah aktif di akun DOKU; channel nonaktif ditolak "PAYMENT CHANNEL IS INACTIVE".
         'methods' => array_values(array_filter(array_map(
             'trim',
-            explode(',', env('DOKU_METHODS', 'OVO,DANA')),
+            explode(',', env('DOKU_METHODS', 'SHOPEEPAY')),
         ))),
         'channels' => [
             'OVO' => 'EMONEY_OVO',
             'DANA' => 'EMONEY_DANA',
-            'SHOPEEPAY' => 'EMONEY_SHOPEEPAY',
+            // DOKU memakai garis bawah: EMONEY_SHOPEE_PAY, bukan EMONEY_SHOPEEPAY.
+            'SHOPEEPAY' => 'EMONEY_SHOPEE_PAY',
+            'LINKAJA' => 'EMONEY_LINKAJA',
             'QRIS' => env('DOKU_QRIS_CHANNEL', 'QRIS'),
             'VIRTUAL_ACCOUNT' => 'VIRTUAL_ACCOUNT_'.env('DOKU_VA_CHANNEL', 'BCA'),
         ],
