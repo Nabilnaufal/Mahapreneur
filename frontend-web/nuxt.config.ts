@@ -8,10 +8,14 @@ export default defineNuxtConfig({
   vite: { plugins: [tailwindcss()] },
   components: [{ path: '~/components', pathPrefix: false }],
   runtimeConfig: {
+    // Backend hanya diakses server-side lewat proxy /api agar cookie login
+    // tetap berada pada domain frontend saat aplikasi memakai SSR.
+    apiOrigin: process.env.NUXT_API_ORIGIN || process.env.NUXT_PUBLIC_API_ORIGIN || 'http://localhost:8000',
     public: {
-      // URL REST API Laravel. Nilai bisa ditimpa lewat env NUXT_PUBLIC_API_BASE / NUXT_PUBLIC_API_ORIGIN.
-      apiBase: 'http://localhost:8000/api',
-      apiOrigin: 'http://localhost:8000',
+      // Production memakai proxy same-origin. Local tetap bisa langsung ke backend
+      // jika NUXT_PUBLIC_API_BASE ditimpa melalui .env.
+      apiBase: process.env.NUXT_PUBLIC_API_BASE || '/api',
+      apiOrigin: process.env.NUXT_PUBLIC_API_ORIGIN || process.env.NUXT_API_ORIGIN || 'http://localhost:8000',
     },
   },
   app: {

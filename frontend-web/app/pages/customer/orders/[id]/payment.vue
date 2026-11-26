@@ -1,5 +1,10 @@
 <template>
   <div v-if="order" class="space-y-5">
+    <div v-if="redirecting" class="card flex items-center gap-3 border-primary/30 bg-primary/5 p-4 text-sm text-strong">
+      <Loader2 class="size-5 animate-spin text-primary" />
+      Mengarahkan ke simulator pembayaran DOKU…
+    </div>
+
     <div>
       <NuxtLink :to="`/customer/orders/${order.id}`" class="flex items-center gap-1.5 text-xs font-semibold text-muted hover:text-strong">
         <ArrowLeft class="size-3.5" /> Detail pesanan
@@ -177,6 +182,15 @@ const order = computed(() => data.value?.order ?? null);
 const payment = computed(() => data.value?.payment ?? null);
 const channels = computed(() => data.value?.channels ?? []);
 const simulated = computed(() => data.value?.simulated ?? false);
+const redirecting = ref(false);
+
+onMounted(() => {
+  const paymentUrl = payment.value?.dokuPaymentUrl;
+  if (!simulated.value && paymentUrl?.startsWith('http')) {
+    redirecting.value = true;
+    window.location.replace(paymentUrl);
+  }
+});
 
 async function chooseChannel(channelCode: string) {
   loading.value = true;
