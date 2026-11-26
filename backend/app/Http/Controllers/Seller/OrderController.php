@@ -51,6 +51,9 @@ class OrderController extends Controller
     ];
 
     private const PAYMENT_METHOD_LABELS = [
+        'OVO' => 'OVO',
+        'DANA' => 'DANA',
+        'SHOPEEPAY' => 'ShopeePay',
         'QRIS' => 'QRIS',
         'VIRTUAL_ACCOUNT' => 'Virtual Account',
         'EWALLET' => 'E-Wallet',

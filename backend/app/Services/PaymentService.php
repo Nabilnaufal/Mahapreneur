@@ -13,7 +13,14 @@ use Throwable;
 
 class PaymentService
 {
+    private const SIMULATED_METHODS = ['OVO', 'DANA', 'SHOPEEPAY'];
+
     public function __construct(private DokuService $doku) {}
+
+    public static function isSimulatedMethod(string $method): bool
+    {
+        return in_array($method, self::SIMULATED_METHODS, true);
+    }
 
     /**
      * Satu-satunya jalur yang boleh mengubah status pembayaran menjadi PAID.
@@ -128,7 +135,7 @@ class PaymentService
         $paymentUrl = $order->payment?->doku_payment_url;
         $tokenId = null;
 
-        if (DokuService::configured()) {
+        if (DokuService::configured() && ! self::isSimulatedMethod($order->payment_method)) {
             try {
                 $created = $this->doku->createInvoice(
                     $invoice,
@@ -142,8 +149,11 @@ class PaymentService
             } catch (Throwable $error) {
                 Log::error('Gagal membuat invoice DOKU: '.$error->getMessage());
             }
-        } else {
+        } elseif (! self::isSimulatedMethod($order->payment_method)) {
             $paymentUrl = config('mahapreneur.app_url')."/payment/{$order->order_number}";
+        } else {
+            // Metode non-DOKU tidak memiliki halaman gateway atau URL pembayaran.
+            $paymentUrl = null;
         }
 
         $payment = Payment::updateOrCreate(['order_id' => $orderId], [
@@ -152,20 +162,38 @@ class PaymentService
             'amount' => $order->total,
             'invoice_number' => $invoice,
             'doku_payment_url' => $paymentUrl,
-            'doku_channel' => match ($order->payment_method) {
-                'QRIS' => config('mahapreneur.doku.qris_channel'),
-                'VIRTUAL_ACCOUNT' => config('mahapreneur.doku.va_channel'),
-                default => config('mahapreneur.doku.ewallet_channel'),
-            },
+            'doku_channel' => self::isSimulatedMethod($order->payment_method)
+                ? $order->payment_method
+                : match ($order->payment_method) {
+                    'QRIS' => config('mahapreneur.doku.qris_channel'),
+                    'VIRTUAL_ACCOUNT' => config('mahapreneur.doku.va_channel'),
+                    default => config('mahapreneur.doku.ewallet_channel'),
+                },
             'expires_at' => $expiresAt,
         ]);
 
-        return ['payment' => $payment, 'tokenId' => $tokenId, 'simulated' => ! DokuService::configured()];
+        return [
+            'payment' => $payment,
+            'tokenId' => $tokenId,
+            'simulated' => self::isSimulatedMethod($order->payment_method) || ! DokuService::configured(),
+        ];
     }
 
     /** Daftar channel pembayaran yang tersedia pada metode tertentu. */
     public function availableChannels(string $method)
     {
+        if (self::isSimulatedMethod($method)) {
+            return [[
+                'channelCode' => $method,
+                'label' => match ($method) {
+                    'OVO' => 'OVO (simulasi)',
+                    'DANA' => 'DANA (simulasi)',
+                    default => 'ShopeePay (simulasi)',
+                },
+                'method' => $method,
+            ]];
+        }
+
         if (! DokuService::configured()) {
             return array_values(array_filter([
                 ['channelCode' => config('mahapreneur.doku.qris_channel'), 'label' => 'QRIS (semua e-wallet & m-banking)', 'method' => 'QRIS'],

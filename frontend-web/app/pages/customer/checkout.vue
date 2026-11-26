@@ -70,7 +70,7 @@
 
           <p v-if="methods.length && simulated" class="mt-3 flex items-start gap-2 rounded-xl bg-amber-50 p-3 text-[11px] leading-relaxed text-amber-800 dark:bg-amber-500/10 dark:text-amber-300">
             <Info class="mt-0.5 size-3.5 shrink-0" />
-            Kredensial DOKU Sandbox belum diisi, jadi pembayaran online berjalan dalam mode simulasi pengembangan. COD tetap berfungsi normal.
+            OVO, DANA, dan ShopeePay saat ini tersedia dalam mode simulasi. COD tetap berfungsi normal.
           </p>
 
           <div class="mt-4 space-y-3">
@@ -150,7 +150,7 @@
 </template>
 
 <script setup lang="ts">
-import { BookmarkCheck, Info, Loader2, MapPin, QrCode, Wallet, Banknote, CreditCard } from 'lucide-vue-next';
+import { Banknote, BookmarkCheck, Info, Loader2, MapPin, Wallet } from 'lucide-vue-next';
 import type { Address, CartItem, PaymentMethod } from '~/types';
 
 definePageMeta({ requiresAuth: true, roles: ['CUSTOMER'] });
@@ -172,7 +172,7 @@ const form = reactive({
   campus: '',
   room: '',
   note: '',
-  paymentMethod: 'QRIS' as PaymentMethod,
+  paymentMethod: 'OVO' as PaymentMethod,
   saveAddress: true,
 });
 
@@ -199,7 +199,7 @@ const simulated = computed(() => methodData.value?.simulated ?? false);
 const addresses = computed(() => addressData.value?.addresses ?? []);
 
 const methodIcon = (code: string) =>
-  ({ QRIS: QrCode, VIRTUAL_ACCOUNT: CreditCard, EWALLET: Wallet, COD: Banknote })[code] ?? Wallet;
+  ({ OVO: Wallet, DANA: Wallet, SHOPEEPAY: Wallet, COD: Banknote })[code] ?? Wallet;
 
 function useAddress(address: Address) {
   form.recipientName = address.recipientName;

@@ -37,7 +37,8 @@
         <section class="card p-5">
           <h2 class="text-sm font-bold text-strong">Pilih channel pembayaran</h2>
           <p class="mt-1 text-xs text-muted">
-            Channel yang tampil mengikuti konfigurasi akun DOKU. Pilih salah satu untuk mendapatkan kode bayar.
+            <template v-if="simulated">Metode ini masih berjalan dalam mode simulasi. Pilih metode lalu tandai pembayaran berhasil untuk melanjutkan pesanan.</template>
+            <template v-else>Channel yang tampil mengikuti konfigurasi akun DOKU. Pilih salah satu untuk mendapatkan kode bayar.</template>
           </p>
           <div class="mt-4 grid gap-2 sm:grid-cols-2">
             <button
@@ -98,8 +99,7 @@
         <section v-if="simulated" class="card border-dashed border-line-strong p-5">
           <h2 class="flex items-center gap-2 text-sm font-bold text-strong"><FlaskConical class="size-4" /> Simulasi pembayaran</h2>
           <p class="mt-1 text-xs leading-relaxed text-muted">
-            Kredensial DOKU Sandbox belum diisi di server, jadi tombol ini mensimulasikan notifikasi pembayaran berhasil.
-            Setelah kredensial diisi, tombol ini otomatis hilang dan status hanya berubah lewat webhook resmi DOKU.
+            Metode ini belum terhubung ke gateway pembayaran. Tombol ini hanya untuk pengujian alur pesanan dan tidak memproses uang sungguhan.
           </p>
           <button class="btn btn-tertiary mt-4" :disabled="loading" @click="simulate">
             <Loader2 v-if="loading" class="size-4 animate-spin" />

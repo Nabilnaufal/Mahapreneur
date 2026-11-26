@@ -21,9 +21,9 @@
       <div class="card flex flex-wrap items-center gap-3 p-4">
         <select v-model="method" class="input !w-auto !py-2 text-xs">
           <option value="">Semua metode</option>
-          <option value="QRIS">QRIS</option>
-          <option value="VIRTUAL_ACCOUNT">Virtual Account</option>
-          <option value="EWALLET">E-Wallet</option>
+          <option value="OVO">OVO</option>
+          <option value="DANA">DANA</option>
+          <option value="SHOPEEPAY">ShopeePay</option>
           <option value="COD">COD</option>
         </select>
         <select v-model="status" class="input !w-auto !py-2 text-xs">

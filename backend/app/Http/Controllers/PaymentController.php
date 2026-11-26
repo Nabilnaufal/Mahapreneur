@@ -27,11 +27,11 @@ class PaymentController extends Controller
     public function methods()
     {
         return $this->ok([
-            'simulated' => ! DokuService::configured(),
+            'simulated' => true,
             'methods' => [
-                ['code' => 'QRIS', 'label' => 'QRIS', 'description' => 'Scan sekali pakai untuk semua e-wallet dan m-banking', 'type' => 'online'],
-                ['code' => 'VIRTUAL_ACCOUNT', 'label' => 'Virtual Account', 'description' => 'Transfer ke nomor Virtual Account '.config('mahapreneur.doku.va_channel'), 'type' => 'online'],
-                ['code' => 'EWALLET', 'label' => 'E-Wallet', 'description' => 'Bayar melalui '.config('mahapreneur.doku.ewallet_channel').' dan e-wallet lain', 'type' => 'online'],
+                ['code' => 'OVO', 'label' => 'OVO', 'description' => 'Pembayaran OVO (simulasi sementara)', 'type' => 'online'],
+                ['code' => 'DANA', 'label' => 'DANA', 'description' => 'Pembayaran DANA (simulasi sementara)', 'type' => 'online'],
+                ['code' => 'SHOPEEPAY', 'label' => 'ShopeePay', 'description' => 'Pembayaran ShopeePay (simulasi sementara)', 'type' => 'online'],
                 ['code' => 'COD', 'label' => 'Bayar di Tempat (COD)', 'description' => 'Bayar langsung ke seller saat pesanan diterima', 'type' => 'cod'],
             ],
         ]);

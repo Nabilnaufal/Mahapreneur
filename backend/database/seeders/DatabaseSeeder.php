@@ -79,7 +79,7 @@ class DatabaseSeeder extends Seeder
         foreach ([
             ['title' => 'Belanja dari tetangga kampusmu.', 'description' => 'Makanan, minuman, dan jasa dari mahasiswa lain — diantar langsung oleh seller ke kelas atau kosmu.', 'image' => $image('photo-1504674900247-0877df9cc836'), 'cta_label' => 'Jelajahi Produk', 'cta_url' => '/catalog', 'sort_order' => 1],
             ['title' => 'Buka toko pertamamu di Mahapreneur.', 'description' => 'Daftar sebagai seller, unggah produk, dan mulai terima pesanan dari mahasiswa se-kampus.', 'image' => $image('photo-1521737604893-d14cc237f11d'), 'cta_label' => 'Mulai Berjualan', 'cta_url' => '/auth/register?role=SELLER', 'sort_order' => 2],
-            ['title' => 'Bayar fleksibel: QRIS, VA, atau COD.', 'description' => 'Pilih pembayaran online lewat DOKU atau bayar langsung saat pesanan diterima.', 'image' => $image('photo-1556742049-0cfed4f6a45d'), 'cta_label' => 'Cara Berbelanja', 'cta_url' => '/catalog', 'sort_order' => 3],
+            ['title' => 'Bayar fleksibel: OVO, DANA, ShopeePay, atau COD.', 'description' => 'Pilih metode pembayaran yang nyaman atau bayar langsung saat pesanan diterima.', 'image' => $image('photo-1556742049-0cfed4f6a45d'), 'cta_label' => 'Cara Berbelanja', 'cta_url' => '/catalog', 'sort_order' => 3],
         ] as $banner) {
             Banner::updateOrCreate(['sort_order' => $banner['sort_order']], $banner);
         }

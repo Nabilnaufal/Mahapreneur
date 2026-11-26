@@ -49,9 +49,9 @@ export const PAYMENT_STATUS_LABEL: Record<PaymentStatus, string> = {
 };
 
 export const PAYMENT_METHOD_LABEL: Record<string, string> = {
-  QRIS: 'QRIS',
-  VIRTUAL_ACCOUNT: 'Virtual Account',
-  EWALLET: 'E-Wallet',
+  OVO: 'OVO',
+  DANA: 'DANA',
+  SHOPEEPAY: 'ShopeePay',
   COD: 'Bayar di Tempat (COD)',
 };
 

@@ -68,7 +68,7 @@ import { BadgeCheck, ShieldCheck, Store, Wallet } from 'lucide-vue-next';
 
 const features = [
   { icon: Store, title: 'Toko milik sendiri', desc: 'Kelola produk, stok, dan pesanan dari satu dashboard.' },
-  { icon: Wallet, title: 'Pembayaran fleksibel', desc: 'QRIS, Virtual Account, e-wallet, atau COD saat bertemu.' },
+  { icon: Wallet, title: 'Pembayaran fleksibel', desc: 'OVO, DANA, ShopeePay, atau COD saat bertemu.' },
   { icon: BadgeCheck, title: 'Antar langsung', desc: 'Seller mengantar pesanan sendiri ke pembeli di sekitar kampus.' },
 ];
 const route = useRoute();
