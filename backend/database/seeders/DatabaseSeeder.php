@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use App\Models\Banner;
 use App\Models\Category;
+use App\Models\Store;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
@@ -14,7 +15,7 @@ class DatabaseSeeder extends Seeder
     {
         $image = fn (string $id) => "https://images.unsplash.com/{$id}?auto=format&fit=crop&w=900&q=80";
 
-        User::updateOrCreate(
+        $tiaSeller = User::updateOrCreate(
             ['email' => 'seller@gmail.com'],
             [
                 'name' => 'Tia Seller',
@@ -58,6 +59,22 @@ class DatabaseSeeder extends Seeder
         foreach ($categories as $category) {
             Category::updateOrCreate(['slug' => $category['slug']], $category);
         }
+
+        Store::updateOrCreate(
+            ['slug' => 'tia-store'],
+            [
+                'user_id' => $tiaSeller->id,
+                'name' => 'Tia Kitchen & Creative',
+                'campus' => 'Gedung A - Fakultas Ekonomi',
+                'address' => 'Jl. Kampus Raya No. 12, Depok',
+                'phone' => '081234567899',
+                'open_time' => '08:00',
+                'close_time' => '20:00',
+                'description' => 'Produk makanan, minuman, dan jasa pilihan mahasiswa dari Tia.',
+                'logo' => $image('photo-1556910103-1c02745aae4d'),
+                'banner' => $image('photo-1504674900247-0877df9cc836'),
+            ],
+        );
 
         foreach ([
             ['title' => 'Belanja dari tetangga kampusmu.', 'description' => 'Makanan, minuman, dan jasa dari mahasiswa lain — diantar langsung oleh seller ke kelas atau kosmu.', 'image' => $image('photo-1504674900247-0877df9cc836'), 'cta_label' => 'Jelajahi Produk', 'cta_url' => '/catalog', 'sort_order' => 1],
