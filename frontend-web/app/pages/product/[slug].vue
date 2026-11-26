@@ -12,7 +12,7 @@
       <span class="truncate font-semibold text-strong">{{ product.name }}</span>
     </nav>
 
-    <div class="grid gap-8 lg:grid-cols-2">
+    <div class="grid grid-cols-1 gap-8 lg:grid-cols-2">
       <ProductGallery :images="product.images" :alt="product.name">
         <span v-if="product.type === 'SERVICE'" class="badge absolute left-4 top-4 bg-primary text-tertiary">Layanan Jasa</span>
       </ProductGallery>
@@ -98,7 +98,7 @@
     </div>
 
     <!-- Deskripsi & ketentuan -->
-    <section class="grid gap-6 lg:grid-cols-3">
+    <section class="grid grid-cols-1 gap-6 lg:grid-cols-3">
       <div class="card p-6 lg:col-span-2">
         <h2 class="text-lg font-extrabold text-strong">Deskripsi {{ product.type === 'SERVICE' ? 'layanan' : 'produk' }}</h2>
         <p class="mt-3 whitespace-pre-line text-sm leading-relaxed text-body">{{ product.description }}</p>

@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex-col gap-4 sm:grid sm:grid-cols-[96px_1fr]">
+  <div class="flex min-w-0 flex-col gap-4 sm:grid sm:grid-cols-[96px_1fr]">
     <div class="order-2 flex gap-2 overflow-x-auto no-scrollbar sm:order-1 sm:flex-col sm:overflow-visible">
       <button
         v-for="(image, index) in images"
