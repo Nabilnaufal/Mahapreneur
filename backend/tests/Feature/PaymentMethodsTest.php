@@ -11,14 +11,15 @@ class PaymentMethodsTest extends TestCase
         config([
             'mahapreneur.doku.client_id' => 'BRN-TEST',
             'mahapreneur.doku.secret_key' => 'SK-TEST',
-            'mahapreneur.doku.methods' => ['OVO', 'DANA'],
+            'mahapreneur.doku.methods' => ['DANA', 'SHOPEEPAY'],
         ]);
 
         $this->getJson('/api/payments/methods')
             ->assertOk()
             ->assertJsonPath('data.dokuConfigured', true)
-            ->assertJsonPath('data.methods.0.code', 'OVO')
-            ->assertJsonPath('data.methods.1.code', 'DANA')
+            ->assertJsonPath('data.methods.0.code', 'DANA')
+            ->assertJsonPath('data.methods.1.code', 'SHOPEEPAY')
+            ->assertJsonPath('data.methods.1.label', 'ShopeePay')
             ->assertJsonPath('data.methods.2.code', 'COD');
     }
 

@@ -28,7 +28,7 @@ return [
         // sudah aktif di akun DOKU; channel nonaktif ditolak "PAYMENT CHANNEL IS INACTIVE".
         'methods' => array_values(array_filter(array_map(
             'trim',
-            explode(',', env('DOKU_METHODS', 'SHOPEEPAY')),
+            explode(',', env('DOKU_METHODS', 'DANA,SHOPEEPAY')),
         ))),
         'channels' => [
             'OVO' => 'EMONEY_OVO',

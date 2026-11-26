@@ -244,7 +244,7 @@ Password ketiga akun: `password`. Semua akun dibuat oleh `php artisan migrate --
 | `MAIL_MAILER` / `RESEND_API_KEY` | Mailer Resend dan API key untuk email verifikasi/reset password |
 | `MAIL_FROM_ADDRESS` / `MAIL_FROM_NAME` | Identitas pengirim email dari domain `nabil-naufal.online` yang sudah diverifikasi di Resend |
 | `DOKU_CLIENT_ID` / `DOKU_SECRET_KEY` | Kredensial DOKU; kosong berarti hanya COD yang ditawarkan |
-| `DOKU_METHODS` | Metode online yang ditawarkan, default `SHOPEEPAY` (channel harus aktif di akun DOKU) |
+| `DOKU_METHODS` | Metode online yang ditawarkan, default `DANA,SHOPEEPAY` (channel harus aktif di akun DOKU) |
 | `MAX_UPLOAD_MB` | Batas ukuran file upload |
 | `AUTH_TTL_DAYS` / `EMAIL_VERIFICATION_TTL_HOURS` / `PASSWORD_RESET_TTL_MINUTES` | Masa berlaku token |
 | `PAYMENT_TTL_MINUTES` | Masa berlaku instruksi pembayaran |
@@ -269,7 +269,7 @@ hanya mengembalikan COD dan pembayaran online disembunyikan. Tidak ada mode simu
 
 1. Isi `DOKU_CLIENT_ID` dan `DOKU_SECRET_KEY` dari dashboard DOKU Sandbox, plus
    `DOKU_BASE_URL=https://api-sandbox.doku.com`.
-2. Pilih channel yang sudah aktif di akun Sandbox lewat `DOKU_METHODS` (default `SHOPEEPAY`).
+2. Pilih channel yang sudah aktif di akun Sandbox lewat `DOKU_METHODS` (default `DANA,SHOPEEPAY`).
    Channel nonaktif ditolak DOKU dengan `PAYMENT CHANNEL IS INACTIVE`.
 3. Daftarkan URL notifikasi `POST {API_URL}/api/payments/doku/notification`.
 4. Backend memverifikasi signature HMAC-SHA256 dari raw body sebelum memproses.

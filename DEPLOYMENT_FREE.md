@@ -55,7 +55,7 @@ DOKU_SECRET_KEY=...
 DOKU_BASE_URL=https://api-sandbox.doku.com
 DOKU_QRIS_CHANNEL=QRIS
 DOKU_VA_CHANNEL=BCA
-DOKU_METHODS=SHOPEEPAY
+DOKU_METHODS=DANA,SHOPEEPAY
 ```
 
 Generate `APP_KEY` secara lokal dari folder backend:
@@ -113,15 +113,15 @@ walau notifikasi tidak sampai.
 
 DOKU menolak invoice dengan pesan `PAYMENT CHANNEL IS INACTIVE` bila channel belum
 diaktifkan di akun Sandbox, atau bila kode channel-nya salah. Hasil uji langsung ke
-akun demo (26 Nov 2026): `EMONEY_SHOPEE_PAY`, `EMONEY_LINKAJA`, `VIRTUAL_ACCOUNT_BCA`
-dan `VIRTUAL_ACCOUNT_DOKU` berhasil membuat invoice; `EMONEY_OVO` dan `EMONEY_DANA`
-membuat invoice tetapi pembayarannya gagal di halaman DOKU; `QRIS` masih nonaktif.
+akun demo (26 Nov 2026): `EMONEY_DANA`, `EMONEY_SHOPEE_PAY`, `EMONEY_LINKAJA`,
+`VIRTUAL_ACCOUNT_BCA` dan `VIRTUAL_ACCOUNT_DOKU` berhasil membuat invoice;
+`EMONEY_OVO` gagal saat pembayaran di halaman DOKU; `QRIS` masih nonaktif.
 
-Karena itu `DOKU_METHODS` default-nya `SHOPEEPAY`. Kode channel untuk ShopeePay adalah
-`EMONEY_SHOPEE_PAY` (memakai garis bawah) — `EMONEY_SHOPEEPAY` ditolak DOKU dengan
-pesan `PAYMENT CHANNEL IS INACTIVE` yang menyesatkan.
+Karena itu `DOKU_METHODS` default-nya `DANA,SHOPEEPAY`. Kode channel untuk ShopeePay
+adalah `EMONEY_SHOPEE_PAY` (memakai garis bawah) — `EMONEY_SHOPEEPAY` ditolak DOKU
+dengan pesan `PAYMENT CHANNEL IS INACTIVE` yang menyesatkan.
 
-Tambahkan channel lain lewat env, contoh `DOKU_METHODS=SHOPEEPAY,LINKAJA,VIRTUAL_ACCOUNT`.
+Tambahkan channel lain lewat env, contoh `DOKU_METHODS=DANA,SHOPEEPAY,VIRTUAL_ACCOUNT`.
 Pesan error asli DOKU ikut ditampilkan di halaman pembayaran agar penyebabnya kelihatan.
 
 ## 5b. Deploy backend ke Railway
