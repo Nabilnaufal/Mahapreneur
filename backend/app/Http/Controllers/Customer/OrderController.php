@@ -42,6 +42,11 @@ class OrderController extends Controller
             throw ApiException::notFound('Pesanan tidak ditemukan');
         }
 
+        if ($order->payment?->status === 'PENDING') {
+            $this->payments->syncFromDoku($order->payment);
+            $order->refresh()->load('payment');
+        }
+
         return $this->ok([
             'order' => OrderResource::make($order),
             'store' => StoreResource::make($order->store),
@@ -156,6 +161,10 @@ class OrderController extends Controller
         if (! $order->payment) {
             $this->payments->prepareOnlinePayment($order->id);
             $order->load('payment');
+        }
+        if ($order->payment?->status === 'PENDING') {
+            $this->payments->syncFromDoku($order->payment);
+            $order->refresh()->load('payment');
         }
         if ($order->payment?->status === 'PENDING' && $order->payment->expires_at?->isPast()) {
             $order->payment->update(['status' => 'EXPIRED']);

@@ -5,8 +5,10 @@ namespace App\Services;
 use Illuminate\Http\Client\Response;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use RuntimeException;
+use Throwable;
 
 /** Klien DOKU SNAP. Secret key tidak pernah dikirim ke frontend. */
 class DokuService
@@ -55,6 +57,26 @@ class DokuService
             'tokenId' => $tokenId,
             'paymentUrl' => $paymentUrl,
             'expiredDate' => data_get($response, 'response.payment.expired_date'),
+        ];
+    }
+
+    /**
+     * Status transaksi menurut DOKU. Jaring pengaman saat notifikasi webhook
+     * tidak sampai ke server; status final baru tersedia 60 detik setelah bayar.
+     */
+    public function transactionStatus(string $invoiceNumber): ?array
+    {
+        try {
+            $response = $this->request('GET', '/orders/v1/status/'.$invoiceNumber);
+        } catch (Throwable $error) {
+            Log::warning('Gagal cek status DOKU: '.$error->getMessage());
+
+            return null;
+        }
+
+        return [
+            'status' => strtoupper((string) data_get($response, 'transaction.status', '')),
+            'channel' => data_get($response, 'channel.id'),
         ];
     }
 

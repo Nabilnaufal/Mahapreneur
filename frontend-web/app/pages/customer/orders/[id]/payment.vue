@@ -156,7 +156,9 @@ const payment = computed(() => data.value?.payment ?? null);
 const redirecting = ref(false);
 
 onMounted(() => {
-  redirectToDoku(payment.value?.dokuPaymentUrl);
+  // Hanya pembayaran yang masih menunggu yang diarahkan; status FAILED/PAID
+  // harus menampilkan halaman ini, bukan checkout DOKU yang sudah tidak berlaku.
+  if (payment.value?.status === 'PENDING') redirectToDoku(payment.value.dokuPaymentUrl);
 });
 
 watch(() => payment.value?.dokuPaymentUrl, (paymentUrl) => redirectToDoku(paymentUrl));

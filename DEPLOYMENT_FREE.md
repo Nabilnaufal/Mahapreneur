@@ -99,6 +99,16 @@ https://NAMA-SERVICE.onrender.com/api/payments/doku/notification
 
 URL webhook harus publik dan HTTPS. Jangan pakai localhost atau URL tunnel lama.
 
+Notification URL diisi **per channel**, bukan satu kali untuk semua: buka
+**Settings → Payment Settings → e-Wallet** lalu klik **CONFIGURE** pada OVO/DANA.
+Channel yang Notification URL-nya kosong tidak akan pernah mengirim notifikasi, sehingga
+status pembayaran di aplikasi tetap `PENDING` meskipun customer sudah membayar.
+
+Sebagai jaring pengaman, aplikasi juga menanyakan status langsung ke DOKU
+(`GET /orders/v1/status/{invoice_number}`) saat halaman pembayaran atau detail pesanan
+dibuka dan pembayaran masih `PENDING` lebih dari 60 detik. Jadi status tetap terkoreksi
+walau notifikasi tidak sampai.
+
 ### Channel DOKU yang tidak aktif
 
 DOKU menolak invoice dengan pesan `PAYMENT CHANNEL IS INACTIVE` bila channel belum
@@ -132,7 +142,8 @@ Catatan penting di Railway:
   hasilnya 401 dari DOKU.
 - `CORS_ORIGIN` harus origin frontend, bukan domain backend.
 - Jalankan `php artisan migrate --force` sekali lewat Railway shell/command, dan set
-  Notification URL DOKU ke `https://NAMA-SERVICE.up.railway.app/api/payments/doku/notification`.
+  Notification URL DOKU ke `https://NAMA-SERVICE.up.railway.app/api/payments/doku/notification`
+  pada **tiap channel** di **Settings → Payment Settings → e-Wallet → CONFIGURE**.
 - Setelah mengubah env, redeploy; Laravel membaca env saat proses start.
 
 ## Catatan demo

@@ -8,6 +8,7 @@ use App\Models\Payment;
 use App\Support\Activity;
 use App\Support\Reference;
 use Carbon\CarbonInterface;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Throwable;
@@ -92,6 +93,38 @@ class PaymentService
         );
 
         return ['status' => 'PAID', 'orderId' => $order->id, 'orderNumber' => $order->order_number];
+    }
+
+    /**
+     * Selaraskan status dengan DOKU Check Status API. Dipakai saat notifikasi
+     * webhook tidak sampai, supaya status pesanan tetap mengikuti keadaan asli.
+     */
+    public function syncFromDoku(Payment $payment): void
+    {
+        if ($payment->status !== 'PENDING' || blank($payment->invoice_number)) {
+            return;
+        }
+        // Status final baru tersedia 60 detik setelah pembayaran dibuat.
+        if (! $payment->created_at || $payment->created_at->gt(now()->subMinute())) {
+            return;
+        }
+        // Batasi satu panggilan per pembayaran agar halaman tidak membanjiri DOKU.
+        if (! Cache::add('doku-sync-'.$payment->id, 1, 20)) {
+            return;
+        }
+
+        $state = $this->doku->transactionStatus($payment->invoice_number);
+        if (! $state) {
+            return;
+        }
+
+        if (in_array($state['status'], ['SUCCESS', 'SUCCESSFUL', 'PAID', 'SETTLED'], true)) {
+            $this->markPaid($payment->invoice_number, null, $state['channel'], 'DOKU_STATUS_SYNC');
+        } elseif ($state['status'] === 'EXPIRED') {
+            $this->markFailed($payment->invoice_number, 'EXPIRED');
+        } elseif ($state['status'] === 'FAILED') {
+            $this->markFailed($payment->invoice_number, 'FAILED');
+        }
     }
 
     /** Tandai pembayaran gagal/kedaluwarsa tanpa mengubah status pesanan. */
