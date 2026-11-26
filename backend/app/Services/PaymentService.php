@@ -119,7 +119,7 @@ class PaymentService
         }
 
         if (in_array($state['status'], ['SUCCESS', 'SUCCESSFUL', 'PAID', 'SETTLED'], true)) {
-            $this->markPaid($payment->invoice_number, null, $state['channel'], 'DOKU_STATUS_SYNC');
+            $this->markPaid($payment->invoice_number, null, $state['channel'] ?: null, 'DOKU_STATUS_SYNC');
         } elseif ($state['status'] === 'EXPIRED') {
             $this->markFailed($payment->invoice_number, 'EXPIRED');
         } elseif ($state['status'] === 'FAILED') {

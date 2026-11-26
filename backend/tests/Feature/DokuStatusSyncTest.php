@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use App\Models\Order;
 use App\Models\Store;
 use App\Models\User;
+use App\Services\DokuService;
 use App\Support\AuthToken;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Http;
@@ -73,6 +74,26 @@ class DokuStatusSyncTest extends TestCase
             ->assertJsonPath('data.orders.0.paymentStatus', 'PAID');
 
         $this->assertSame('PAID', $order->payment->fresh()->status);
+    }
+
+    public function test_get_status_signature_omits_digest_line(): void
+    {
+        Http::fake(function ($request) {
+            $lines = [
+                'Client-Id:test-client',
+                'Request-Id:'.$request->header('Request-Id')[0],
+                'Request-Timestamp:'.$request->header('Request-Timestamp')[0],
+                'Request-Target:/orders/v1/status/INV-1',
+            ];
+            $expected = 'HMACSHA256='.base64_encode(hash_hmac('sha256', implode("\n", $lines), 'test-secret', true));
+
+            $this->assertSame($expected, $request->header('Signature')[0]);
+            $this->assertSame([], $request->header('Digest'));
+
+            return Http::response(['transaction' => ['status' => 'PENDING']]);
+        });
+
+        app(DokuService::class)->transactionStatus('INV-1');
     }
 
     private function orderWithPayment(): array

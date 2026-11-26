@@ -120,14 +120,17 @@ class DokuService
         $timestamp = now()->utc()->format('Y-m-d\TH:i:s\Z');
         $raw = $body ? json_encode($body) : '';
         $digest = $raw !== '' ? base64_encode(hash('sha256', $raw, true)) : '';
-        $stringToSign = implode("\n", [
+        $lines = [
             'Client-Id:'.config('mahapreneur.doku.client_id'),
             "Request-Id:{$requestId}",
             "Request-Timestamp:{$timestamp}",
             "Request-Target:{$target}",
-            "Digest:{$digest}",
-        ]);
-        $signature = base64_encode(hash_hmac('sha256', $stringToSign, config('mahapreneur.doku.secret_key'), true));
+        ];
+        // GET tanpa body tidak boleh menyertakan baris Digest di string to sign.
+        if ($digest !== '') {
+            $lines[] = "Digest:{$digest}";
+        }
+        $signature = base64_encode(hash_hmac('sha256', implode("\n", $lines), config('mahapreneur.doku.secret_key'), true));
 
         $headers = [
             'Client-Id' => config('mahapreneur.doku.client_id'),
