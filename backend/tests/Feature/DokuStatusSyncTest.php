@@ -59,6 +59,22 @@ class DokuStatusSyncTest extends TestCase
         $this->assertSame('WAITING_PAYMENT', $order->fresh()->status);
     }
 
+    public function test_order_list_also_reflects_doku_status(): void
+    {
+        [$order, $customer] = $this->orderWithPayment();
+        Http::fake(['api-sandbox.doku.com/*' => Http::response([
+            'transaction' => ['status' => 'SUCCESS'],
+            'channel' => ['id' => 'EMONEY_DANA'],
+        ])]);
+
+        $this->withToken(AuthToken::issue($customer))
+            ->getJson('/api/customer/orders')
+            ->assertOk()
+            ->assertJsonPath('data.orders.0.paymentStatus', 'PAID');
+
+        $this->assertSame('PAID', $order->payment->fresh()->status);
+    }
+
     private function orderWithPayment(): array
     {
         $seller = User::create([

@@ -27,6 +27,15 @@ class OrderController extends Controller
             ->latest('created_at')
             ->paginate($this->perPage($request));
 
+        // Status di daftar ikut diselaraskan dengan DOKU, supaya badge tidak
+        // tertinggal PENDING saat notifikasi webhook tidak sampai.
+        foreach ($orders as $order) {
+            if ($order->payment?->status === 'PENDING') {
+                $this->payments->syncFromDoku($order->payment);
+                $order->refresh();
+            }
+        }
+
         return $this->ok([
             'orders' => OrderResource::collection($orders),
             'meta' => $this->meta($orders),
