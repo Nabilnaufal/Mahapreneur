@@ -31,7 +31,7 @@ class CheckoutController extends Controller
             'campus' => ['nullable', 'string', 'max:120'],
             'room' => ['nullable', 'string', 'max:60'],
             'note' => ['nullable', 'string', 'max:500'],
-            'payment_method' => ['required', Rule::in(['OVO', 'DANA', 'SHOPEEPAY', 'COD'])],
+            'payment_method' => ['required', Rule::in(['OVO', 'DANA', 'SHOPEEPAY', 'QRIS', 'VIRTUAL_ACCOUNT', 'EWALLET', 'COD'])],
             'save_address' => ['boolean'],
         ]);
 

@@ -23,7 +23,7 @@ class DokuService
                 'amount' => $amount,
                 'invoice_number' => $invoiceNumber,
                 'currency' => 'IDR',
-                'callback_url' => config('mahapreneur.api_url').'/api/payments/doku/notification',
+                'callback_url' => rtrim(config('mahapreneur.app_url'), '/').'/customer/orders',
                 'line_items' => [['name' => $description, 'price' => $amount, 'quantity' => 1]],
             ],
             'payment' => [

@@ -26,14 +26,26 @@ class PaymentController extends Controller
     /** Metode pembayaran yang disiapkan platform (dipakai halaman checkout). */
     public function methods()
     {
+        $methods = [
+            ['code' => 'OVO', 'label' => 'OVO', 'description' => 'Pembayaran OVO (simulasi sementara)', 'type' => 'online'],
+            ['code' => 'DANA', 'label' => 'DANA', 'description' => 'Pembayaran DANA (simulasi sementara)', 'type' => 'online'],
+            ['code' => 'SHOPEEPAY', 'label' => 'ShopeePay', 'description' => 'Pembayaran ShopeePay (simulasi sementara)', 'type' => 'online'],
+            ['code' => 'COD', 'label' => 'Bayar di Tempat (COD)', 'description' => 'Bayar langsung ke seller saat pesanan diterima', 'type' => 'cod'],
+        ];
+
+        if (DokuService::configured()) {
+            $methods = [
+                ...$methods,
+                ['code' => 'QRIS', 'label' => 'QRIS DOKU', 'description' => 'Bayar dengan QRIS melalui halaman pembayaran DOKU', 'type' => 'online'],
+                ['code' => 'VIRTUAL_ACCOUNT', 'label' => 'Virtual Account DOKU', 'description' => 'Transfer ke Virtual Account bank yang tersedia di DOKU', 'type' => 'online'],
+                ['code' => 'EWALLET', 'label' => 'E-Wallet DOKU', 'description' => 'Pilih e-wallet yang aktif di halaman pembayaran DOKU', 'type' => 'online'],
+            ];
+        }
+
         return $this->ok([
             'simulated' => true,
-            'methods' => [
-                ['code' => 'OVO', 'label' => 'OVO', 'description' => 'Pembayaran OVO (simulasi sementara)', 'type' => 'online'],
-                ['code' => 'DANA', 'label' => 'DANA', 'description' => 'Pembayaran DANA (simulasi sementara)', 'type' => 'online'],
-                ['code' => 'SHOPEEPAY', 'label' => 'ShopeePay', 'description' => 'Pembayaran ShopeePay (simulasi sementara)', 'type' => 'online'],
-                ['code' => 'COD', 'label' => 'Bayar di Tempat (COD)', 'description' => 'Bayar langsung ke seller saat pesanan diterima', 'type' => 'cod'],
-            ],
+            'dokuConfigured' => DokuService::configured(),
+            'methods' => $methods,
         ]);
     }
 

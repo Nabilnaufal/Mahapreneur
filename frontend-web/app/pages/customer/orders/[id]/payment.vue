@@ -37,7 +37,7 @@
         <section class="card p-5">
           <h2 class="text-sm font-bold text-strong">Pilih channel pembayaran</h2>
           <p class="mt-1 text-xs text-muted">
-            <template v-if="simulated">Metode ini masih berjalan dalam mode simulasi. Pilih metode lalu tandai pembayaran berhasil untuk melanjutkan pesanan.</template>
+            <template v-if="simulated">Metode OVO, DANA, dan ShopeePay masih berjalan dalam mode simulasi. Pilih metode lalu tandai pembayaran berhasil untuk melanjutkan pesanan.</template>
             <template v-else>Channel yang tampil mengikuti konfigurasi akun DOKU. Pilih salah satu untuk mendapatkan kode bayar.</template>
           </p>
           <div class="mt-4 grid gap-2 sm:grid-cols-2">

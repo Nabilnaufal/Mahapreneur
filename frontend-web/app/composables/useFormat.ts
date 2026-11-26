@@ -52,6 +52,9 @@ export const PAYMENT_METHOD_LABEL: Record<string, string> = {
   OVO: 'OVO',
   DANA: 'DANA',
   SHOPEEPAY: 'ShopeePay',
+  QRIS: 'QRIS DOKU',
+  VIRTUAL_ACCOUNT: 'Virtual Account DOKU',
+  EWALLET: 'E-Wallet DOKU',
   COD: 'Bayar di Tempat (COD)',
 };
 

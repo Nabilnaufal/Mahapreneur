@@ -24,6 +24,9 @@
           <option value="OVO">OVO</option>
           <option value="DANA">DANA</option>
           <option value="SHOPEEPAY">ShopeePay</option>
+          <option value="QRIS">QRIS DOKU</option>
+          <option value="VIRTUAL_ACCOUNT">Virtual Account DOKU</option>
+          <option value="EWALLET">E-Wallet DOKU</option>
           <option value="COD">COD</option>
         </select>
         <select v-model="status" class="input !w-auto !py-2 text-xs">

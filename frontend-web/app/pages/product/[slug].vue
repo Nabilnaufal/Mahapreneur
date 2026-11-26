@@ -121,7 +121,7 @@
           </div>
           <div class="flex justify-between gap-4">
             <dt class="text-muted">Metode bayar</dt>
-            <dd class="font-semibold text-strong">OVO, DANA, ShopeePay, COD</dd>
+            <dd class="font-semibold text-strong">OVO, DANA, ShopeePay, COD, dan DOKU</dd>
           </div>
         </dl>
         <div v-if="product.serviceTerms" class="border-t border-line pt-4">

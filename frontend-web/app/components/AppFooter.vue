@@ -40,7 +40,7 @@
           <li><NuxtLink to="/customer/orders" class="hover:text-strong">Lacak pesanan</NuxtLink></li>
           <li><NuxtLink to="/customer/profile" class="hover:text-strong">Pengaturan akun</NuxtLink></li>
           <li><span class="inline-flex items-center gap-1.5"><ShieldCheck class="size-4" /> Pembayaran lewat DOKU</span></li>
-          <li><span class="inline-flex items-center gap-1.5"><Wallet class="size-4" /> OVO, DANA, ShopeePay, dan COD</span></li>
+          <li><span class="inline-flex items-center gap-1.5"><Wallet class="size-4" /> OVO, DANA, ShopeePay, DOKU, dan COD</span></li>
         </ul>
       </div>
     </div>

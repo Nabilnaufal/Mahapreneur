@@ -162,6 +162,7 @@ class PaymentService
             'amount' => $order->total,
             'invoice_number' => $invoice,
             'doku_payment_url' => $paymentUrl,
+            'doku_token_id' => $tokenId ?? $order->payment?->doku_token_id,
             'doku_channel' => self::isSimulatedMethod($order->payment_method)
                 ? $order->payment_method
                 : match ($order->payment_method) {
