@@ -150,7 +150,7 @@
 </template>
 
 <script setup lang="ts">
-import { Banknote, BookmarkCheck, CreditCard, Info, Loader2, MapPin, QrCode, Wallet } from 'lucide-vue-next';
+import { Banknote, BookmarkCheck, Info, Loader2, Wallet } from 'lucide-vue-next';
 import type { Address, CartItem, PaymentMethod } from '~/types';
 
 definePageMeta({ requiresAuth: true, roles: ['CUSTOMER'] });
@@ -205,7 +205,7 @@ watch(methods, (availableMethods) => {
 }, { immediate: true });
 
 const methodIcon = (code: string) =>
-  ({ OVO: Wallet, DANA: Wallet, SHOPEEPAY: Wallet, QRIS: QrCode, VIRTUAL_ACCOUNT: CreditCard, EWALLET: Wallet, COD: Banknote })[code] ?? Wallet;
+  ({ OVO: Wallet, DANA: Wallet, SHOPEEPAY: Wallet, COD: Banknote })[code] ?? Wallet;
 
 function useAddress(address: Address) {
   form.recipientName = address.recipientName;

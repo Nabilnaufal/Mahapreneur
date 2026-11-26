@@ -13,7 +13,7 @@ export type OrderStatus =
   | 'COMPLETED'
   | 'CANCELLED';
 export type PaymentStatus = 'PENDING' | 'PAID' | 'FAILED' | 'EXPIRED' | 'UNPAID_COD' | 'REFUNDED';
-export type PaymentMethod = 'OVO' | 'DANA' | 'SHOPEEPAY' | 'QRIS' | 'VIRTUAL_ACCOUNT' | 'EWALLET' | 'COD';
+export type PaymentMethod = 'OVO' | 'DANA' | 'SHOPEEPAY' | 'COD';
 
 export interface User {
   id: number;
