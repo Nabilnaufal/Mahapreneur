@@ -51,9 +51,15 @@ class DokuService
             'customer' => ['name' => $customerName, 'email' => $customerEmail],
         ]);
 
+        $tokenId = data_get($response, 'response.payment.token_id');
+        $paymentUrl = data_get($response, 'response.payment.url');
+        if (blank($tokenId) || blank($paymentUrl)) {
+            throw new RuntimeException('Respons DOKU tidak memiliki token atau URL checkout: '.Str::limit(json_encode($response), 500));
+        }
+
         return [
-            'tokenId' => data_get($response, 'response.payment.token_id'),
-            'paymentUrl' => data_get($response, 'response.payment.url'),
+            'tokenId' => $tokenId,
+            'paymentUrl' => $paymentUrl,
             'expiredDate' => data_get($response, 'response.payment.expired_date'),
         ];
     }

@@ -11,6 +11,7 @@ use App\Models\Order;
 use App\Models\Product;
 use App\Services\PaymentService;
 use App\Support\Activity;
+use App\Support\Reference;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -188,7 +189,14 @@ class OrderController extends Controller
             throw ApiException::badRequest('Pesanan COD tidak memerlukan pembayaran online');
         }
 
-        $order->payment?->update(['status' => 'PENDING']);
+        $order->payment?->update([
+            'status' => 'PENDING',
+            'invoice_number' => Reference::invoiceNumber($order->order_number),
+            'doku_token_id' => null,
+            'doku_payment_url' => null,
+            'doku_qr_string' => null,
+            'doku_va_number' => null,
+        ]);
         $prepared = $this->payments->prepareOnlinePayment($order->id);
 
         return $this->ok(['payment' => $prepared ? PaymentResource::make($prepared['payment']) : null], 'Instruksi pembayaran baru dibuat');

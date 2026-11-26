@@ -127,8 +127,13 @@ class PaymentService
             throw ApiException::badRequest('Pembayaran online DOKU belum tersedia. Silakan pilih COD atau hubungi admin.');
         }
 
-        $invoice = $order->payment?->invoice_number ?? Reference::invoiceNumber($order->order_number);
-        $expiresAt = $order->payment?->expires_at ?? $this->expiry();
+        $hasUsableCheckout = filled($order->payment?->doku_token_id) && filled($order->payment?->doku_payment_url);
+        $invoice = $hasUsableCheckout
+            ? $order->payment->invoice_number
+            : Reference::invoiceNumber($order->order_number);
+        $expiresAt = $hasUsableCheckout && $order->payment->expires_at?->isFuture()
+            ? $order->payment->expires_at
+            : $this->expiry();
         $paymentUrl = $order->payment?->doku_payment_url;
         $tokenId = null;
 

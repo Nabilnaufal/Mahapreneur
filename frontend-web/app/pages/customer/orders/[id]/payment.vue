@@ -76,6 +76,17 @@
           </a>
         </section>
 
+        <section v-else class="card border-amber-300 bg-amber-50 p-5 dark:border-amber-500/30 dark:bg-amber-500/10">
+          <h2 class="text-sm font-bold text-amber-900 dark:text-amber-200">Link pembayaran DOKU belum tersedia</h2>
+          <p class="mt-1 text-xs leading-relaxed text-amber-800 dark:text-amber-300">
+            DOKU belum mengembalikan halaman pembayaran untuk invoice ini. Buat instruksi baru untuk mencoba kembali.
+          </p>
+          <button class="btn btn-primary mt-4" :disabled="loading" @click="retry">
+            <Loader2 v-if="loading" class="size-4 animate-spin" />
+            Coba buat pembayaran lagi
+          </button>
+        </section>
+
       </div>
 
       <aside class="space-y-5">
@@ -145,12 +156,16 @@ const payment = computed(() => data.value?.payment ?? null);
 const redirecting = ref(false);
 
 onMounted(() => {
-  const paymentUrl = payment.value?.dokuPaymentUrl;
-  if (paymentUrl?.startsWith('http')) {
-    redirecting.value = true;
-    window.location.replace(paymentUrl);
-  }
+  redirectToDoku(payment.value?.dokuPaymentUrl);
 });
+
+watch(() => payment.value?.dokuPaymentUrl, (paymentUrl) => redirectToDoku(paymentUrl));
+
+function redirectToDoku(paymentUrl?: string | null) {
+  if (redirecting.value || !paymentUrl?.startsWith('http')) return;
+  redirecting.value = true;
+  window.location.replace(paymentUrl);
+}
 
 async function retry() {
   loading.value = true;
