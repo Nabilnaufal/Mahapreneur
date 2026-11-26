@@ -10,6 +10,7 @@ use App\Models\CartItem;
 use App\Models\Order;
 use App\Models\Product;
 use App\Services\PaymentService;
+use App\Services\DokuService;
 use App\Support\Activity;
 use App\Support\Reference;
 use Illuminate\Http\Request;
@@ -36,6 +37,10 @@ class CheckoutController extends Controller
         ]);
 
         $user = $request->user();
+        if ($data['payment_method'] !== 'COD' && ! DokuService::configured()) {
+            throw ApiException::badRequest('Pembayaran online DOKU belum tersedia. Silakan pilih COD atau hubungi admin.');
+        }
+
         $cartItems = CartItem::whereIn('id', $data['cart_item_ids'])
             ->whereHas('cart', fn ($query) => $query->where('user_id', $user->id))
             ->with('product.store')

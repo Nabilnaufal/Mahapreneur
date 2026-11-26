@@ -27,23 +27,22 @@ class PaymentController extends Controller
     public function methods()
     {
         $methods = [
-            ['code' => 'OVO', 'label' => 'OVO', 'description' => 'Pembayaran OVO (simulasi sementara)', 'type' => 'online'],
-            ['code' => 'DANA', 'label' => 'DANA', 'description' => 'Pembayaran DANA (simulasi sementara)', 'type' => 'online'],
-            ['code' => 'SHOPEEPAY', 'label' => 'ShopeePay', 'description' => 'Pembayaran ShopeePay (simulasi sementara)', 'type' => 'online'],
             ['code' => 'COD', 'label' => 'Bayar di Tempat (COD)', 'description' => 'Bayar langsung ke seller saat pesanan diterima', 'type' => 'cod'],
         ];
 
         if (DokuService::configured()) {
             $methods = [
-                ...$methods,
+                ['code' => 'OVO', 'label' => 'OVO', 'description' => 'Bayar melalui checkout DOKU Sandbox', 'type' => 'online'],
+                ['code' => 'DANA', 'label' => 'DANA', 'description' => 'Bayar melalui checkout DOKU Sandbox', 'type' => 'online'],
+                ['code' => 'SHOPEEPAY', 'label' => 'ShopeePay', 'description' => 'Bayar melalui checkout DOKU Sandbox', 'type' => 'online'],
                 ['code' => 'QRIS', 'label' => 'QRIS DOKU', 'description' => 'Bayar dengan QRIS melalui halaman pembayaran DOKU', 'type' => 'online'],
                 ['code' => 'VIRTUAL_ACCOUNT', 'label' => 'Virtual Account DOKU', 'description' => 'Transfer ke Virtual Account bank yang tersedia di DOKU', 'type' => 'online'],
                 ['code' => 'EWALLET', 'label' => 'E-Wallet DOKU', 'description' => 'Pilih e-wallet yang aktif di halaman pembayaran DOKU', 'type' => 'online'],
+                ...$methods,
             ];
         }
 
         return $this->ok([
-            'simulated' => true,
             'dokuConfigured' => DokuService::configured(),
             'methods' => $methods,
         ]);

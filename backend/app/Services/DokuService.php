@@ -16,19 +16,37 @@ class DokuService
         return filled(config('mahapreneur.doku.client_id')) && filled(config('mahapreneur.doku.secret_key'));
     }
 
-    public function createInvoice(string $invoiceNumber, int $amount, string $customerName, string $customerEmail, string $description)
+    public function createInvoice(
+        string $invoiceNumber,
+        int $amount,
+        string $customerName,
+        string $customerEmail,
+        string $description,
+        string $paymentMethod,
+    )
     {
+        $paymentMethodTypes = match ($paymentMethod) {
+            'OVO' => ['EMONEY_OVO'],
+            'DANA' => ['EMONEY_DANA'],
+            'SHOPEEPAY' => ['EMONEY_SHOPEEPAY'],
+            'QRIS' => ['QRIS'],
+            'VIRTUAL_ACCOUNT' => ['VIRTUAL_ACCOUNT_'.config('mahapreneur.doku.va_channel')],
+            'EWALLET' => ['EMONEY_OVO', 'EMONEY_DANA', 'EMONEY_SHOPEEPAY'],
+            default => ['QRIS', 'VIRTUAL_ACCOUNT', 'EMONEY_OVO', 'EMONEY_DANA', 'EMONEY_SHOPEEPAY'],
+        };
+
         $response = $this->request('POST', '/checkout/v1/payment', [
             'order' => [
                 'amount' => $amount,
                 'invoice_number' => $invoiceNumber,
                 'currency' => 'IDR',
                 'callback_url' => rtrim(config('mahapreneur.app_url'), '/').'/customer/orders',
+                'auto_redirect' => true,
                 'line_items' => [['name' => $description, 'price' => $amount, 'quantity' => 1]],
             ],
             'payment' => [
                 'payment_due_date' => config('mahapreneur.doku.payment_ttl_minutes'),
-                'payment_method_types' => ['QRIS', 'VIRTUAL_ACCOUNT', 'EMONEY'],
+                'payment_method_types' => $paymentMethodTypes,
             ],
             'customer' => ['name' => $customerName, 'email' => $customerEmail],
         ]);
@@ -37,38 +55,6 @@ class DokuService
             'tokenId' => data_get($response, 'response.payment.token_id'),
             'paymentUrl' => data_get($response, 'response.payment.url'),
             'expiredDate' => data_get($response, 'response.payment.expired_date'),
-        ];
-    }
-
-    public function listChannels()
-    {
-        $response = $this->request('GET', '/checkout/v1/payment/methods');
-        $methods = data_get($response, 'response.payment_methods', []);
-
-        return array_map(fn ($method) => [
-            'channelCode' => $method['channel_code'] ?? $method['payment_method_type'] ?? '',
-            'label' => $method['name'] ?? $method['channel_code'] ?? '',
-            'method' => match ($method['payment_method_type'] ?? '') {
-                'VIRTUAL_ACCOUNT' => 'VIRTUAL_ACCOUNT',
-                'EMONEY' => 'EWALLET',
-                default => 'QRIS',
-            },
-        ], $methods);
-    }
-
-    /** Aktifkan satu channel pada invoice, lalu ambil data bayar (QR / nomor VA). */
-    public function requestChannel(string $tokenId, string $channelCode)
-    {
-        $response = $this->request('POST', "/checkout/v1/payment/{$tokenId}/channels", [
-            'channel_code' => $channelCode,
-        ]);
-        $channel = data_get($response, 'response.channel', []);
-
-        return [
-            'qrString' => $channel['qr_code'] ?? null,
-            'vaNumber' => $channel['virtual_account_number'] ?? $channel['pay_code'] ?? null,
-            'paymentUrl' => $channel['url'] ?? data_get($response, 'response.payment.url'),
-            'channelCode' => $channelCode,
         ];
     }
 

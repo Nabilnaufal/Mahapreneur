@@ -94,9 +94,7 @@ Route::middleware(['auth.api', 'role:CUSTOMER'])->prefix('customer')->group(func
     Route::post('orders/{id}/review', [CustomerOrderController::class, 'review']);
 
     Route::get('orders/{id}/payment', [CustomerOrderController::class, 'payment']);
-    Route::post('orders/{id}/payment/channel', [CustomerOrderController::class, 'chooseChannel']);
     Route::post('orders/{id}/payment/retry', [CustomerOrderController::class, 'retryPayment']);
-    Route::post('orders/{id}/payment/simulate', [CustomerOrderController::class, 'simulatePayment']);
 
     Route::get('profile', [CustomerProfileController::class, 'show']);
     Route::patch('profile', [CustomerProfileController::class, 'update']);

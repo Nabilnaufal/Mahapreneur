@@ -9,7 +9,6 @@ use App\Http\Resources\PaymentResource;
 use App\Http\Resources\StoreResource;
 use App\Models\Order;
 use App\Models\Product;
-use App\Services\DokuService;
 use App\Services\PaymentService;
 use App\Support\Activity;
 use Illuminate\Http\Request;
@@ -173,44 +172,7 @@ class OrderController extends Controller
                 'paymentMethod' => $order->payment_method,
             ],
             'payment' => $order->payment ? PaymentResource::make($order->payment) : null,
-            'channels' => $this->payments->availableChannels($order->payment_method),
-            'simulated' => PaymentService::isSimulatedMethod($order->payment_method) || ! DokuService::configured(),
         ]);
-    }
-
-    public function chooseChannel(Request $request, int $id)
-    {
-        $data = $request->validate(['channel_code' => ['required', 'string', 'min:2']]);
-        $order = Order::with('payment')->where('customer_id', $request->user()->id)->find($id);
-        if (! $order?->payment) {
-            throw ApiException::notFound('Data pembayaran belum tersedia');
-        }
-        if ($order->payment->status === 'PAID') {
-            throw ApiException::badRequest('Pesanan ini sudah dibayar');
-        }
-        if ($order->payment->status === 'EXPIRED') {
-            throw ApiException::badRequest('Pembayaran sudah kedaluwarsa. Buat pembayaran baru.');
-        }
-
-        if (PaymentService::isSimulatedMethod($order->payment_method) || ! DokuService::configured() || ! $order->payment->doku_token_id) {
-            $order->payment->update([
-                'doku_channel' => $data['channel_code'],
-                'doku_qr_string' => $order->payment_method === 'QRIS' ? "SIMULASI-QRIS-{$order->order_number}" : null,
-                'doku_va_number' => $order->payment_method === 'VIRTUAL_ACCOUNT' ? '88'.str_pad((string) $order->id, 10, '0', STR_PAD_LEFT) : null,
-            ]);
-
-            return $this->ok(['payment' => PaymentResource::make($order->payment->fresh()), 'simulated' => true], 'Mode simulasi pembayaran aktif untuk metode ini');
-        }
-
-        $channel = app(DokuService::class)->requestChannel($order->payment->doku_token_id, $data['channel_code']);
-        $order->payment->update([
-            'doku_channel' => $data['channel_code'],
-            'doku_qr_string' => $channel['qrString'],
-            'doku_va_number' => $channel['vaNumber'],
-            'doku_payment_url' => $channel['paymentUrl'] ?? $order->payment->doku_payment_url,
-        ]);
-
-        return $this->ok(['payment' => PaymentResource::make($order->payment->fresh()), 'simulated' => false], 'Instruksi pembayaran siap');
     }
 
     public function retryPayment(Request $request, int $id)
@@ -232,23 +194,4 @@ class OrderController extends Controller
         return $this->ok(['payment' => $prepared ? PaymentResource::make($prepared['payment']) : null], 'Instruksi pembayaran baru dibuat');
     }
 
-    public function simulatePayment(Request $request, int $id)
-    {
-        $order = Order::with('payment')->where('customer_id', $request->user()->id)->find($id);
-        if (! $order?->payment?->invoice_number) {
-            throw ApiException::notFound('Data pembayaran tidak ditemukan');
-        }
-        if (DokuService::configured() && ! PaymentService::isSimulatedMethod($order->payment_method)) {
-            throw ApiException::forbidden('Simulasi pembayaran tidak tersedia saat DOKU aktif');
-        }
-
-        $result = $this->payments->markPaid(
-            $order->payment->invoice_number,
-            $order->payment->amount,
-            $order->payment->doku_channel,
-            'SIMULATION',
-        );
-
-        return $this->ok($result, 'Pembayaran simulasi diproses');
-    }
 }

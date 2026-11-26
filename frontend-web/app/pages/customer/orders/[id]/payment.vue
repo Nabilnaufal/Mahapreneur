@@ -38,30 +38,6 @@
 
     <div v-else class="grid items-start gap-5 lg:grid-cols-[1fr_320px]">
       <div class="space-y-5">
-        <!-- Pilih channel -->
-        <section class="card p-5">
-          <h2 class="text-sm font-bold text-strong">Pilih channel pembayaran</h2>
-          <p class="mt-1 text-xs text-muted">
-            <template v-if="simulated">Metode OVO, DANA, dan ShopeePay masih berjalan dalam mode simulasi. Pilih metode lalu tandai pembayaran berhasil untuk melanjutkan pesanan.</template>
-            <template v-else>Channel yang tampil mengikuti konfigurasi akun DOKU. Pilih salah satu untuk mendapatkan kode bayar.</template>
-          </p>
-          <div class="mt-4 grid gap-2 sm:grid-cols-2">
-            <button
-              v-for="channel in channels"
-              :key="channel.channelCode"
-              class="rounded-2xl border p-3 text-left text-xs transition"
-              :class="payment?.dokuChannel === channel.channelCode ? 'border-primary bg-primary/5 dark:bg-primary-soft/20' : 'border-line hover:border-line-strong'"
-              @click="chooseChannel(channel.channelCode)"
-            >
-              <p class="font-bold text-strong">{{ channel.label }}</p>
-              <p class="mt-0.5 font-mono text-[10px] uppercase text-muted">{{ channel.channelCode }}</p>
-            </button>
-          </div>
-          <p v-if="!channels.length" class="mt-3 rounded-xl bg-surface-muted p-3 text-xs text-muted">
-            Belum ada channel yang tersedia untuk metode ini. Coba muat ulang halaman atau hubungi admin.
-          </p>
-        </section>
-
         <!-- Data bayar -->
         <section v-if="payment?.dokuQrString || payment?.dokuVaNumber || payment?.dokuPaymentUrl" class="card p-5">
           <h2 class="text-sm font-bold text-strong">Data pembayaran</h2>
@@ -100,18 +76,6 @@
           </a>
         </section>
 
-        <!-- Simulasi -->
-        <section v-if="simulated" class="card border-dashed border-line-strong p-5">
-          <h2 class="flex items-center gap-2 text-sm font-bold text-strong"><FlaskConical class="size-4" /> Simulasi pembayaran</h2>
-          <p class="mt-1 text-xs leading-relaxed text-muted">
-            Metode ini belum terhubung ke gateway pembayaran. Tombol ini hanya untuk pengujian alur pesanan dan tidak memproses uang sungguhan.
-          </p>
-          <button class="btn btn-tertiary mt-4" :disabled="loading" @click="simulate">
-            <Loader2 v-if="loading" class="size-4 animate-spin" />
-            <Zap v-else class="size-4" />
-            Simulasikan pembayaran berhasil
-          </button>
-        </section>
       </div>
 
       <aside class="space-y-5">
@@ -156,7 +120,7 @@
 </template>
 
 <script setup lang="ts">
-import { AlertTriangle, ArrowLeft, CheckCircle2, Copy, ExternalLink, FlaskConical, Loader2, QrCode, ShieldCheck, Zap } from 'lucide-vue-next';
+import { AlertTriangle, ArrowLeft, CheckCircle2, Copy, ExternalLink, Loader2, QrCode, ShieldCheck } from 'lucide-vue-next';
 import type { Payment } from '~/types';
 
 definePageMeta({ layout: 'account', requiresAuth: true, roles: ['CUSTOMER'] });
@@ -170,8 +134,6 @@ const loading = ref(false);
 interface PaymentData {
   order: { id: number; orderNumber: string; total: number; status: string; paymentStatus: string; paymentMethod: string };
   payment: Payment | null;
-  channels: { channelCode: string; label: string; method: string }[];
-  simulated: boolean;
 }
 
 const { data, refresh } = await useAsyncData(`payment-${route.params.id}`, () =>
@@ -180,42 +142,15 @@ const { data, refresh } = await useAsyncData(`payment-${route.params.id}`, () =>
 
 const order = computed(() => data.value?.order ?? null);
 const payment = computed(() => data.value?.payment ?? null);
-const channels = computed(() => data.value?.channels ?? []);
-const simulated = computed(() => data.value?.simulated ?? false);
 const redirecting = ref(false);
 
 onMounted(() => {
   const paymentUrl = payment.value?.dokuPaymentUrl;
-  if (!simulated.value && paymentUrl?.startsWith('http')) {
+  if (paymentUrl?.startsWith('http')) {
     redirecting.value = true;
     window.location.replace(paymentUrl);
   }
 });
-
-async function chooseChannel(channelCode: string) {
-  loading.value = true;
-  try {
-    await api.post(`/customer/orders/${route.params.id}/payment/channel`, { channelCode });
-    await refresh();
-  } catch (error) {
-    ui.toast(apiError(error), 'error');
-  } finally {
-    loading.value = false;
-  }
-}
-
-async function simulate() {
-  loading.value = true;
-  try {
-    await api.post(`/customer/orders/${route.params.id}/payment/simulate`);
-    ui.toast('Pembayaran simulasi berhasil diproses.', 'success');
-    await refresh();
-  } catch (error) {
-    ui.toast(apiError(error), 'error');
-  } finally {
-    loading.value = false;
-  }
-}
 
 async function retry() {
   loading.value = true;

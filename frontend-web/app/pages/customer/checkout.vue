@@ -68,9 +68,9 @@
         <section class="card p-5">
           <h2 class="flex items-center gap-2 text-base font-extrabold text-strong"><Wallet class="size-4" /> Metode pembayaran</h2>
 
-          <p v-if="methods.length && simulated" class="mt-3 flex items-start gap-2 rounded-xl bg-amber-50 p-3 text-[11px] leading-relaxed text-amber-800 dark:bg-amber-500/10 dark:text-amber-300">
+          <p v-if="methods.length && !dokuConfigured" class="mt-3 flex items-start gap-2 rounded-xl bg-amber-50 p-3 text-[11px] leading-relaxed text-amber-800 dark:bg-amber-500/10 dark:text-amber-300">
             <Info class="mt-0.5 size-3.5 shrink-0" />
-            OVO, DANA, dan ShopeePay tersedia dalam mode simulasi. Channel DOKU yang aktif akan muncul setelah kredensial DOKU terpasang. COD tetap berfungsi normal.
+            Pembayaran online belum tersedia. Untuk sementara, pilih COD atau hubungi admin.
           </p>
 
           <div class="mt-4 space-y-3">
@@ -188,15 +188,21 @@ const subtotal = computed(() => items.value.reduce((sum, item) => sum + item.sub
 const storeCount = computed(() => new Set(items.value.map((item) => item.product.store?.id)).size);
 
 const { data: methodData } = await useAsyncData('payment-methods', () =>
-  api.get<{ methods: { code: PaymentMethod; label: string; description: string; type: string }[]; simulated: boolean }>('/payments/methods'),
+  api.get<{ methods: { code: PaymentMethod; label: string; description: string; type: string }[]; dokuConfigured: boolean }>('/payments/methods'),
 );
 const { data: addressData } = await useAsyncData('checkout-addresses', () =>
   api.get<{ addresses: Address[] }>('/customer/addresses').catch(() => ({ addresses: [] as Address[] })),
 );
 
 const methods = computed(() => methodData.value?.methods ?? []);
-const simulated = computed(() => methodData.value?.simulated ?? false);
+const dokuConfigured = computed(() => methodData.value?.dokuConfigured ?? false);
 const addresses = computed(() => addressData.value?.addresses ?? []);
+
+watch(methods, (availableMethods) => {
+  if (!availableMethods.some((method) => method.code === form.paymentMethod)) {
+    form.paymentMethod = availableMethods[0]?.code ?? 'COD';
+  }
+}, { immediate: true });
 
 const methodIcon = (code: string) =>
   ({ OVO: Wallet, DANA: Wallet, SHOPEEPAY: Wallet, QRIS: QrCode, VIRTUAL_ACCOUNT: CreditCard, EWALLET: Wallet, COD: Banknote })[code] ?? Wallet;
