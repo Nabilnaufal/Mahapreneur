@@ -132,7 +132,7 @@ Browser
 - [Node.js 20+](https://nodejs.org/) dan npm.
 - [XAMPP](https://www.apachefriends.org/) (Apache + MariaDB/MySQL + phpMyAdmin) atau server MySQL 8 mandiri.
 - Git.
-- Kredensial **DOKU Sandbox** (opsional; tanpa kredensial aplikasi otomatis memakai mode simulasi).
+- Kredensial **DOKU Sandbox** (wajib untuk pembayaran online; tanpa kredensial hanya COD yang muncul di checkout).
 
 ## Instalasi
 
@@ -243,7 +243,8 @@ Password ketiga akun: `password`. Semua akun dibuat oleh `php artisan migrate --
 | `DB_CONNECTION`, `DB_HOST`, `DB_PORT`, `DB_DATABASE`, `DB_USERNAME`, `DB_PASSWORD` | Koneksi database, default XAMPP |
 | `MAIL_MAILER` / `RESEND_API_KEY` | Mailer Resend dan API key untuk email verifikasi/reset password |
 | `MAIL_FROM_ADDRESS` / `MAIL_FROM_NAME` | Identitas pengirim email dari domain `nabil-naufal.online` yang sudah diverifikasi di Resend |
-| `DOKU_CLIENT_ID` / `DOKU_SECRET_KEY` | Kredensial DOKU; kosong berarti mode simulasi |
+| `DOKU_CLIENT_ID` / `DOKU_SECRET_KEY` | Kredensial DOKU; kosong berarti hanya COD yang ditawarkan |
+| `DOKU_METHODS` | Metode online yang ditawarkan, default `OVO,DANA` (channel harus aktif di akun DOKU) |
 | `MAX_UPLOAD_MB` | Batas ukuran file upload |
 | `AUTH_TTL_DAYS` / `EMAIL_VERIFICATION_TTL_HOURS` / `PASSWORD_RESET_TTL_MINUTES` | Masa berlaku token |
 | `PAYMENT_TTL_MINUTES` | Masa berlaku instruksi pembayaran |
@@ -259,20 +260,20 @@ Password ketiga akun: `password`. Semua akun dibuat oleh `php artisan migrate --
 
 Status pembayaran **hanya** berubah menjadi `PAID` setelah backend menerima dan memverifikasi notifikasi resmi DOKU. Redirect dari browser tidak pernah dipercaya.
 
-### Mode simulasi
+### Tanpa kredensial
 
-Jika `DOKU_CLIENT_ID` dan `DOKU_SECRET_KEY` kosong:
+Jika `DOKU_CLIENT_ID` dan `DOKU_SECRET_KEY` kosong, endpoint `/api/payments/methods`
+hanya mengembalikan COD dan pembayaran online disembunyikan. Tidak ada mode simulasi.
 
-- Backend berjalan dalam mode simulasi dan menandai response dengan `simulated: true`.
-- Halaman pembayaran menampilkan tombol **Simulasikan pembayaran berhasil**.
-- Seluruh alur checkout, status pesanan, dan notifikasi tetap bisa diuji tanpa akun DOKU.
+### DOKU Sandbox asli
 
-### Mode DOKU Sandbox asli
-
-1. Isi `DOKU_CLIENT_ID` dan `DOKU_SECRET_KEY` dari dashboard DOKU Sandbox.
-2. Daftarkan URL notifikasi `POST {API_URL}/api/payments/doku/notification`.
-3. Backend memverifikasi signature HMAC-SHA256 dari raw body sebelum memproses.
-4. Notifikasi duplikat diabaikan lewat kolom unik `notification_key`.
+1. Isi `DOKU_CLIENT_ID` dan `DOKU_SECRET_KEY` dari dashboard DOKU Sandbox, plus
+   `DOKU_BASE_URL=https://api-sandbox.doku.com`.
+2. Pilih channel yang sudah aktif di akun Sandbox lewat `DOKU_METHODS` (default `OVO,DANA`).
+   Channel nonaktif ditolak DOKU dengan `PAYMENT CHANNEL IS INACTIVE`.
+3. Daftarkan URL notifikasi `POST {API_URL}/api/payments/doku/notification`.
+4. Backend memverifikasi signature HMAC-SHA256 dari raw body sebelum memproses.
+5. Notifikasi duplikat diabaikan lewat kolom unik `notification_key`.
 
 ## Status Pesanan & Pembayaran
 
@@ -331,7 +332,7 @@ Semua response memakai envelope `{ success, message, data }` dengan field camelC
 ## Catatan Deployment
 
 - Set `APP_ENV=production`, `APP_DEBUG=false`, `APP_KEY` acak, `CORS_ORIGIN`, dan `APP_URL` sesuai domain.
-- Isi kredensial DOKU dan `RESEND_API_KEY` agar mode simulasi pembayaran dan email development tidak aktif.
+- Isi kredensial DOKU dan `RESEND_API_KEY`; tanpa kredensial DOKU checkout hanya menawarkan COD.
 - Arahkan `NUXT_PUBLIC_API_BASE` ke URL API publik, lalu build dengan `npm run build`.
 - Folder `backend/public/uploads/` harus persisten (volume) atau diganti object storage.
 - Jalankan `php artisan migrate --force` saat deploy pertama dan setiap ada migrasi baru.

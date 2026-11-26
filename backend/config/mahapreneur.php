@@ -22,9 +22,20 @@ return [
         'client_id' => env('DOKU_CLIENT_ID'),
         'secret_key' => env('DOKU_SECRET_KEY'),
         'base_url' => env('DOKU_BASE_URL', 'https://api-sandbox.doku.com'),
-        'qris_channel' => env('DOKU_QRIS_CHANNEL', 'QRIS'),
         'va_channel' => env('DOKU_VA_CHANNEL', 'BCA'),
-        'ewallet_channel' => env('DOKU_EWALLET_CHANNEL', 'SHOPEEPAY'),
         'payment_ttl_minutes' => (int) env('PAYMENT_TTL_MINUTES', 60),
+        // Metode online yang ditawarkan ke pembeli. Hanya aktifkan channel yang
+        // sudah aktif di akun DOKU; channel nonaktif ditolak "PAYMENT CHANNEL IS INACTIVE".
+        'methods' => array_values(array_filter(array_map(
+            'trim',
+            explode(',', env('DOKU_METHODS', 'OVO,DANA')),
+        ))),
+        'channels' => [
+            'OVO' => 'EMONEY_OVO',
+            'DANA' => 'EMONEY_DANA',
+            'SHOPEEPAY' => 'EMONEY_SHOPEEPAY',
+            'QRIS' => env('DOKU_QRIS_CHANNEL', 'QRIS'),
+            'VIRTUAL_ACCOUNT' => 'VIRTUAL_ACCOUNT_'.env('DOKU_VA_CHANNEL', 'BCA'),
+        ],
     ],
 ];

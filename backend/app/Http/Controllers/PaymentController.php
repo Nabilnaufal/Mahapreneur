@@ -26,18 +26,28 @@ class PaymentController extends Controller
     /** Metode pembayaran yang disiapkan platform (dipakai halaman checkout). */
     public function methods()
     {
-        $methods = [
-            ['code' => 'COD', 'label' => 'Bayar di Tempat (COD)', 'description' => 'Bayar langsung ke seller saat pesanan diterima', 'type' => 'cod'],
-        ];
+        $methods = [];
 
         if (DokuService::configured()) {
-            $methods = [
-                ['code' => 'OVO', 'label' => 'OVO', 'description' => 'Bayar melalui checkout DOKU Sandbox', 'type' => 'online'],
-                ['code' => 'DANA', 'label' => 'DANA', 'description' => 'Bayar melalui checkout DOKU Sandbox', 'type' => 'online'],
-                ['code' => 'SHOPEEPAY', 'label' => 'ShopeePay', 'description' => 'Bayar melalui checkout DOKU Sandbox', 'type' => 'online'],
-                ...$methods,
+            $labels = [
+                'OVO' => 'OVO',
+                'DANA' => 'DANA',
+                'SHOPEEPAY' => 'ShopeePay',
+                'QRIS' => 'QRIS',
+                'VIRTUAL_ACCOUNT' => 'Virtual Account '.config('mahapreneur.doku.va_channel'),
             ];
+
+            foreach (config('mahapreneur.doku.methods') as $code) {
+                $methods[] = [
+                    'code' => $code,
+                    'label' => $labels[$code] ?? $code,
+                    'description' => 'Bayar melalui checkout DOKU Sandbox',
+                    'type' => 'online',
+                ];
+            }
         }
+
+        $methods[] = ['code' => 'COD', 'label' => 'Bayar di Tempat (COD)', 'description' => 'Bayar langsung ke seller saat pesanan diterima', 'type' => 'cod'];
 
         return $this->ok([
             'dokuConfigured' => DokuService::configured(),

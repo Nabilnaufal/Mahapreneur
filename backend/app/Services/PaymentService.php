@@ -52,7 +52,7 @@ class PaymentService
         $order = $payment->order;
         $now = now();
 
-        DB::transaction(function () use ($payment, $order, $channel, $source, $now) {
+        DB::transaction(function () use ($payment, $order, $channel, $now) {
             $payment->update([
                 'status' => 'PAID',
                 'paid_at' => $now,
@@ -150,7 +150,8 @@ class PaymentService
             $tokenId = $created['tokenId'];
         } catch (Throwable $error) {
             Log::error('Gagal membuat invoice DOKU: '.$error->getMessage());
-            throw ApiException::badRequest('DOKU gagal membuat pembayaran. Periksa channel dan kredensial Sandbox.');
+            // Alasan asli DOKU ikut ditampilkan supaya channel/kredensial yang salah cepat ketahuan.
+            throw ApiException::badRequest('DOKU gagal membuat pembayaran: '.$error->getMessage());
         }
 
         $payment = Payment::updateOrCreate(['order_id' => $orderId], [
@@ -160,14 +161,7 @@ class PaymentService
             'invoice_number' => $invoice,
             'doku_payment_url' => $paymentUrl,
             'doku_token_id' => $tokenId ?? $order->payment?->doku_token_id,
-            'doku_channel' => match ($order->payment_method) {
-                'OVO' => 'EMONEY_OVO',
-                'DANA' => 'EMONEY_DANA',
-                'SHOPEEPAY' => 'EMONEY_SHOPEEPAY',
-                'QRIS' => config('mahapreneur.doku.qris_channel'),
-                'VIRTUAL_ACCOUNT' => config('mahapreneur.doku.va_channel'),
-                default => config('mahapreneur.doku.ewallet_channel'),
-            },
+            'doku_channel' => config('mahapreneur.doku.channels')[$order->payment_method] ?? $order->payment_method,
             'expires_at' => $expiresAt,
         ]);
 

@@ -9,8 +9,8 @@ use App\Models\Address;
 use App\Models\CartItem;
 use App\Models\Order;
 use App\Models\Product;
-use App\Services\PaymentService;
 use App\Services\DokuService;
+use App\Services\PaymentService;
 use App\Support\Activity;
 use App\Support\Reference;
 use Illuminate\Http\Request;
@@ -32,7 +32,7 @@ class CheckoutController extends Controller
             'campus' => ['nullable', 'string', 'max:120'],
             'room' => ['nullable', 'string', 'max:60'],
             'note' => ['nullable', 'string', 'max:500'],
-            'payment_method' => ['required', Rule::in(['OVO', 'DANA', 'SHOPEEPAY', 'COD'])],
+            'payment_method' => ['required', Rule::in([...config('mahapreneur.doku.methods'), 'COD'])],
             'save_address' => ['boolean'],
         ]);
 

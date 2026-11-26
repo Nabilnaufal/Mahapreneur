@@ -23,17 +23,11 @@ class DokuService
         string $customerEmail,
         string $description,
         string $paymentMethod,
-    )
-    {
-        $paymentMethodTypes = match ($paymentMethod) {
-            'OVO' => ['EMONEY_OVO'],
-            'DANA' => ['EMONEY_DANA'],
-            'SHOPEEPAY' => ['EMONEY_SHOPEEPAY'],
-            'QRIS' => ['QRIS'],
-            'VIRTUAL_ACCOUNT' => ['VIRTUAL_ACCOUNT_'.config('mahapreneur.doku.va_channel')],
-            'EWALLET' => ['EMONEY_OVO', 'EMONEY_DANA', 'EMONEY_SHOPEEPAY'],
-            default => ['QRIS', 'VIRTUAL_ACCOUNT', 'EMONEY_OVO', 'EMONEY_DANA', 'EMONEY_SHOPEEPAY'],
-        };
+    ) {
+        $channel = config('mahapreneur.doku.channels')[$paymentMethod] ?? null;
+        if (! $channel) {
+            throw new RuntimeException("Metode pembayaran {$paymentMethod} tidak didukung DOKU");
+        }
 
         $response = $this->request('POST', '/checkout/v1/payment', [
             'order' => [
@@ -46,7 +40,7 @@ class DokuService
             ],
             'payment' => [
                 'payment_due_date' => config('mahapreneur.doku.payment_ttl_minutes'),
-                'payment_method_types' => $paymentMethodTypes,
+                'payment_method_types' => [$channel],
             ],
             'customer' => ['name' => $customerName, 'email' => $customerEmail],
         ]);
